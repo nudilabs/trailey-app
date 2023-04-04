@@ -28,7 +28,6 @@ const MOCK_MOST_TX_DATA = [
 ];
 
 export default function Trending() {
-  // testing deployment
   return (
     <Grid templateColumns="repeat(12, 1fr)" gap={6}>
       <GridItem colSpan={{ base: 12, md: 8 }}>
