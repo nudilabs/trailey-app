@@ -95,7 +95,6 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   return (
     <Flex
       direction="column"
-      transition="3s ease"
       bg={useColorModeValue('white', 'gray.900')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
