@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import {
   IconButton,
   Box,
@@ -19,7 +19,8 @@ import {
   InputLeftElement,
   useColorMode,
   Text,
-  Spacer
+  Spacer,
+  Button
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -61,6 +62,7 @@ export default function SidebarWithHeader({
       <SidebarContent
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}
+        zIndex={999}
       />
       <Drawer
         autoFocus={false}
@@ -77,7 +79,7 @@ export default function SidebarWithHeader({
       </Drawer>
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p={4}>
+      <Box ml={{ base: 0, md: '68px' }} p={4}>
         {children}
       </Box>
     </Box>
@@ -92,24 +94,40 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   const { toggleColorMode } = useColorMode();
   const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
+  const [isHover, setIsHover] = useState(false);
+
+  const handleHover = (hover: boolean) => {
+    setIsHover(hover);
+  };
   return (
     <Flex
       direction="column"
       bg={useColorModeValue('white', 'gray.900')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: 60 }}
+      w={{ base: 'full', md: isHover ? 60 : '68px' }}
       pos="fixed"
       h="full"
       {...rest}
+      onMouseEnter={() => handleHover(true)}
+      onMouseLeave={() => handleHover(false)}
     >
-      <Flex alignItems="center" py="8" px="8" justifyContent="space-between">
-        <Image src={logo} alt="Dropbook Logo" width="128px" />
+      <Flex alignItems="center" py={4} px={4} justifyContent="space-between">
+        <Image
+          src={isHover ? logo : logo.replace('logo', 'logo-small')}
+          alt="Dropbook Logo"
+          height={'32px'}
+        />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      <Flex direction="column" gap="6">
+      <Flex direction="column">
         {LinkItems.map(link => (
-          <NavItem key={link.name} icon={link.icon} href={link.href}>
+          <NavItem
+            isHover={isHover}
+            key={link.name}
+            icon={link.icon}
+            href={link.href}
+          >
             {link.name}
           </NavItem>
         ))}
@@ -133,13 +151,14 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 };
 
 interface NavItemProps extends FlexProps {
+  isHover: boolean;
   icon: IconType;
   href: string;
   children: ReactText;
   isActive?: boolean;
 }
 
-const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
+const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
   const router = useRouter();
   const isActive = router.pathname === href;
   const color = useColorModeValue('blackAlpha.600', 'whiteAlpha.600');
@@ -147,28 +166,25 @@ const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
   const borderColor = useColorModeValue('blue.600', 'blue.300');
 
   return (
-    <Link
-      href={href}
-      style={{ textDecoration: 'none' }}
-      _focus={{ boxShadow: 'none' }}
-    >
-      <Flex
-        align="center"
-        px="8"
-        color={isActive ? activeColor : color}
-        role="group"
-        cursor="pointer"
-        _hover={{
-          color: activeColor
-        }}
-        borderRight={isActive ? '4px' : '0px'}
-        borderColor={isActive ? borderColor : 'none'}
-        {...rest}
-      >
-        {icon && <Icon mr="4" fontSize="16" as={icon} />}
-        <Text>{children}</Text>
-      </Flex>
-    </Link>
+    <Flex direction="column" {...rest} px={4} py={1}>
+      {isHover ? (
+        <Button
+          variant={isActive ? 'solid' : 'ghost'}
+          size="sm"
+          leftIcon={<Icon fontSize="16" as={icon} />}
+          justifyContent="left"
+        >
+          {children}
+        </Button>
+      ) : (
+        <IconButton
+          variant={isActive ? 'solid' : 'ghost'}
+          size="sm"
+          aria-label="toggle dark mode"
+          icon={<Icon fontSize="16" as={icon} />}
+        />
+      )}
+    </Flex>
   );
 };
 
@@ -180,7 +196,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
   return (
     <Flex
-      ml={{ base: 0, md: 60 }}
+      ml={{ base: 0, md: '68px' }}
       p={{ base: 2, md: 2 }}
       gap={{ base: 2, md: 4 }}
       alignItems="center"
