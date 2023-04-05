@@ -13,7 +13,7 @@ export default function NotFound() {
         {`The page you're looking for does not seem to exist`}
       </Text>
 
-      <Button variant="solid" colorScheme="blue" as="a" href="/">
+      <Button variant="solid" colorScheme="pink" as="a" href="/">
         Go to Home
       </Button>
     </Box>

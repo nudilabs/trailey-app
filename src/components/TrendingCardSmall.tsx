@@ -82,7 +82,7 @@ const TrendingCardSmall = ({ chainData }: { chainData: ChainData[] }) => {
       <CardFooter>
         <Button
           size="sm"
-          colorScheme="blue"
+          colorScheme="pink"
           variant="link"
           rightIcon={<FiArrowRight />}
           as="a"

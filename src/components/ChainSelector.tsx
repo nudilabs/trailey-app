@@ -38,6 +38,7 @@ const ChainSelector = ({
       <CardBody p={1} gap={1}>
         {chainData.map((chain, index) => (
           <Button
+            size="sm"
             key={chain.name}
             variant={
               activeChain && chain.name.toLowerCase() === activeChain

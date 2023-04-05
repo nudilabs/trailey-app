@@ -33,14 +33,29 @@ const MOCK_BRIDGED_DATA = [
       amount: 0.1
     },
     value: 183
+  }
+];
+
+const MOCK_OVERVIEW_DATA = [
+  {
+    address: '0x293j...293k',
+    bridged: 20,
+    txns: {
+      smartContract: 5,
+      general: 28,
+      average: 5.5,
+      value: 28.5283
+    }
   },
   {
-    address: '0x2ks0...192j',
-    token: {
-      symbol: 'ETH',
-      amount: 0.1
-    },
-    value: 183
+    address: '0x293j...293k',
+    bridged: 20,
+    txns: {
+      smartContract: 5,
+      general: 28,
+      average: 5.5,
+      value: 28.5283
+    }
   }
 ];
 
@@ -139,16 +154,16 @@ export default function Home({ query }: { query: { chain: string } }) {
                     activeChain={query.chain}
                   />
                 </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 8 }}>
+                <GridItem colSpan={{ base: 12, md: 9 }}>
                   <Flex direction="column" gap={4}>
-                    <OverviewCard txData={MOCK_BRIDGED_DATA} />
+                    <OverviewCard txData={MOCK_OVERVIEW_DATA} />
                     {/* <BridgedCard txData={MOCK_BRIDGED_DATA} />
                     <TxnsOvertimeCard txData={MOCK_TXNS_OVERTIME_DATA} />
                     <TxnsFrequency txData={MOCK_TXNS_FREQUENCY_DATA} />
                     <TxnsValueCard txData={MOCK_TXNS_VALUE_DATA} /> */}
                   </Flex>
                 </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 4 }}>
+                <GridItem colSpan={{ base: 12, lg: 3 }}>
                   <TrendingCardSmall chainData={MOCK_CHAINS} />
                 </GridItem>
               </Grid>
