@@ -147,7 +147,7 @@ export default function Home({ query }: { query: { chain: string } }) {
         </Flex>
       </Flex>
       <Flex>
-        <Tabs w="100%" isLazy>
+        <Tabs w="100%" isLazy colorScheme="pink">
           <TabList>
             <Tab>Portfolio</Tab>
             <Tab>History</Tab>
