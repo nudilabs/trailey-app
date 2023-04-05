@@ -1,5 +1,6 @@
 import BridgedCard from '@/components/BridgedCard';
 import ChainSelector from '@/components/ChainSelector';
+import OverviewCard from '@/components/OverviewCard';
 import TrendingCardSmall from '@/components/TrendingCardSmall';
 import TxnsFrequency from '@/components/TxnsFrequency';
 import TxnsOvertimeCard from '@/components/TxnsOvertimeCard';
@@ -140,10 +141,11 @@ export default function Home({ query }: { query: { chain: string } }) {
                 </GridItem>
                 <GridItem colSpan={{ base: 12, lg: 8 }}>
                   <Flex direction="column" gap={4}>
-                    <BridgedCard txData={MOCK_BRIDGED_DATA} />
+                    <OverviewCard txData={MOCK_BRIDGED_DATA} />
+                    {/* <BridgedCard txData={MOCK_BRIDGED_DATA} />
                     <TxnsOvertimeCard txData={MOCK_TXNS_OVERTIME_DATA} />
                     <TxnsFrequency txData={MOCK_TXNS_FREQUENCY_DATA} />
-                    <TxnsValueCard txData={MOCK_TXNS_VALUE_DATA} />
+                    <TxnsValueCard txData={MOCK_TXNS_VALUE_DATA} /> */}
                   </Flex>
                 </GridItem>
                 <GridItem colSpan={{ base: 12, lg: 4 }}>

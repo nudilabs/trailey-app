@@ -213,22 +213,24 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       justifyContent={{ base: 'space-between', md: 'flex-end' }}
       {...rest}
     >
-      <InputGroup display={{ base: 'none', md: 'flex' }} width="240px">
-        <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
-          <FiSearch />
-        </InputLeftElement>
-        <Input placeholder="Search address or ens..." />
-      </InputGroup>
-      <IconButton
-        display={{ base: 'flex', md: 'none' }}
-        onClick={onOpen}
-        variant="outline"
-        aria-label="open menu"
-        icon={<FiMenu />}
-      />
-      <Box display={{ base: 'flex', md: 'none' }}>
-        <Image src="/logo.svg" alt="Dropbook Logo" width="128px" />
-      </Box>
+      <Flex alignItems="center" gap={2}>
+        <InputGroup display={{ base: 'none', md: 'flex' }} width="240px">
+          <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
+            <FiSearch />
+          </InputLeftElement>
+          <Input placeholder="Search address or ens..." />
+        </InputGroup>
+        <IconButton
+          display={{ base: 'flex', md: 'none' }}
+          onClick={onOpen}
+          variant="outline"
+          aria-label="open menu"
+          icon={<FiMenu />}
+        />
+        <Box display={{ base: 'flex', md: 'none' }}>
+          <Image src="/logo.svg" alt="Dropbook Logo" width="128px" />
+        </Box>
+      </Flex>
 
       <HStack>
         <IconButton variant="ghost" aria-label="open menu" icon={<FiBell />} />
