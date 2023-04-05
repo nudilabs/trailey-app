@@ -198,6 +198,7 @@ interface MobileProps extends FlexProps {
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const { toggleColorMode } = useColorMode();
   const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
+  const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
   return (
     <Flex
       ml={{ base: 0, md: '68px' }}
@@ -228,7 +229,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           icon={<FiMenu />}
         />
         <Box display={{ base: 'flex', md: 'none' }}>
-          <Image src="/logo.svg" alt="Dropbook Logo" width="128px" />
+          <Image src={logo} alt="Dropbook Logo" width="128px" />
         </Box>
       </Flex>
 

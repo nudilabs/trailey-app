@@ -33,6 +33,14 @@ const MOCK_BRIDGED_DATA = [
       amount: 0.1
     },
     value: 183
+  },
+  {
+    address: '0x293j...293k',
+    token: {
+      symbol: 'ETH',
+      amount: 0.1
+    },
+    value: 183
   }
 ];
 

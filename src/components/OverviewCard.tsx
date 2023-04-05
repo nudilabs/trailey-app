@@ -14,8 +14,8 @@ import {
   useColorModeValue,
   Button
 } from '@chakra-ui/react';
-import TokenIcon from './TokenIcon';
-import { FiExternalLink } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
 
 type OverviewData = {
   address: string;
@@ -63,7 +63,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                     <Button
                       colorScheme="pink"
                       variant="link"
-                      rightIcon={<FiExternalLink />}
+                      rightIcon={<FiArrowRight />}
                     >
                       {data.address}
                     </Button>
