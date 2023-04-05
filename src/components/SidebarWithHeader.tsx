@@ -173,6 +173,8 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
           size="sm"
           leftIcon={<Icon fontSize="16" as={icon} />}
           justifyContent="left"
+          as="a"
+          href={href}
         >
           {children}
         </Button>
@@ -182,6 +184,8 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
           size="sm"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={icon} />}
+          as="a"
+          href={href}
         />
       )}
     </Flex>
@@ -200,7 +204,10 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       p={{ base: 2, md: 2 }}
       gap={{ base: 2, md: 4 }}
       alignItems="center"
-      bg={useColorModeValue('whiteAlpha.600', 'gray.900')}
+      bg={{
+        base: useColorModeValue('white', 'gray.900'),
+        md: useColorModeValue('whiteAlpha.600', 'gray.900')
+      }}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
       justifyContent={{ base: 'space-between', md: 'flex-end' }}
