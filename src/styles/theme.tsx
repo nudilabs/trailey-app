@@ -3,6 +3,7 @@ import inputTheme from './input';
 import linkTheme from './link';
 import { tabsTheme } from './tabs';
 import { buttonTheme } from './button';
+import { tableTheme } from './table';
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -15,7 +16,8 @@ const theme = extendTheme({
     Input: inputTheme,
     Link: linkTheme,
     Tabs: tabsTheme,
-    Button: buttonTheme
+    Button: buttonTheme,
+    Table: tableTheme
   }
 });
 

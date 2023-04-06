@@ -20,6 +20,7 @@ import {
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiExternalLink, FiPlusCircle } from 'react-icons/fi';
 import TimeFilter from './TimeFilter';
+import Link from 'next/link';
 
 type OverviewData = {
   address: string;
@@ -33,7 +34,6 @@ type OverviewData = {
 };
 
 const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
-  const hoverBg = useColorModeValue('blackAlpha.50', 'whiteAlpha.50');
   const goalColor = useColorModeValue('gray.500', 'gray.400');
   return (
     <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
@@ -68,22 +68,17 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
             </Thead>
             <Tbody>
               {txData.map(data => (
-                <Tr
-                  key={data.address}
-                  _hover={{
-                    bg: hoverBg
-                  }}
-                >
+                <Tr key={data.address}>
                   <Td>
-                    <Button
-                      colorScheme="pink"
-                      variant="link"
-                      rightIcon={<FiArrowRight />}
-                      as="a"
-                      href={`/account/${data.address}`}
-                    >
-                      {data.address}
-                    </Button>
+                    <Link href={`/account/${data.address}`} passHref>
+                      <Button
+                        colorScheme="pink"
+                        variant="link"
+                        rightIcon={<FiArrowRight />}
+                      >
+                        {data.address}
+                      </Button>
+                    </Link>
                   </Td>
                   <Td isNumeric>
                     <Flex direction="row" alignItems="center" gap={1}>
