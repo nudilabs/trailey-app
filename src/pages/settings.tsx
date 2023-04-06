@@ -82,7 +82,7 @@ export default function Settings() {
           ))}
         </CardBody>
         <CardFooter>
-          <Button colorScheme="pink">Save</Button>
+          <Button>Save</Button>
         </CardFooter>
       </Card>
       <Card width={{ base: '100%', md: '70%' }}>
