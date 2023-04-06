@@ -217,12 +217,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       {...rest}
     >
       <Flex alignItems="center" gap={2}>
-        <InputGroup display={{ base: 'none', md: 'flex' }} width="240px">
-          <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
-            <FiSearch />
-          </InputLeftElement>
-          <SearchBar />
-        </InputGroup>
+        <SearchBar />
         <IconButton
           display={{ base: 'flex', md: 'none' }}
           onClick={onOpen}

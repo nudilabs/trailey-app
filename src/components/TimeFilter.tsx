@@ -1,4 +1,4 @@
-import { Flex, Button } from '@chakra-ui/react';
+import { Flex, Button, useColorModeValue } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -25,7 +25,7 @@ function TimeFilter() {
       alignItems="center"
       gap={2}
       border="1px"
-      borderColor="gray.200"
+      borderColor={useColorModeValue('gray.200', 'gray.600')}
       borderRadius="full"
       p={1}
     >
