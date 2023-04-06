@@ -165,10 +165,6 @@ export default function Home({ query }: { query: { chain: string } }) {
                 <GridItem colSpan={{ base: 12, md: 9 }}>
                   <Flex direction="column" gap={4}>
                     <OverviewCard txData={MOCK_OVERVIEW_DATA} />
-                    {/* <BridgedCard txData={MOCK_BRIDGED_DATA} />
-                    <TxnsOvertimeCard txData={MOCK_TXNS_OVERTIME_DATA} />
-                    <TxnsFrequency txData={MOCK_TXNS_FREQUENCY_DATA} />
-                    <TxnsValueCard txData={MOCK_TXNS_VALUE_DATA} /> */}
                   </Flex>
                 </GridItem>
                 <GridItem colSpan={{ base: 12, lg: 3 }}>

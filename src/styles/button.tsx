@@ -5,6 +5,11 @@ const solid = defineStyle({
   fontWeight: 'bold' // change the font weight
 });
 
+const outline = defineStyle({
+  borderRadius: 'full', // remove the border radius
+  fontWeight: 'bold' // change the font weight
+});
+
 const ghost = defineStyle({
   borderRadius: 'full', // remove the border radius
   fontWeight: 'bold', // change the font weight
@@ -16,5 +21,5 @@ const ghost = defineStyle({
 });
 
 export const buttonTheme = defineStyleConfig({
-  variants: { solid, ghost }
+  variants: { solid, ghost, outline }
 });

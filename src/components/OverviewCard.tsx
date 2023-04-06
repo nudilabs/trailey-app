@@ -15,7 +15,7 @@ import {
   Button
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
+import { FiArrowRight, FiExternalLink, FiPlusCircle } from 'react-icons/fi';
 
 type OverviewData = {
   address: string;
@@ -35,7 +35,14 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
       <CardHeader>
         <Flex direction="row" justifyContent="space-between">
           <Heading fontSize={{ base: 'md', lg: 'xl' }}>Overview</Heading>
-          {/* <Heading fontSize={{ base: 'md', lg: 'xl' }}>$420.69</Heading> */}
+          <Button
+            size="xs"
+            colorScheme="pink"
+            variant="outline"
+            leftIcon={<FiPlusCircle />}
+          >
+            Add Wallet
+          </Button>
         </Flex>
       </CardHeader>
       <CardBody>
