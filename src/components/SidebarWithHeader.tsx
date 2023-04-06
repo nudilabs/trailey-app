@@ -165,6 +165,11 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
   const activeColor = useColorModeValue('blackAlpha.800', 'whiteAlpha.800');
   const borderColor = useColorModeValue('blue.600', 'blue.300');
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push(href);
+  };
+
   return (
     <Flex direction="column" {...rest} px={4} py={1}>
       {isHover ? (
@@ -173,8 +178,8 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
           size="sm"
           leftIcon={<Icon fontSize="16" as={icon} />}
           justifyContent="left"
-          as="a"
-          href={href}
+          onClick={handleClick}
+          cursor="pointer"
         >
           {children}
         </Button>
@@ -184,8 +189,8 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
           size="sm"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={icon} />}
-          as="a"
-          href={href}
+          onClick={handleClick}
+          cursor="pointer"
         />
       )}
     </Flex>
