@@ -7,7 +7,6 @@ import {
   HStack,
   Icon,
   useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
   useDisclosure,
@@ -18,7 +17,6 @@ import {
   InputGroup,
   InputLeftElement,
   useColorMode,
-  Text,
   Spacer,
   Button
 } from '@chakra-ui/react';
@@ -26,7 +24,6 @@ import {
   FiHome,
   FiTrendingUp,
   FiCompass,
-  FiStar,
   FiSettings,
   FiMenu,
   FiBell,
@@ -37,6 +34,7 @@ import {
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { useRouter } from 'next/router';
+import SearchBar from './SearchBar';
 
 interface LinkItemProps {
   name: string;
@@ -47,7 +45,6 @@ const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome, href: '/' },
   { name: 'Trending', icon: FiTrendingUp, href: '/trending' },
   { name: 'Explore', icon: FiCompass, href: '/explore' },
-  { name: 'Favourites', icon: FiStar, href: '/favourites' },
   { name: 'Settings', icon: FiSettings, href: '/settings' }
 ];
 
@@ -224,7 +221,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
             <FiSearch />
           </InputLeftElement>
-          <Input placeholder="Search address or ens..." />
+          <SearchBar />
         </InputGroup>
         <IconButton
           display={{ base: 'flex', md: 'none' }}

@@ -150,7 +150,7 @@ export default function Home() {
         <Tabs w="100%" isLazy colorScheme="pink">
           <TabList>
             <Tab>Portfolio</Tab>
-            <Tab>History</Tab>
+            {/* <Tab>History</Tab> */}
           </TabList>
 
           <TabPanels>
@@ -168,9 +168,6 @@ export default function Home() {
                   <TrendingCardSmall chainData={MOCK_CHAINS} />
                 </GridItem>
               </Grid>
-            </TabPanel>
-            <TabPanel>
-              <p>two!</p>
             </TabPanel>
           </TabPanels>
         </Tabs>
