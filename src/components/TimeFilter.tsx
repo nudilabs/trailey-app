@@ -15,7 +15,8 @@ function TimeFilter() {
 
   const handleSelectTime = (time: string) => {
     setSelectedTime(time);
-    router.push(`/?time=${time}`);
+    const query = { ...router.query, time };
+    router.push({ query });
   };
 
   return (

@@ -131,7 +131,7 @@ const MOCK_CHAINS = [
   }
 ];
 
-export default function Home({ query }: { query: { chain: string } }) {
+export default function Home() {
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
@@ -157,10 +157,7 @@ export default function Home({ query }: { query: { chain: string } }) {
             <TabPanel>
               <Grid templateColumns="repeat(12, 1fr)" gap={4}>
                 <GridItem colSpan={{ base: 12, lg: 12 }}>
-                  <ChainSelector
-                    chainData={MOCK_CHAINS}
-                    activeChain={query.chain}
-                  />
+                  <ChainSelector chainData={MOCK_CHAINS} />
                 </GridItem>
                 <GridItem colSpan={{ base: 12, md: 9 }}>
                   <Flex direction="column" gap={4}>
@@ -185,10 +182,7 @@ export default function Home({ query }: { query: { chain: string } }) {
 export const getServerSideProps = async (context: {
   query: { chain: string };
 }) => {
-  const { query } = context;
   return {
-    props: {
-      query
-    }
+    props: {}
   };
 };

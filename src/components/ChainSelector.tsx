@@ -15,6 +15,8 @@ import {
   Tbody,
   Td
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { FiGrid } from 'react-icons/fi';
 
 type ChainData = {
@@ -22,16 +24,17 @@ type ChainData = {
   icon: string;
 };
 
-const ChainSelector = ({
-  chainData,
-  activeChain
-}: {
-  chainData: ChainData[];
-  activeChain: string;
-}) => {
-  if (!activeChain) {
-    activeChain = chainData[0].name.toLowerCase();
-  }
+const ChainSelector = ({ chainData }: { chainData: ChainData[] }) => {
+  const router = useRouter();
+  const [selectedChain, setSelectedChain] = useState(
+    router.query.chain || chainData[0].name.toLowerCase()
+  );
+
+  const handleSelectChain = (chain: string) => {
+    setSelectedChain(chain);
+    const query = { ...router.query, chain };
+    router.push({ query });
+  };
 
   return (
     <Card maxW="fit-content" rounded="full">
@@ -41,12 +44,9 @@ const ChainSelector = ({
             size="sm"
             key={chain.name}
             variant={
-              activeChain && chain.name.toLowerCase() === activeChain
-                ? 'solid'
-                : 'ghost'
+              selectedChain === chain.name.toLowerCase() ? 'solid' : 'ghost'
             }
-            as="a"
-            href={`?chain=${chain.name.toLowerCase()}`}
+            onClick={() => handleSelectChain(chain.name.toLowerCase())}
           >
             <Image
               src={chain.icon}
