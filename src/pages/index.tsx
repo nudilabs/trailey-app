@@ -47,22 +47,22 @@ const MOCK_BRIDGED_DATA = [
 const MOCK_OVERVIEW_DATA = [
   {
     address: '0x293j...293k',
-    bridged: 20,
+    bridged: { value: 20, goal: 25 },
     txns: {
-      smartContract: 5,
-      general: 28,
-      average: 5.5,
-      value: 28.5283
+      smartContract: { value: 5, goal: 10 },
+      general: { value: 28, goal: 35 },
+      average: { value: 5.5, goal: 10 },
+      value: { value: 28.5283, goal: 40 }
     }
   },
   {
     address: '0x293j...293k',
-    bridged: 20,
+    bridged: { value: 20, goal: 25 },
     txns: {
-      smartContract: 5,
-      general: 28,
-      average: 5.5,
-      value: 28.5283
+      smartContract: { value: 5, goal: 10 },
+      general: { value: 28, goal: 35 },
+      average: { value: 5.5, goal: 10 },
+      value: { value: 28.5283, goal: 40 }
     }
   }
 ];

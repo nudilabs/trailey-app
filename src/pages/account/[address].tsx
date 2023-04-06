@@ -137,33 +137,27 @@ const MOCK_CHAINS = [
 const data02 = [
   {
     name: 'zkSync',
-    value: 2400,
-    color: '#FFC107'
+    value: 24
   },
   {
     name: 'Scroll',
-    value: 4567,
-    color: '#FF5722'
+    value: 45
   },
   {
     name: 'Linea',
-    value: 1398,
-    color: '#4CAF50'
+    value: 13
   },
   {
     name: 'Sui',
-    value: 9800,
-    color: '#2196F3'
+    value: 98
   },
   {
     name: 'Sei',
-    value: 3908,
-    color: '#9C27B0'
+    value: 39
   },
   {
     name: 'Base',
-    value: 4800,
-    color: '#00BCD4'
+    value: 48
   }
 ];
 
@@ -218,7 +212,7 @@ export default function Home({ query }: { query: { chain: string } }) {
                       <CardHeader>
                         <Flex direction="row" justifyContent="space-between">
                           <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Activity
+                            Most Active Chains
                           </Heading>
                         </Flex>
                       </CardHeader>
