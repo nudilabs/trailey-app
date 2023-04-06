@@ -15,10 +15,22 @@ import {
   Button,
   Tfoot,
   Text,
-  Tooltip
+  Tooltip,
+  IconButton,
+  Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiArrowRight, FiExternalLink, FiPlusCircle } from 'react-icons/fi';
+import {
+  FiArrowRight,
+  FiExternalLink,
+  FiFlag,
+  FiPlusCircle,
+  FiSettings
+} from 'react-icons/fi';
 import TimeFilter from './TimeFilter';
 import Link from 'next/link';
 
@@ -38,19 +50,25 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
   return (
     <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
       <CardHeader>
-        <Flex direction="row" justifyContent="space-between">
+        <Flex direction="row" alignItems="center" gap={4}>
           <Flex direction="row" alignItems="center" gap={4}>
             <Heading fontSize={{ base: 'md', lg: 'xl' }}>Overview</Heading>
-            <Button
-              size="xs"
-              colorScheme="pink"
-              variant="link"
-              leftIcon={<FiPlusCircle />}
-            >
-              Add Wallet
-            </Button>
           </Flex>
+          <Spacer />
           <TimeFilter />
+          <Menu isLazy>
+            <MenuButton
+              as={IconButton}
+              aria-label="Options"
+              icon={<FiSettings />}
+              variant="outline"
+              size="sm"
+            />
+            <MenuList>
+              <MenuItem icon={<FiPlusCircle />}>Add Wallet</MenuItem>
+              <MenuItem icon={<FiFlag />}>Edit Goals</MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
       </CardHeader>
       <CardBody>
