@@ -88,7 +88,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td isNumeric>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.bridged.value}</Text>
-                      <Tooltip label="🏆 Goal">
+                      <Tooltip label="🏆 Weekly Goal">
                         <Text
                           fontSize="xs"
                           color={goalColor}
@@ -99,7 +99,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td isNumeric>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.average.value}</Text>
-                      <Tooltip label="🏆 Goal">
+                      <Tooltip label="🏆 Weekly Goal">
                         <Text
                           fontSize="xs"
                           color={goalColor}
@@ -110,7 +110,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td isNumeric>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.general.value}</Text>
-                      <Tooltip label="🏆 Goal">
+                      <Tooltip label="🏆 Weekly Goal">
                         <Text
                           fontSize="xs"
                           color={goalColor}
@@ -121,7 +121,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td isNumeric>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.smartContract.value}</Text>
-                      <Tooltip label="🏆 Goal">
+                      <Tooltip label="🏆 Weekly Goal">
                         <Text
                           fontSize="xs"
                           color={goalColor}
@@ -132,7 +132,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td isNumeric>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.value.value}</Text>
-                      <Tooltip label="🏆 Goal">
+                      <Tooltip label="🏆 Weekly Goal">
                         <Text
                           fontSize="xs"
                           color={goalColor}
