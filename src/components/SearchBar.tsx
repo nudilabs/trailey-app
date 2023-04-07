@@ -51,7 +51,7 @@ export default function SearchBar() {
   }
 
   return (
-    <InputGroup display={{ base: 'none', md: 'flex' }} width="540px">
+    <InputGroup display={{ base: 'none', md: 'flex' }} width="440px">
       <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
         <FiSearch onClick={handleSearch} />
       </InputLeftElement>

@@ -114,6 +114,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           src={isHover ? logo : logo.replace('logo', 'logo-small')}
           alt="Dropbook Logo"
           height={'32px'}
+          display={{ base: 'none', md: 'block' }}
+        />
+        <Image
+          src={logo}
+          alt="Dropbook Logo"
+          height={'32px'}
+          display={{ base: 'block', md: 'none' }}
         />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
@@ -158,9 +165,6 @@ interface NavItemProps extends FlexProps {
 const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
   const router = useRouter();
   const isActive = router.pathname === href;
-  const color = useColorModeValue('blackAlpha.600', 'whiteAlpha.600');
-  const activeColor = useColorModeValue('blackAlpha.800', 'whiteAlpha.800');
-  const borderColor = useColorModeValue('blue.600', 'blue.300');
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -177,6 +181,7 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
           justifyContent="left"
           onClick={handleClick}
           cursor="pointer"
+          display={{ base: 'none', md: 'flex' }}
         >
           {children}
         </Button>
@@ -188,8 +193,20 @@ const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
           icon={<Icon fontSize="16" as={icon} />}
           onClick={handleClick}
           cursor="pointer"
+          display={{ base: 'none', md: 'flex' }}
         />
       )}
+      <Button
+        variant={isActive ? 'solid' : 'ghost'}
+        size="sm"
+        leftIcon={<Icon fontSize="16" as={icon} />}
+        justifyContent="left"
+        onClick={handleClick}
+        cursor="pointer"
+        display={{ base: 'flex', md: 'none' }}
+      >
+        {children}
+      </Button>
     </Flex>
   );
 };
