@@ -1,9 +1,10 @@
 import BridgedCard from '@/components/BridgedCard';
 import ChainSelector from '@/components/ChainSelector';
 import TrendingCardSmall from '@/components/TrendingCardSmall';
-import TxnsFrequency from '@/components/TxnsFrequency';
-import TxnsOvertimeCard from '@/components/TxnsOvertimeCard';
-import TxnsValueCard from '@/components/TxnsValueCard';
+import { isAddress } from 'viem';
+import { normalize } from 'viem/ens';
+import { publicClient } from '@/utils/client';
+
 import {
   Box,
   Card,
@@ -22,11 +23,13 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text
+  Text,
+  useToast
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import { getFormattedAddress } from '@/utils/format';
 
 const MOCK_BRIDGED_DATA = [
   {
@@ -170,23 +173,46 @@ const COLORS = [
   '#FF0000'
 ];
 
-export default function Account() {
+export default function Account({
+  address,
+  ensName,
+  avatarUrl
+}: {
+  address: string;
+  ensName: string;
+  avatarUrl: string | null;
+}) {
+  const toast = useToast();
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
         <Image
-          src="/pfp.png"
-          alt="0x0asdaoisjdklas"
+          src={avatarUrl ? avatarUrl : '/pfp.png'}
+          alt={ensName}
           rounded={{ base: 'lg', md: 'xl' }}
           boxSize={'80px'}
         />
         <Flex direction="column">
-          <Heading>alice.eth</Heading>
+          <Heading>{ensName}</Heading>
           <Flex direction="row" gap={2} alignItems="center" fontSize={12}>
-            <Link href="https://etherscan.io/address/0x283j...293k">
-              <Text>0x283j...293k</Text>
+            <Link href={`https://etherscan.io/address/${address}`}>
+              <Text>{getFormattedAddress(address)}</Text>
             </Link>
-            <IconButton aria-label="Copy" icon={<FiCopy />} size="xs" />
+            <IconButton
+              aria-label="Copy"
+              icon={<FiCopy />}
+              size="xs"
+              onClick={() => {
+                navigator.clipboard.writeText(address);
+                toast({
+                  title: 'Copied address to clipboard',
+                  status: 'info',
+                  position: 'top-right',
+                  duration: 2500,
+                  isClosable: true
+                });
+              }}
+            />
           </Flex>
         </Flex>
       </Flex>
@@ -288,10 +314,89 @@ export default function Account() {
   );
 }
 
+const getAddressType = (address: string): string | null => {
+  if (isAddress(address)) {
+    return 'address';
+  } else if (address.endsWith('.eth')) {
+    return 'ens';
+  } else {
+    return null;
+  }
+};
+
+const fetchAddressProps = async (address: string) => {
+  const ensName = await publicClient.getEnsName({
+    address: `0x${address.slice(2)}`
+  });
+
+  const avatarUrlPromise = async () => {
+    if (ensName) {
+      return publicClient.getEnsAvatar({
+        name: normalize(ensName)
+      });
+    }
+    return null;
+  };
+
+  const [avatarUrl] = await Promise.all([avatarUrlPromise()]);
+
+  return {
+    ensName: ensName ? ensName : 'Unidentified',
+    address,
+    avatarUrl
+  };
+};
+
+const fetchEnsProps = async (ensName: string) => {
+  const addressPromise = publicClient.getEnsAddress({
+    name: normalize(ensName)
+  });
+
+  const avatarUrlPromise = publicClient.getEnsAvatar({
+    name: normalize(ensName)
+  });
+
+  const [address, avatarUrl] = await Promise.all([
+    addressPromise,
+    avatarUrlPromise
+  ]);
+
+  if (!address) {
+    throw new Error('No address found for ENS name');
+  }
+
+  return {
+    ensName,
+    address,
+    avatarUrl
+  };
+};
+
 export const getServerSideProps = async (context: {
   query: { chain: string };
+  params: { address: string };
 }) => {
-  return {
-    props: {}
-  };
+  const p = context.params;
+  const addressType = getAddressType(p.address);
+
+  if (!addressType) {
+    return {
+      notFound: true
+    };
+  }
+
+  try {
+    if (addressType === 'address') {
+      const props = await fetchAddressProps(p.address);
+      return { props };
+    } else if (addressType === 'ens') {
+      const props = await fetchEnsProps(p.address);
+      return { props };
+    }
+  } catch (error) {
+    console.error(error);
+    return {
+      notFound: true
+    };
+  }
 };
