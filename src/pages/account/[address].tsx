@@ -375,7 +375,13 @@ const fetchEnsProps = async (ensName: string) => {
 export const getServerSideProps = async (context: {
   query: { chain: string };
   params: { address: string };
+  res: { setHeader: (arg0: string, arg1: string) => void };
 }) => {
+  const { res } = context;
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  );
   const p = context.params;
   const addressType = getAddressType(p.address);
 
