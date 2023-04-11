@@ -11,6 +11,6 @@ export function getEmojiForIndex(index: number) {
   }
 }
 
-export function getFormattedAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+export function getFormattedAddress(address: string, size = 6) {
+  return `${address.slice(0, size)}...${address.slice(-(size - 2))}`;
 }

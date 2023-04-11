@@ -6,7 +6,13 @@ import TxnsFrequency from '@/components/TxnsFrequency';
 import TxnsOvertimeCard from '@/components/TxnsOvertimeCard';
 import TxnsCard from '@/components/TxnsOvertimeCard';
 import TxnsValueCard from '@/components/TxnsValueCard';
+import { getFormattedAddress } from '@/utils/format';
 import {
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
+  AccordionIcon,
   Box,
   Button,
   Card,
@@ -26,10 +32,28 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text
+  Text,
+  Tooltip,
+  useToast,
+  useColorModeValue,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  TagLeftIcon
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import {
+  FiArrowRight,
+  FiCopy,
+  FiDroplet,
+  FiGrid,
+  FiPlus,
+  FiPlusCircle,
+  FiSettings,
+  FiStopCircle,
+  FiX
+} from 'react-icons/fi';
 
 const MOCK_GOALS_DATA = [
   {
@@ -82,7 +106,7 @@ export default function Settings() {
           ))}
         </CardBody>
         <CardFooter>
-          <Button>Save</Button>
+          <Button size="sm">Save</Button>
         </CardFooter>
       </Card>
       <Card width={{ base: '100%', md: '70%' }}>

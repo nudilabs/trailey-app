@@ -3,8 +3,23 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Progress } from '@chakra-ui/react';
 import SidebarWithHeader from './SidebarWithHeader';
+import { IProfile } from '@/types/IProfile';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  currentProfile: number;
+  setCurrentProfile: React.Dispatch<React.SetStateAction<number>>;
+  profilesData: IProfile[];
+  setProfilesData: React.Dispatch<React.SetStateAction<IProfile[]>>;
+  children: React.ReactNode;
+}
+
+export default function Layout({
+  currentProfile,
+  setCurrentProfile,
+  profilesData,
+  setProfilesData,
+  children
+}: LayoutProps) {
   const router = useRouter();
   const { pathname } = router;
 
@@ -47,7 +62,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           right="0"
         />
       )}
-      <SidebarWithHeader>
+      <SidebarWithHeader
+        currentProfile={currentProfile}
+        setCurrentProfile={setCurrentProfile}
+        profilesData={profilesData}
+        setProfilesData={setProfilesData}
+      >
         <main>{children}</main>
       </SidebarWithHeader>
     </>

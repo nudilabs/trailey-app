@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   IconButton,
   Box,
@@ -18,7 +18,8 @@ import {
   InputLeftElement,
   useColorMode,
   Spacer,
-  Button
+  Button,
+  Select
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -29,12 +30,16 @@ import {
   FiBell,
   FiSearch,
   FiSun,
-  FiMoon
+  FiMoon,
+  FiUser,
+  FiChevronDown
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { useRouter } from 'next/router';
 import SearchBar from './SearchBar';
+import ProfileButton from './ProfileButton';
+import { IProfile } from '@/types/IProfile';
 
 interface LinkItemProps {
   name: string;
@@ -43,14 +48,23 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome, href: '/' },
+  { name: 'Profile', icon: FiUser, href: '/profile' },
   { name: 'Trending', icon: FiTrendingUp, href: '/trending' },
   { name: 'Explore', icon: FiCompass, href: '/explore' },
   { name: 'Settings', icon: FiSettings, href: '/settings' }
 ];
 
 export default function SidebarWithHeader({
+  currentProfile,
+  setCurrentProfile,
+  profilesData,
+  setProfilesData,
   children
 }: {
+  currentProfile: number;
+  setCurrentProfile: (index: number) => void;
+  profilesData: IProfile[];
+  setProfilesData: (data: IProfile[]) => void;
   children: ReactNode;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -60,6 +74,10 @@ export default function SidebarWithHeader({
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}
         zIndex={999}
+        currentProfile={currentProfile}
+        setCurrentProfile={setCurrentProfile}
+        profilesData={profilesData}
+        setProfilesData={setProfilesData}
       />
       <Drawer
         autoFocus={false}
@@ -71,7 +89,13 @@ export default function SidebarWithHeader({
         size="full"
       >
         <DrawerContent>
-          <SidebarContent onClose={onClose} />
+          <SidebarContent
+            onClose={onClose}
+            currentProfile={currentProfile}
+            setCurrentProfile={setCurrentProfile}
+            profilesData={profilesData}
+            setProfilesData={setProfilesData}
+          />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
@@ -85,9 +109,20 @@ export default function SidebarWithHeader({
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  currentProfile: number;
+  setCurrentProfile: (index: number) => void;
+  profilesData: IProfile[];
+  setProfilesData: (data: IProfile[]) => void;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({
+  onClose,
+  currentProfile,
+  setCurrentProfile,
+  profilesData,
+  setProfilesData,
+  ...rest
+}: SidebarProps) => {
   const { toggleColorMode } = useColorMode();
   const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
@@ -124,9 +159,18 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         />
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
+      <ProfileButton
+        onClose={onClose}
+        isHover={isHover}
+        currentProfile={currentProfile}
+        setCurrentProfile={setCurrentProfile}
+        profilesData={profilesData}
+        setProfilesData={setProfilesData}
+      />
       <Flex direction="column">
         {LinkItems.map(link => (
           <NavItem
+            onClose={onClose}
             isHover={isHover}
             key={link.name}
             icon={link.icon}
@@ -155,6 +199,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 };
 
 interface NavItemProps extends FlexProps {
+  onClose: () => void;
   isHover: boolean;
   icon: IconType;
   href: string;
@@ -162,11 +207,19 @@ interface NavItemProps extends FlexProps {
   isActive?: boolean;
 }
 
-const NavItem = ({ isHover, icon, href, children, ...rest }: NavItemProps) => {
+const NavItem = ({
+  onClose,
+  isHover,
+  icon,
+  href,
+  children,
+  ...rest
+}: NavItemProps) => {
   const router = useRouter();
   const isActive = router.pathname === href;
 
   const handleClick = (e: React.MouseEvent) => {
+    onClose();
     e.preventDefault();
     router.push(href);
   };
