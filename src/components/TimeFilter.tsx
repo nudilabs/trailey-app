@@ -33,7 +33,7 @@ function TimeFilter() {
         <Button
           key={option.value}
           size="xs"
-          colorScheme="pink"
+          colorScheme="primary"
           variant={selectedTime === option.value ? 'solid' : 'ghost'}
           onClick={() => handleSelectTime(option.value)}
         >

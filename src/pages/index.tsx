@@ -147,7 +147,7 @@ export default function Home() {
         </Flex>
       </Flex>
       <Flex>
-        <Tabs w="100%" isLazy colorScheme="pink">
+        <Tabs w="100%" isLazy colorScheme="primary">
           <TabList>
             <Tab>Portfolio</Tab>
             {/* <Tab>History</Tab> */}

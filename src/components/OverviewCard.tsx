@@ -90,7 +90,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td>
                     <Link href={`/account/${data.address}`} passHref>
                       <Button
-                        colorScheme="pink"
+                        colorScheme="primary"
                         variant="link"
                         rightIcon={<FiArrowRight />}
                       >

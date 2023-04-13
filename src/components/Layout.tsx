@@ -54,7 +54,7 @@ export default function Layout({
       {isLoading && (
         <Progress
           size="xs"
-          colorScheme="pink"
+          colorScheme="primary"
           isIndeterminate
           position="fixed"
           top="0"
