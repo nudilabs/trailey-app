@@ -1,4 +1,4 @@
-import { getFormattedAddress } from '@/utils/format';
+import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
   Accordion,
   AccordionButton,
@@ -79,7 +79,7 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
   const [showModal, setShowModal] = useState(false);
 
   const [profilesData, setProfilesData] = useState<
-    { name: string; wallets: { address: string }[] }[]
+    { name: string; wallets: { address: string; type: string }[] }[]
   >([]);
   const router = useRouter();
   const toast = useToast();
@@ -98,7 +98,7 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
 
   const handleAddProfileSubmit = (formData: {
     name: string;
-    wallets: { address: string }[];
+    wallets: { address: string; type: string }[];
   }) => {
     // Add the new profile data to the existing profiles array
     const updatedProfiles = [...profilesData, formData];
@@ -213,7 +213,9 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
                           });
                         }}
                       >
-                        {getFormattedAddress(wallet.address, 8)}
+                        {`${getEmojiForWalletType(
+                          wallet.type
+                        )} ${getFormattedAddress(wallet.address, 8)}`}
                       </TagLabel>
                     </Tooltip>
                   </Tag>
@@ -264,7 +266,7 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
                   if (!isError) {
                     handleAddProfileSubmit({
                       name: profileInput,
-                      wallets: [{ address: addressInput }]
+                      wallets: [{ address: addressInput, type: 'hot' }]
                     });
                     setShowModal(false);
                   }

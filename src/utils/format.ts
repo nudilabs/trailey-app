@@ -14,3 +14,16 @@ export function getEmojiForIndex(index: number) {
 export function getFormattedAddress(address: string, size = 6) {
   return `${address.slice(0, size)}...${address.slice(-(size - 2))}`;
 }
+
+export function getEmojiForWalletType(type: string) {
+  switch (type) {
+    case 'hot':
+      return '🔥';
+    case 'cold':
+      return '🥶';
+    case 'vault':
+      return '🔒';
+    default:
+      return '';
+  }
+}

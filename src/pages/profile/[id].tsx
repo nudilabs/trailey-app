@@ -1,4 +1,4 @@
-import { getFormattedAddress } from '@/utils/format';
+import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
   Accordion,
   AccordionButton,
@@ -47,7 +47,10 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-  FormHelperText
+  FormHelperText,
+  RadioGroup,
+  Radio,
+  Stack
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -67,17 +70,19 @@ export default function Profile({ id }: { id: string }) {
   const [editInput, setEditInput] = useState('');
   const handleEditInputChange = (e: any) => setEditInput(e.target.value);
 
+  const [type, setType] = useState('hot');
+
   const isError = !isAddress(input);
   const [showModal, setShowModal] = useState(false);
   const [showEditNameModal, setShowEditNameModal] = useState(false);
   const toast = useToast();
   const [profilesData, setProfilesData] = useState<
-    { name: string; wallets: { address: string }[] }[]
+    { name: string; wallets: { address: string; type: string }[] }[]
   >([]);
 
   const [profile, setProfile] = useState<{
     name: string;
-    wallets: { address: string }[];
+    wallets: { address: string; type: string }[];
   }>();
 
   const handleRemoveAddress = (index: number) => {
@@ -93,9 +98,9 @@ export default function Profile({ id }: { id: string }) {
     }
   };
 
-  const handleAddAddress = (address: string) => {
+  const handleAddAddress = (address: string, type: string) => {
     if (profile) {
-      const newWallets = [...profile.wallets, { address }];
+      const newWallets = [...profile.wallets, { address, type }];
       const newProfile = { ...profile, wallets: newWallets };
       setProfile(newProfile);
       const newProfilesData = profilesData.map((p, i) =>
@@ -182,7 +187,9 @@ export default function Profile({ id }: { id: string }) {
                         });
                       }}
                     >
-                      {getFormattedAddress(wallet.address)}
+                      {`${getEmojiForWalletType(
+                        wallet.type
+                      )} ${getFormattedAddress(wallet.address)}`}
                     </TagLabel>
                   </Tooltip>
                   <TagCloseButton onClick={() => handleRemoveAddress(index)} />
@@ -198,7 +205,7 @@ export default function Profile({ id }: { id: string }) {
                 cursor="pointer"
               >
                 <TagLeftIcon as={FiPlusCircle} />
-                <TagLabel>Add address</TagLabel>
+                <TagLabel>Add wallet</TagLabel>
               </Tag>
             </GridItem>
           </Grid>
@@ -207,19 +214,29 @@ export default function Profile({ id }: { id: string }) {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add address</ModalHeader>
+          <ModalHeader>Add wallet</ModalHeader>
           <ModalCloseButton />
           <Divider />
           <ModalBody>
-            <FormControl isInvalid={isError}>
-              <FormLabel>Address</FormLabel>
-              <Input type="email" value={input} onChange={handleInputChange} />
-              {isError && (
-                <FormErrorMessage>
-                  Please enter a valid address
-                </FormErrorMessage>
-              )}
-            </FormControl>
+            <Flex direction="column" gap={4}>
+              <FormControl isInvalid={isError}>
+                <FormLabel>Address</FormLabel>
+                <Input type="text" value={input} onChange={handleInputChange} />
+                {isError && (
+                  <FormErrorMessage>
+                    Please enter a valid address
+                  </FormErrorMessage>
+                )}
+              </FormControl>
+              <RadioGroup onChange={setType} value={type}>
+                <FormLabel>Wallet Type</FormLabel>
+                <Stack direction="row">
+                  <Radio value="hot">🔥 Hot</Radio>
+                  <Radio value="cold">🥶 Cold</Radio>
+                  <Radio value="vault">🔒 Vault</Radio>
+                </Stack>
+              </RadioGroup>
+            </Flex>
           </ModalBody>
           <Divider />
           <ModalFooter>
@@ -227,8 +244,10 @@ export default function Profile({ id }: { id: string }) {
               <Button
                 size="sm"
                 onClick={() => {
-                  handleAddAddress(input);
-                  setShowModal(false);
+                  if (!isError) {
+                    handleAddAddress(input, type);
+                    setShowModal(false);
+                  }
                 }}
               >
                 Add
