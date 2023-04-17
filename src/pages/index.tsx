@@ -6,6 +6,7 @@ import TxnsFrequency from '@/components/TxnsFrequency';
 import TxnsOvertimeCard from '@/components/TxnsOvertimeCard';
 import TxnsCard from '@/components/TxnsOvertimeCard';
 import TxnsValueCard from '@/components/TxnsValueCard';
+import { IProfile } from '@/types/IProfile';
 import {
   Box,
   Flex,
@@ -25,25 +26,6 @@ import {
 import { useRouter } from 'next/router';
 import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
 
-const MOCK_BRIDGED_DATA = [
-  {
-    address: '0x293j...293k',
-    token: {
-      symbol: 'ETH',
-      amount: 0.1
-    },
-    value: 183
-  },
-  {
-    address: '0x293j...293k',
-    token: {
-      symbol: 'ETH',
-      amount: 0.1
-    },
-    value: 183
-  }
-];
-
 const MOCK_OVERVIEW_DATA = [
   {
     address: '0x293j...293k',
@@ -56,7 +38,7 @@ const MOCK_OVERVIEW_DATA = [
     }
   },
   {
-    address: '0x293j...293k',
+    address: '0x293j...293s',
     bridged: { value: 20, goal: 25 },
     txns: {
       smartContract: { value: 5, goal: 10 },
@@ -131,7 +113,13 @@ const MOCK_CHAINS = [
   }
 ];
 
-export default function Home() {
+export default function Home({
+  currentProfile,
+  profilesData
+}: {
+  currentProfile: number;
+  profilesData: IProfile[];
+}) {
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
@@ -141,10 +129,12 @@ export default function Home() {
           rounded={{ base: 'lg', md: 'xl' }}
           boxSize={'80px'}
         />
-        <Flex direction="column">
-          <Heading>Profile 1</Heading>
-          <Text>{MOCK_BRIDGED_DATA.length} Wallets</Text>
-        </Flex>
+        {profilesData[currentProfile] && (
+          <Flex direction="column">
+            <Heading>{profilesData[currentProfile].name}</Heading>
+            <Text>{profilesData[currentProfile].wallets.length} Wallets</Text>
+          </Flex>
+        )}
       </Flex>
       <Flex>
         <Tabs w="100%" isLazy colorScheme="primary">

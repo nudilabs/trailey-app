@@ -5,4 +5,5 @@ export interface IProfile {
 
 export interface Wallet {
   address: string;
+  type: string;
 }

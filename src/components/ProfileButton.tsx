@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
   Flex,
   Button,
@@ -41,15 +41,6 @@ export default function ProfileButton({
 }) {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const localStorage = window.localStorage;
-    // Get item from local storage
-    const profiles = localStorage.getItem('profiles');
-    if (profiles) setProfilesData(JSON.parse(profiles));
-    const currentProfileId = localStorage.getItem('profileId');
-    if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
-  }, [currentProfile]);
 
   const handleProfileClick = () => {
     setShowModal(true);

@@ -1,3 +1,4 @@
+import { IProfile } from '@/types/IProfile';
 import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
   Accordion,
@@ -62,7 +63,17 @@ import {
 } from 'react-icons/fi';
 import { isAddress } from 'viem';
 
-export default function Profile({ id }: { id: string }) {
+interface ProfileProps {
+  id: string;
+  profilesData: IProfile[];
+  setProfilesData: React.Dispatch<React.SetStateAction<IProfile[]>>;
+}
+
+export default function Profile({
+  id,
+  profilesData,
+  setProfilesData
+}: ProfileProps) {
   const router = useRouter();
   const [input, setInput] = useState('');
   const handleInputChange = (e: any) => setInput(e.target.value);
@@ -76,9 +87,6 @@ export default function Profile({ id }: { id: string }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditNameModal, setShowEditNameModal] = useState(false);
   const toast = useToast();
-  const [profilesData, setProfilesData] = useState<
-    { name: string; wallets: { address: string; type: string }[] }[]
-  >([]);
 
   const [profile, setProfile] = useState<{
     name: string;
