@@ -18,10 +18,12 @@
     "@types/react-dom": "18.0.11",
     "@types/react-helmet": "^6.1.6",
     "@wagmi/core": "^0.10.9",
+    "drizzle-orm": "^0.25.3",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
     "ethers": "^6.3.0",
     "framer-motion": "^10.10.0",
+    "mysql2": "^3.2.4",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -33,6 +35,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.17.6",
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
