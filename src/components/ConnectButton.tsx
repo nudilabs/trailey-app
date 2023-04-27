@@ -1,7 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Button, Flex, Image, useBreakpointValue } from '@chakra-ui/react';
-export const CustomConnectButton = () => {
-  const buttonText = useBreakpointValue(
+export const CustomConnectButton = ({ text }: { text?: string }) => {
+  const defaultButtonText = useBreakpointValue(
     {
       base: 'Connect',
       md: 'Connect Wallet'
@@ -12,6 +12,7 @@ export const CustomConnectButton = () => {
       fallback: 'md'
     }
   );
+  const buttonText = text || defaultButtonText;
   return (
     <ConnectButton.Custom>
       {({

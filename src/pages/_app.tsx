@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { IProfile } from '@/types/IProfile';
 
 // Rainbowkit
-
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   darkTheme,
@@ -20,6 +19,13 @@ import { mainnet, polygon, optimism, arbitrum } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import ENV from '@/utils/Env';
+// session
+import {
+  RainbowKitSiweNextAuthProvider,
+  GetSiweMessageOptions
+} from '@rainbow-me/rainbowkit-siwe-next-auth';
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
 
 const { chains, provider } = configureChains(
   [mainnet, polygon, optimism, arbitrum],
@@ -38,7 +44,12 @@ const wagmiClient = createClient({
   provider
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps
+}: AppProps<{
+  session: Session;
+}>) {
   const [currentProfile, setCurrentProfile] = useState(0);
   const [profilesData, setProfilesData] = useState<IProfile[]>([]);
   const profileProps = {
@@ -47,6 +58,10 @@ export default function App({ Component, pageProps }: AppProps) {
     profilesData,
     setProfilesData
   };
+
+  const getSiweMessageOptions: GetSiweMessageOptions = () => ({
+    statement: 'Sign in to Biway Analytics'
+  });
 
   const [isDarkTheme, setIsDarkTheme] = useState(false); // light mode by default
 
@@ -66,30 +81,36 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider
-        chains={chains}
-        theme={
-          isDarkTheme
-            ? darkTheme({
-                accentColor: '#68D36D',
-                accentColorForeground: 'black',
-                borderRadius: 'medium',
-                overlayBlur: 'small'
-              })
-            : lightTheme({
-                accentColor: '#38A146',
-                accentColorForeground: 'white',
-                borderRadius: 'medium',
-                overlayBlur: 'small'
-              })
-        }
-      >
-        <ChakraProvider theme={theme}>
-          <Layout {...profileProps}>
-            <Component {...profileProps} {...pageProps} />
-          </Layout>
-        </ChakraProvider>
-      </RainbowKitProvider>
+      <SessionProvider refetchInterval={0} session={pageProps.session}>
+        <RainbowKitSiweNextAuthProvider
+          getSiweMessageOptions={getSiweMessageOptions}
+        >
+          <RainbowKitProvider
+            chains={chains}
+            theme={
+              isDarkTheme
+                ? darkTheme({
+                    accentColor: '#68D36D',
+                    accentColorForeground: 'black',
+                    borderRadius: 'medium',
+                    overlayBlur: 'small'
+                  })
+                : lightTheme({
+                    accentColor: '#38A146',
+                    accentColorForeground: 'white',
+                    borderRadius: 'medium',
+                    overlayBlur: 'small'
+                  })
+            }
+          >
+            <ChakraProvider theme={theme}>
+              <Layout {...profileProps}>
+                <Component {...profileProps} {...pageProps} />
+              </Layout>
+            </ChakraProvider>
+          </RainbowKitProvider>
+        </RainbowKitSiweNextAuthProvider>
+      </SessionProvider>
     </WagmiConfig>
   );
 }

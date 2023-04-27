@@ -121,20 +121,23 @@ export default function ProfileButton({
                 <Text
                   fontSize={{ base: 'xs', md: 'sm' }}
                   color={useColorModeValue('gray.500', 'gray.400')}
-                >{`My Profiles (${profilesData.length})`}</Text>
+                >{`My Profiles (${
+                  profilesData.length > 0 ? profilesData.length : 0
+                })`}</Text>
                 <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                  {profilesData.map((profile, index) => (
-                    <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
-                      <Button
-                        variant={'outline'}
-                        size="sm"
-                        w="full"
-                        onClick={() => handleSelectProfileClick(index)}
-                      >
-                        {profile.name}
-                      </Button>
-                    </GridItem>
-                  ))}
+                  {profilesData.length > 0 &&
+                    profilesData.map((profile, index) => (
+                      <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
+                        <Button
+                          variant={'outline'}
+                          size="sm"
+                          w="full"
+                          onClick={() => handleSelectProfileClick(index)}
+                        >
+                          {profile.name}
+                        </Button>
+                      </GridItem>
+                    ))}
                 </Grid>
               </Flex>
             </Flex>

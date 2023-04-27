@@ -1,30 +1,32 @@
-import BridgedCard from '@/components/BridgedCard';
 import ChainSelector from '@/components/ChainSelector';
+import { CustomConnectButton } from '@/components/ConnectButton';
 import OverviewCard from '@/components/OverviewCard';
-import TrendingCardSmall from '@/components/TrendingCardSmall';
-import TxnsFrequency from '@/components/TxnsFrequency';
-import TxnsOvertimeCard from '@/components/TxnsOvertimeCard';
-import TxnsCard from '@/components/TxnsOvertimeCard';
-import TxnsValueCard from '@/components/TxnsValueCard';
 import { IProfile } from '@/types/IProfile';
+import { generateColorFromString } from '@/utils/format';
 import {
   Box,
+  Button,
+  Container,
   Flex,
   Grid,
   GridItem,
   Heading,
-  IconButton,
   Image,
-  Link,
+  Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text
+  Text,
+  useColorModeValue
 } from '@chakra-ui/react';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { GetServerSideProps } from 'next';
+import { getToken } from 'next-auth/jwt';
+import { getSession, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
 
 const MOCK_OVERVIEW_DATA = [
   {
@@ -36,69 +38,6 @@ const MOCK_OVERVIEW_DATA = [
       average: { value: 5.5, goal: 10 },
       value: { value: 28.5283, goal: 40 }
     }
-  },
-  {
-    address: '0x293j...293s',
-    bridged: { value: 20, goal: 25 },
-    txns: {
-      smartContract: { value: 5, goal: 10 },
-      general: { value: 28, goal: 35 },
-      average: { value: 5.5, goal: 10 },
-      value: { value: 28.5283, goal: 40 }
-    }
-  }
-];
-
-const MOCK_TXNS_FREQUENCY_DATA = [
-  {
-    address: '0x293j...293k',
-    txns: {
-      smartContract: 5,
-      general: 28
-    }
-  },
-  {
-    address: '0x293j...293k',
-    txns: {
-      smartContract: 5,
-      general: 28
-    }
-  }
-];
-
-const MOCK_TXNS_VALUE_DATA = [
-  {
-    address: '0x293j...293k',
-    txns: {
-      symbol: 'ETH',
-      amount: 28.5283
-    }
-  },
-  {
-    address: '0x293j...293k',
-    txns: {
-      symbol: 'ETH',
-      amount: 8.5283
-    }
-  }
-];
-
-const MOCK_TXNS_OVERTIME_DATA = [
-  {
-    address: '0x293j...293k',
-    txns: {
-      total: 33,
-      average: 5.5
-    },
-    duration: 6
-  },
-  {
-    address: '0x293j...293k',
-    txns: {
-      total: 33,
-      average: 5.5
-    },
-    duration: 6
   }
 ];
 
@@ -113,6 +52,15 @@ const MOCK_CHAINS = [
   }
 ];
 
+interface Session {
+  user: {
+    name: string;
+    image: string;
+  };
+  address: string;
+  expires: string;
+}
+
 export default function Home({
   currentProfile,
   profilesData
@@ -120,15 +68,68 @@ export default function Home({
   currentProfile: number;
   profilesData: IProfile[];
 }) {
+  const [address, setAddress] = useState<string | null>(null);
+  const { data: session, status: sessionStatus } = useSession();
+  const { openConnectModal } = useConnectModal();
+  const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
+  const router = useRouter();
+  console.log(session);
+
+  useEffect(() => {
+    setAddress((session as Session)?.address ?? null);
+  }, [sessionStatus]);
+
+  if (!session || !address) {
+    return (
+      <Container maxW="container.lg" py={24}>
+        <Grid templateColumns="repeat(12, 1fr)" gap={8}>
+          <GridItem colSpan={{ base: 12, md: 5, lg: 4 }}>
+            <Flex direction="column" gap={8}>
+              <Stack>
+                <Heading>Lorem ipsum</Heading>
+                <Text fontSize="lg" color={subHeadingColor}>
+                  Lorem ipsum dolor sit amet
+                </Text>
+              </Stack>
+              <Box>
+                <Button
+                  onClick={openConnectModal}
+                  colorScheme="primary"
+                  isLoading={sessionStatus === 'loading'}
+                >
+                  Login to start
+                </Button>
+              </Box>
+            </Flex>
+          </GridItem>
+          <GridItem colSpan={{ base: 12, md: 7, lg: 8 }}>
+            <Image src="/banner.png" alt="banner" />
+          </GridItem>
+        </Grid>
+      </Container>
+    );
+  }
+
+  if (profilesData.length === 0) {
+    router.push('/profile');
+  }
+
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
-        <Image
+        {/* <Image
           src="/pfp.png"
           alt="0x0asdaoisjdklas"
           rounded={{ base: 'lg', md: 'xl' }}
           boxSize={'80px'}
-        />
+        /> */}
+        <Box
+          rounded={{ base: 'lg', md: 'xl' }}
+          boxSize={'80px'}
+          bgGradient={generateColorFromString(
+            profilesData[currentProfile].name
+          )}
+        ></Box>
         {profilesData[currentProfile] && (
           <Flex direction="column">
             <Heading>{profilesData[currentProfile].name}</Heading>
@@ -163,9 +164,10 @@ export default function Home({
   );
 }
 
-export const getServerSideProps = async (context: {
-  query: { chain: string };
-}) => {
+export const getServerSideProps: GetServerSideProps = async context => {
+  // const session = await getSession(context);
+  // const token = await getToken({ req: context.req });
+  // const address = token?.sub ?? null;
   return {
     props: {}
   };
