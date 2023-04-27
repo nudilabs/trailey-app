@@ -25,8 +25,8 @@ export default function Layout({
 
   const pageTitle =
     pathname === '/'
-      ? 'Dropbook'
-      : `Dropbook | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
+      ? 'Biway'
+      : `Biway | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
 
   const [isLoading, setIsLoading] = useState(false);
 

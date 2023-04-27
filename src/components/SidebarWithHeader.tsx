@@ -166,13 +166,13 @@ const SidebarContent = ({
         >
           <Image
             src={isHover ? logo : logo.replace('logo', 'logo-small')}
-            alt="Dropbook Logo"
+            alt="Biway Logo"
             height={'40px'}
             display={{ base: 'none', md: 'block' }}
           />
           <Image
             src={logo}
-            alt="Dropbook Logo"
+            alt="Biway Logo"
             height={'40px'}
             display={{ base: 'block', md: 'none' }}
           />
@@ -394,7 +394,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           icon={<FiMenu />}
         />
         <Box display={{ base: 'flex', md: 'none' }}>
-          <Image src={logo} alt="Dropbook Logo" width="128px" />
+          <Image src={logo} alt="Biway Logo" width="128px" />
         </Box>
       </Flex>
       {/* <ConnectButton
