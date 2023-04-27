@@ -157,13 +157,7 @@ const SidebarContent = ({
     >
       <Flex direction="column" h="100%" p={4} gap={8}>
         {/* Sidebar header */}
-        <Box
-          alignItems="center"
-          justifyContent={{
-            base: 'space-between',
-            md: isHover ? 'space-between' : 'center'
-          }}
-        >
+        <Flex alignItems="center" justifyContent={'space-between'}>
           <Image
             src={isHover ? logo : logo.replace('logo', 'logo-small')}
             alt="Biway Logo"
@@ -180,7 +174,7 @@ const SidebarContent = ({
             display={{ base: 'flex', md: 'none' }}
             onClick={onClose}
           />
-        </Box>
+        </Flex>
         {/* Profile button */}
         <ProfileButton
           onClose={onClose}
