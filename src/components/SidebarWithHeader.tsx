@@ -75,7 +75,7 @@ export default function SidebarWithHeader({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.800')}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}
@@ -144,7 +144,8 @@ const SidebarContent = ({
   return (
     <Flex
       direction="column"
-      bg={useColorModeValue('white', 'gray.900')}
+      bg={useColorModeValue('gray.50', 'gray.900')}
+      boxShadow={useColorModeValue('xl', 'dark-xl')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
       w={{ base: 'full', md: 'auto' }}
@@ -216,7 +217,7 @@ const SidebarContent = ({
             isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
-            href={'https://twitter.com/w3yxyz'}
+            href={'https://twitter.com/BiwayAnalytics'}
           >
             Twitter
           </NavItem>
@@ -360,8 +361,6 @@ interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const { toggleColorMode } = useColorMode();
-  const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
   return (
     <Flex
@@ -370,8 +369,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       gap={{ base: 2, md: 4 }}
       alignItems="center"
       bg={{
-        base: useColorModeValue('white', 'gray.900'),
-        md: useColorModeValue('whiteAlpha.600', 'gray.900')
+        base: useColorModeValue('gray.50', 'gray.900'),
+        md: useColorModeValue('gray.50', 'gray.900')
       }}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}

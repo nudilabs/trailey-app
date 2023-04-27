@@ -71,13 +71,13 @@ export default function App({ Component, pageProps }: AppProps) {
         theme={
           isDarkTheme
             ? darkTheme({
-                accentColor: '#BFFE58',
+                accentColor: '#68D36D',
                 accentColorForeground: 'black',
                 borderRadius: 'medium',
                 overlayBlur: 'small'
               })
             : lightTheme({
-                accentColor: '#A3D94B',
+                accentColor: '#38A146',
                 accentColorForeground: 'white',
                 borderRadius: 'medium',
                 overlayBlur: 'small'

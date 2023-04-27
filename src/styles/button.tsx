@@ -5,7 +5,7 @@ const md = defineStyle({
 });
 
 const sm = defineStyle({
-  borderRadius: 'xl'
+  borderRadius: 'full'
 });
 
 const xs = defineStyle({

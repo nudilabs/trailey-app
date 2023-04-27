@@ -1,6 +1,17 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Button, Flex, Image } from '@chakra-ui/react';
+import { Button, Flex, Image, useBreakpointValue } from '@chakra-ui/react';
 export const CustomConnectButton = () => {
+  const buttonText = useBreakpointValue(
+    {
+      base: 'Connect',
+      md: 'Connect Wallet'
+    },
+    {
+      // Breakpoint to use when mediaqueries cannot be used, such as in server-side rendering
+      // (Defaults to 'base')
+      fallback: 'md'
+    }
+  );
   return (
     <ConnectButton.Custom>
       {({
@@ -35,12 +46,11 @@ export const CustomConnectButton = () => {
               if (!connected) {
                 return (
                   <Button
-                    colorScheme="secondary"
-                    // variant="outline"
+                    colorScheme="primary"
                     onClick={openConnectModal}
                     rounded="xl"
                   >
-                    Connect Wallet
+                    {buttonText}
                   </Button>
                 );
               }
