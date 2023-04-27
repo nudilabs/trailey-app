@@ -149,13 +149,10 @@ export default function Home({
                 <GridItem colSpan={{ base: 12, lg: 12 }}>
                   <ChainSelector chainData={MOCK_CHAINS} />
                 </GridItem>
-                <GridItem colSpan={{ base: 12, md: 9 }}>
+                <GridItem colSpan={{ base: 12, md: 12 }}>
                   <Flex direction="column" gap={4}>
                     <OverviewCard txData={MOCK_OVERVIEW_DATA} />
                   </Flex>
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 3 }}>
-                  <TrendingCardSmall chainData={MOCK_CHAINS} />
                 </GridItem>
               </Grid>
             </TabPanel>

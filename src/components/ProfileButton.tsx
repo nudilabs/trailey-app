@@ -62,11 +62,12 @@ export default function ProfileButton({
   }
 
   return (
-    <Flex direction="column" {...rest} px={4} py={4}>
+    <Flex direction="column" {...rest}>
       {isHover ? (
         <Button
           variant={'outline'}
-          size="sm"
+          // size="sm"
+          rounded="lg"
           leftIcon={<Icon fontSize="16" as={FiUser} />}
           rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
           w="full"
@@ -78,7 +79,8 @@ export default function ProfileButton({
       ) : (
         <IconButton
           variant={'outline'}
-          size="sm"
+          // size="sm"
+          rounded="lg"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={FiUser} />}
           onClick={handleProfileClick}

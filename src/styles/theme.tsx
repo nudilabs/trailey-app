@@ -1,9 +1,10 @@
-import { extendTheme, type ThemeConfig } from '@chakra-ui/react';
+import { extendTheme, Kbd, type ThemeConfig } from '@chakra-ui/react';
 import inputTheme from './input';
 import linkTheme from './link';
 import { tabsTheme } from './tabs';
 import { buttonTheme } from './button';
 import { tableTheme } from './table';
+import { cardTheme } from './card';
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -17,32 +18,27 @@ const theme = extendTheme({
     Link: linkTheme,
     Tabs: tabsTheme,
     Button: buttonTheme,
-    Table: tableTheme
+    Table: tableTheme,
+    Card: cardTheme
   },
   colors: {
     primary: {
-      50: '#FFF5F7',
-      100: '#FED7E2',
-      200: '#FBB6CE',
-      300: '#F687B3',
-      400: '#ED64A6',
-      500: '#D53F8C',
-      600: '#B83280',
-      700: '#97266D',
-      800: '#702459',
-      900: '#521B41'
+      50: '#DCFEA5',
+      100: '#D3FE8C',
+      200: '#C9FE72',
+      300: '#BFFE58',
+      400: '#B6F254',
+      500: '#ADE550',
+      600: '#A3D94B',
+      700: '#99CC47',
+      800: '#90BF42',
+      900: '#87B23E'
     },
     secondary: {
-      50: '#F0FAFF',
-      100: '#CCEDFF',
-      200: '#A3DBFF',
-      300: '#76C5FF',
-      400: '#47A3FF',
-      500: '#2286F3',
-      600: '#1C64D2',
-      700: '#1450AC',
-      800: '#0E4080',
-      900: '#0C3363'
+      200: '#CBD5E0',
+      300: '#A0AEC0',
+      500: '#2D3748',
+      600: '#1A202C'
     }
   }
 });

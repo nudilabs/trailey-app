@@ -19,7 +19,11 @@ import {
   useColorMode,
   Spacer,
   Button,
-  Select
+  Select,
+  Divider,
+  Stack,
+  Text,
+  Tooltip
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -32,7 +36,8 @@ import {
   FiSun,
   FiMoon,
   FiUser,
-  FiChevronDown
+  FiChevronDown,
+  FiTwitter
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
@@ -41,17 +46,18 @@ import SearchBar from './SearchBar';
 import ProfileButton from './ProfileButton';
 import { IProfile } from '@/types/IProfile';
 
+import { motion } from 'framer-motion';
+import { CustomConnectButton } from './ConnectButton';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 interface LinkItemProps {
   name: string;
   icon: IconType;
-  href: string;
+  href?: string;
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome, href: '/' },
-  { name: 'Profile', icon: FiUser, href: '/profile' },
-  { name: 'Trending', icon: FiTrendingUp, href: '/trending' },
-  { name: 'Explore', icon: FiCompass, href: '/explore' },
-  { name: 'Settings', icon: FiSettings, href: '/settings' }
+  { name: 'Trending', icon: FiTrendingUp }
 ];
 
 export default function SidebarWithHeader({
@@ -124,75 +130,157 @@ const SidebarContent = ({
   ...rest
 }: SidebarProps) => {
   const { toggleColorMode } = useColorMode();
-  const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
+  const toggleIcon = useColorModeValue(<FiSun />, <FiMoon />);
+  const toggleBorderColor = useColorModeValue('blackAlpha.50', 'whiteAlpha.50');
+  const darkModeButtonVariant = useColorModeValue('solid', 'ghost');
+  const lightModeButtonVariant = useColorModeValue('ghost', 'solid');
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
   const [isHover, setIsHover] = useState(false);
 
   const handleHover = (hover: boolean) => {
     setIsHover(hover);
   };
+
   return (
     <Flex
       direction="column"
       bg={useColorModeValue('white', 'gray.900')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: isHover ? 60 : '68px' }}
+      w={{ base: 'full', md: 'auto' }}
+      minW={0}
       pos="fixed"
-      h="full"
+      h="100%"
       {...rest}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
     >
-      <Flex alignItems="center" py={4} px={4} justifyContent="space-between">
-        <Image
-          src={isHover ? logo : logo.replace('logo', 'logo-small')}
-          alt="Dropbook Logo"
-          height={'32px'}
-          display={{ base: 'none', md: 'block' }}
+      <Flex direction="column" h="100%" p={4} gap={8}>
+        {/* Sidebar header */}
+        <Box
+          alignItems="center"
+          justifyContent={{
+            base: 'space-between',
+            md: isHover ? 'space-between' : 'center'
+          }}
+        >
+          <Image
+            src={isHover ? logo : logo.replace('logo', 'logo-small')}
+            alt="Dropbook Logo"
+            height={'40px'}
+            display={{ base: 'none', md: 'block' }}
+          />
+          <Image
+            src={logo}
+            alt="Dropbook Logo"
+            height={'40px'}
+            display={{ base: 'block', md: 'none' }}
+          />
+          <CloseButton
+            display={{ base: 'flex', md: 'none' }}
+            onClick={onClose}
+          />
+        </Box>
+        {/* Profile button */}
+        <ProfileButton
+          onClose={onClose}
+          isHover={isHover}
+          currentProfile={currentProfile}
+          setCurrentProfile={setCurrentProfile}
+          profilesData={profilesData}
+          setProfilesData={setProfilesData}
         />
-        <Image
-          src={logo}
-          alt="Dropbook Logo"
-          height={'32px'}
-          display={{ base: 'block', md: 'none' }}
-        />
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
-      </Flex>
-      <ProfileButton
-        onClose={onClose}
-        isHover={isHover}
-        currentProfile={currentProfile}
-        setCurrentProfile={setCurrentProfile}
-        profilesData={profilesData}
-        setProfilesData={setProfilesData}
-      />
-      <Flex direction="column">
-        {LinkItems.map(link => (
+        <Divider />
+        {/* Navigation items */}
+        <Stack spacing={2}>
+          {LinkItems.map(link => (
+            <NavItem
+              onClose={onClose}
+              isHover={isHover}
+              key={link.name}
+              icon={link.icon}
+              href={link.href}
+            >
+              {link.name}
+            </NavItem>
+          ))}
+        </Stack>
+
+        <Spacer />
+        <Stack spacing={2}>
           <NavItem
             onClose={onClose}
             isHover={isHover}
-            key={link.name}
-            icon={link.icon}
-            href={link.href}
+            key={'settings'}
+            icon={FiSettings}
+            href={'/settings'}
           >
-            {link.name}
+            Settings
           </NavItem>
-        ))}
-      </Flex>
-      <Spacer />
-      <Flex
-        alignItems="center"
-        py={8}
-        px={4}
-        display={{ base: 'flex', md: 'none' }}
-      >
-        <IconButton
-          variant="ghost"
-          aria-label="toggle dark mode"
-          onClick={toggleColorMode}
-          icon={toggleIcon}
-        />
+          <NavItem
+            onClose={onClose}
+            isHover={isHover}
+            key={'twitter'}
+            icon={FiTwitter}
+            href={'https://twitter.com/w3yxyz'}
+          >
+            Twitter
+          </NavItem>
+          {/* Dark mode toggle */}
+          {isHover ? (
+            <Flex
+              direction="row"
+              borderRadius="xl"
+              borderColor={toggleBorderColor}
+              borderWidth="1px"
+              p={1}
+              gap={1}
+            >
+              <Button
+                variant={darkModeButtonVariant}
+                rounded="lg"
+                size="sm"
+                leftIcon={<FiSun fontSize="16" />}
+                justifyContent="left"
+                display={{ base: 'none', md: 'flex' }}
+                onClick={toggleColorMode}
+              >
+                Light
+              </Button>
+              <Button
+                variant={lightModeButtonVariant}
+                rounded="lg"
+                size="sm"
+                leftIcon={<FiMoon fontSize="16" />}
+                justifyContent="left"
+                display={{ base: 'none', md: 'flex' }}
+                onClick={toggleColorMode}
+              >
+                Dark
+              </Button>
+            </Flex>
+          ) : (
+            <Flex
+              direction="row"
+              borderRadius="xl"
+              borderColor={toggleBorderColor}
+              borderWidth="1px"
+              p={1}
+            >
+              <IconButton
+                // variant={isActive ? 'solid' : 'ghost'}
+                // colorScheme={isActive ? 'primary' : 'gray'}
+                size="sm"
+                rounded="lg"
+                aria-label="toggle dark mode"
+                icon={toggleIcon}
+                // onClick={handleClick}
+                cursor="pointer"
+                display={{ base: 'none', md: 'flex' }}
+              />
+            </Flex>
+          )}
+        </Stack>
       </Flex>
     </Flex>
   );
@@ -202,7 +290,7 @@ interface NavItemProps extends FlexProps {
   onClose: () => void;
   isHover: boolean;
   icon: IconType;
-  href: string;
+  href?: string;
   children: ReactText;
   isActive?: boolean;
 }
@@ -221,27 +309,37 @@ const NavItem = ({
   const handleClick = (e: React.MouseEvent) => {
     onClose();
     e.preventDefault();
-    router.push(href);
+    if (href) router.push(href);
   };
 
   return (
-    <Flex direction="column" {...rest} px={4} py={1}>
+    <Flex direction="column" {...rest}>
       {isHover ? (
         <Button
           variant={isActive ? 'solid' : 'ghost'}
-          size="sm"
+          colorScheme={isActive ? 'secondary' : 'gray'}
+          isDisabled={!href}
+          rounded="lg"
           leftIcon={<Icon fontSize="16" as={icon} />}
           justifyContent="left"
           onClick={handleClick}
           cursor="pointer"
           display={{ base: 'none', md: 'flex' }}
         >
-          {children}
+          {href ? (
+            children
+          ) : (
+            <Tooltip label={'Coming soon'} placement="right">
+              {children}
+            </Tooltip>
+          )}
         </Button>
       ) : (
         <IconButton
           variant={isActive ? 'solid' : 'ghost'}
-          size="sm"
+          colorScheme={isActive ? 'secondary' : 'gray'}
+          isDisabled={!href}
+          rounded="lg"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={icon} />}
           onClick={handleClick}
@@ -299,17 +397,18 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           <Image src={logo} alt="Dropbook Logo" width="128px" />
         </Box>
       </Flex>
-
-      <HStack>
-        <IconButton variant="ghost" aria-label="open menu" icon={<FiBell />} />
-        <IconButton
-          variant="ghost"
-          aria-label="toggle dark mode"
-          onClick={toggleColorMode}
-          icon={toggleIcon}
-          display={{ base: 'none', md: 'flex' }}
-        />
-      </HStack>
+      {/* <ConnectButton
+        showBalance={false}
+        chainStatus={{
+          smallScreen: 'none',
+          largeScreen: 'icon'
+        }}
+        accountStatus={{
+          smallScreen: 'avatar',
+          largeScreen: 'full'
+        }}
+      /> */}
+      <CustomConnectButton />
     </Flex>
   );
 };
