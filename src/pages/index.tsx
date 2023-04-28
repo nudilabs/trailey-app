@@ -11,6 +11,7 @@ import {
   Grid,
   GridItem,
   Heading,
+  Highlight,
   Image,
   Stack,
   Tab,
@@ -27,6 +28,7 @@ import { getToken } from 'next-auth/jwt';
 import { getSession, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Spline from '@splinetool/react-spline';
 
 const MOCK_OVERVIEW_DATA = [
   {
@@ -73,7 +75,6 @@ export default function Home({
   const { openConnectModal } = useConnectModal();
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
   const router = useRouter();
-  console.log(session);
 
   useEffect(() => {
     setAddress((session as Session)?.address ?? null);
@@ -83,12 +84,29 @@ export default function Home({
     return (
       <Container maxW="container.lg" py={24}>
         <Grid templateColumns="repeat(12, 1fr)" gap={8}>
-          <GridItem colSpan={{ base: 12, md: 5, lg: 4 }}>
-            <Flex direction="column" gap={8}>
+          <GridItem colSpan={{ base: 12, lg: 6 }}>
+            <Flex
+              direction="column"
+              gap={8}
+              justifyContent={{ base: 'normal', md: 'center' }}
+              height="100%"
+            >
               <Stack>
-                <Heading>Lorem ipsum</Heading>
+                <Heading lineHeight="tall">
+                  <Highlight
+                    query="onchain"
+                    styles={{
+                      px: '2',
+                      py: '1',
+                      rounded: 'xl',
+                      bg: 'green.100'
+                    }}
+                  >
+                    TRACK YOUR ONCHAIN JOURNEY
+                  </Highlight>
+                </Heading>
                 <Text fontSize="lg" color={subHeadingColor}>
-                  Lorem ipsum dolor sit amet
+                  Supercharge your crypto journey with a simple dashboard
                 </Text>
               </Stack>
               <Box>
@@ -102,8 +120,13 @@ export default function Home({
               </Box>
             </Flex>
           </GridItem>
-          <GridItem colSpan={{ base: 12, md: 7, lg: 8 }}>
-            <Image src="/banner.png" alt="banner" />
+          <GridItem
+            colSpan={{ base: 12, lg: 6 }}
+            minHeight="500px"
+            minWidth="100%"
+          >
+            {/* <Image src="/banner.png" alt="banner" /> */}
+            <Spline scene="https://prod.spline.design/QMJDTScZ1nj6yrQl/scene.splinecode" />
           </GridItem>
         </Grid>
       </Container>
