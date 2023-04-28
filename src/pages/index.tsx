@@ -81,53 +81,57 @@ export default function Home({
 
   if (!session || !address) {
     return (
-      <Container maxW="container.lg" py={24}>
-        <Grid templateColumns="repeat(12, 1fr)" gap={8}>
-          <GridItem colSpan={{ base: 12, lg: 6 }}>
-            <Flex
-              direction="column"
-              gap={8}
-              justifyContent={{ base: 'normal', md: 'center' }}
-              height="100%"
-            >
-              <Stack>
-                <Heading>
-                  <Highlight
-                    query="onchain"
-                    styles={{
-                      px: '2',
-                      rounded: 'xl',
-                      bg: 'primary.100'
-                    }}
+      <Flex minH="calc(100vh - 88px)" alignItems="center">
+        <Container maxW="container.lg">
+          <Grid templateColumns="repeat(12, 1fr)" gap={8}>
+            <GridItem colSpan={{ base: 12, lg: 5 }}>
+              <Flex
+                direction="column"
+                gap={8}
+                justifyContent={{ base: 'normal', md: 'center' }}
+                height="100%"
+              >
+                <Stack>
+                  <Heading lineHeight="tall">
+                    <Highlight
+                      query="onchain"
+                      styles={{
+                        px: '2',
+                        rounded: 'xl',
+                        bg: 'primary.100'
+                      }}
+                    >
+                      Keep track of your onchain journey
+                    </Highlight>
+                  </Heading>
+                  <Text fontSize="lg" color={subHeadingColor}>
+                    Simplify your crypto experience with an easy-to-use
+                    dashboard
+                  </Text>
+                </Stack>
+                <Box>
+                  <Button
+                    onClick={openConnectModal}
+                    colorScheme="primary"
+                    isLoading={sessionStatus === 'loading'}
                   >
-                    TRACK YOUR ONCHAIN JOURNEY
-                  </Highlight>
-                </Heading>
-                <Text fontSize="lg" color={subHeadingColor}>
-                  Supercharge your crypto journey with a simple dashboard
-                </Text>
-              </Stack>
-              <Box>
-                <Button
-                  onClick={openConnectModal}
-                  colorScheme="primary"
-                  isLoading={sessionStatus === 'loading'}
-                >
-                  Login to start
-                </Button>
-              </Box>
-            </Flex>
-          </GridItem>
-          <GridItem
-            colSpan={{ base: 12, lg: 6 }}
-            minHeight="500px"
-            minWidth="100%"
-          >
-            {/* <Image src="/banner.png" alt="banner" /> */}
-            <Spline scene="https://prod.spline.design/QMJDTScZ1nj6yrQl/scene.splinecode" />
-          </GridItem>
-        </Grid>
-      </Container>
+                    Login to start
+                  </Button>
+                </Box>
+              </Flex>
+            </GridItem>
+            <GridItem
+              colSpan={{ base: 12, lg: 7 }}
+              bg="blue.200"
+              alignContent={'center'}
+              justifyContent={'center'}
+              minHeight="512px"
+            >
+              <Spline scene="https://prod.spline.design/QMJDTScZ1nj6yrQl/scene.splinecode" />
+            </GridItem>
+          </Grid>
+        </Container>
+      </Flex>
     );
   }
 
