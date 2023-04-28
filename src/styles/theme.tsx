@@ -12,6 +12,10 @@ const config: ThemeConfig = {
 };
 
 const theme = extendTheme({
+  fonts: {
+    heading: `'Poppins', sans-serif`,
+    body: `'Outfit', sans-serif`
+  },
   config,
   components: {
     Input: inputTheme,

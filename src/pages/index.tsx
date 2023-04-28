@@ -1,5 +1,4 @@
 import ChainSelector from '@/components/ChainSelector';
-import { CustomConnectButton } from '@/components/ConnectButton';
 import OverviewCard from '@/components/OverviewCard';
 import { IProfile } from '@/types/IProfile';
 import { generateColorFromString } from '@/utils/format';
@@ -92,14 +91,13 @@ export default function Home({
               height="100%"
             >
               <Stack>
-                <Heading lineHeight="tall">
+                <Heading>
                   <Highlight
                     query="onchain"
                     styles={{
                       px: '2',
-                      py: '1',
                       rounded: 'xl',
-                      bg: 'green.100'
+                      bg: 'primary.100'
                     }}
                   >
                     TRACK YOUR ONCHAIN JOURNEY

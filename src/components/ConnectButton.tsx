@@ -1,5 +1,13 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Button, Flex, Image, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  IconButton,
+  Image,
+  useBreakpointValue
+} from '@chakra-ui/react';
+// import { FiLogIn } from 'react-icons/fi';
+import { BiWallet } from 'react-icons/bi';
 export const CustomConnectButton = ({ text }: { text?: string }) => {
   const defaultButtonText = useBreakpointValue(
     {
@@ -46,25 +54,41 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button
-                    colorScheme="primary"
-                    onClick={openConnectModal}
-                    rounded="xl"
-                  >
-                    {buttonText}
-                  </Button>
+                  <>
+                    <Button
+                      size="sm"
+                      colorScheme="primary"
+                      onClick={openConnectModal}
+                      rounded="xl"
+                      display={{ base: 'none', md: 'flex' }}
+                    >
+                      {buttonText}
+                    </Button>
+                    <IconButton
+                      size="sm"
+                      colorScheme="primary"
+                      onClick={openConnectModal}
+                      rounded="xl"
+                      aria-label="Connect Wallet"
+                      display={{ base: 'flex', md: 'none' }}
+                    >
+                      <BiWallet />
+                    </IconButton>
+                  </>
                 );
               }
               if (chain.unsupported) {
                 return (
-                  <Button onClick={openChainModal} colorScheme="red">
+                  <Button size="sm" onClick={openChainModal} colorScheme="red">
                     Wrong network
                   </Button>
                 );
               }
               return (
                 <Flex gap={3}>
-                  <Button
+                  {/* <Button
+                    size="sm"
+                    rounded="xl"
                     onClick={openChainModal}
                     display={{ base: 'none', lg: 'flex' }}
                     variant="outline"
@@ -86,8 +110,13 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
                         )}
                       </Flex>
                     )}
-                  </Button>
-                  <Button onClick={openAccountModal} variant="outline">
+                  </Button> */}
+                  <Button
+                    size="sm"
+                    rounded="xl"
+                    onClick={openAccountModal}
+                    variant="outline"
+                  >
                     {account.displayName}
                   </Button>
                 </Flex>

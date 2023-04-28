@@ -379,6 +379,13 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
     >
       <Flex alignItems="center" gap={2}>
         <SearchBar />
+        <Box
+          h="32px"
+          borderRight="1px solid"
+          borderColor={useColorModeValue('gray.200', 'gray.700')}
+          pr={2}
+          display={{ base: 'none', md: 'flex' }}
+        />
         <IconButton
           display={{ base: 'flex', md: 'none' }}
           onClick={onOpen}
