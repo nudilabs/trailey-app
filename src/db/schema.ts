@@ -48,6 +48,7 @@ export const transactions = mysqlTable(
     isInteract: boolean('is_interact')
   },
   tx => ({
+    txHashIdx: index('tx_hash_idx').on(tx.txHash),
     fromAddrAtIdx: index('from_addr_at_idx').on(tx.fromAddress, tx.signedAt)
   })
 );
