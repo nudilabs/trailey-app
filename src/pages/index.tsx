@@ -82,7 +82,7 @@ export default function Home({
   if (!session || !address) {
     return (
       <Flex minH="calc(100vh - 88px)" alignItems="center">
-        <Container maxW="container.lg">
+        <Container maxW="container.lg" py={{ base: 12, md: 0 }}>
           <Grid templateColumns="repeat(12, 1fr)" gap={8}>
             <GridItem colSpan={{ base: 12, lg: 5 }}>
               <Flex
@@ -122,7 +122,6 @@ export default function Home({
             </GridItem>
             <GridItem
               colSpan={{ base: 12, lg: 7 }}
-              bg="blue.200"
               alignContent={'center'}
               justifyContent={'center'}
               minHeight="512px"
