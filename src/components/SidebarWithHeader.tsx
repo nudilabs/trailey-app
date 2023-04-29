@@ -141,6 +141,8 @@ const SidebarContent = ({
     setIsHover(hover);
   };
 
+  var viewportHeight = window.innerHeight;
+
   return (
     <Flex
       direction="column"
@@ -151,7 +153,7 @@ const SidebarContent = ({
       w={{ base: 'full', md: 'auto' }}
       minW={0}
       pos="fixed"
-      h="100vh"
+      h={viewportHeight}
       {...rest}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
