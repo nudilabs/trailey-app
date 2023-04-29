@@ -66,7 +66,6 @@ export default function ProfileButton({
       {isHover ? (
         <Button
           variant={'outline'}
-          // size="sm"
           rounded="lg"
           leftIcon={<Icon fontSize="16" as={FiUser} />}
           rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
@@ -79,7 +78,6 @@ export default function ProfileButton({
       ) : (
         <IconButton
           variant={'outline'}
-          // size="sm"
           rounded="lg"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={FiUser} />}
@@ -90,7 +88,6 @@ export default function ProfileButton({
       )}
       <Button
         variant={'outline'}
-        size="sm"
         leftIcon={<Icon fontSize="16" as={FiUser} />}
         rightIcon={<Icon fontSize="16" as={FiChevronDown} />}
         onClick={handleProfileClick}

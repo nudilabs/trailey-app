@@ -339,8 +339,7 @@ const NavItem = ({
       )}
       <Button
         variant={isActive ? 'solid' : 'ghost'}
-        size="sm"
-        leftIcon={<Icon fontSize="16" as={icon} />}
+        leftIcon={<Icon as={icon} />}
         justifyContent="left"
         onClick={handleClick}
         cursor="pointer"
