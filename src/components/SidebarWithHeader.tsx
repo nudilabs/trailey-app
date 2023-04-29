@@ -151,7 +151,7 @@ const SidebarContent = ({
       w={{ base: 'full', md: 'auto' }}
       minW={0}
       pos="fixed"
-      h="100%"
+      h="100vh"
       {...rest}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
