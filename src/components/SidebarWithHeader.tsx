@@ -222,59 +222,51 @@ const SidebarContent = ({
             Twitter
           </NavItem>
           {/* Dark mode toggle */}
-          {isHover ? (
-            <Flex
-              direction="row"
-              borderRadius="xl"
-              borderColor={toggleBorderColor}
-              borderWidth="1px"
-              p={1}
-              gap={1}
+          {/* <Box> */}
+          <Flex
+            direction={'row'}
+            borderRadius="xl"
+            borderColor={toggleBorderColor}
+            borderWidth="1px"
+            p={1}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+          >
+            <Button
+              variant={darkModeButtonVariant}
+              rounded="lg"
+              size="sm"
+              leftIcon={<FiSun fontSize="16" />}
+              justifyContent="center"
+              onClick={toggleColorMode}
+              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              w="100%"
             >
-              <Button
-                variant={darkModeButtonVariant}
-                rounded="lg"
-                size="sm"
-                leftIcon={<FiSun fontSize="16" />}
-                justifyContent="left"
-                display={{ base: 'none', md: 'flex' }}
-                onClick={toggleColorMode}
-              >
-                Light
-              </Button>
-              <Button
-                variant={lightModeButtonVariant}
-                rounded="lg"
-                size="sm"
-                leftIcon={<FiMoon fontSize="16" />}
-                justifyContent="left"
-                display={{ base: 'none', md: 'flex' }}
-                onClick={toggleColorMode}
-              >
-                Dark
-              </Button>
-            </Flex>
-          ) : (
-            <Flex
-              direction="row"
-              borderRadius="xl"
-              borderColor={toggleBorderColor}
-              borderWidth="1px"
-              p={1}
+              Light
+            </Button>
+            <Button
+              variant={lightModeButtonVariant}
+              rounded="lg"
+              size="sm"
+              leftIcon={<FiMoon fontSize="16" />}
+              justifyContent="center"
+              onClick={toggleColorMode}
+              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              w="100%"
             >
-              <IconButton
-                // variant={isActive ? 'solid' : 'ghost'}
-                // colorScheme={isActive ? 'primary' : 'gray'}
-                size="sm"
-                rounded="lg"
-                aria-label="toggle dark mode"
-                icon={toggleIcon}
-                // onClick={handleClick}
-                cursor="pointer"
-                display={{ base: 'none', md: 'flex' }}
-              />
-            </Flex>
-          )}
+              Dark
+            </Button>
+            <IconButton
+              size="sm"
+              rounded="lg"
+              aria-label="toggle dark mode"
+              icon={toggleIcon}
+              onClick={toggleColorMode}
+              cursor="pointer"
+              display={{ base: 'none', md: isHover ? 'none' : 'flex' }}
+            />
+          </Flex>
+          {/* </Box> */}
         </Stack>
       </Flex>
     </Flex>
