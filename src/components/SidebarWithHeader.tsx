@@ -152,7 +152,6 @@ const SidebarContent = ({
       minW={0}
       pos="fixed"
       h="100vh"
-      paddingBottom={{ base: 12, md: 0 }}
       {...rest}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
@@ -189,6 +188,9 @@ const SidebarContent = ({
         <Divider />
         {/* Navigation items */}
         <Stack spacing={2}>
+          <Box display={{ base: 'flex', md: 'none' }}>
+            <SearchBar onClose={onClose} />
+          </Box>
           {LinkItems.map(link => (
             <NavItem
               onClose={onClose}
@@ -201,8 +203,8 @@ const SidebarContent = ({
             </NavItem>
           ))}
         </Stack>
-
-        <Spacer />
+        <Spacer display={{ base: 'none', md: 'block' }} />
+        <Divider display={{ base: 'block', md: 'none' }} />
         <Stack spacing={2}>
           <NavItem
             onClose={onClose}
@@ -371,7 +373,9 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       {...rest}
     >
       <Flex alignItems="center" gap={2}>
-        <SearchBar />
+        <Box display={{ base: 'none', md: 'flex' }} width="440px">
+          <SearchBar kbd />
+        </Box>
         <Box
           h="32px"
           borderRight="1px solid"
