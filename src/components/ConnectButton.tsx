@@ -65,7 +65,7 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
                       {buttonText}
                     </Button>
                     <IconButton
-                      size="sm"
+                      size="md"
                       colorScheme="primary"
                       onClick={openConnectModal}
                       rounded="xl"
