@@ -1,9 +1,37 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "a87a6e7e-8ae2-4f83-8c0c-56ee3d0ed9c3",
+  "id": "c03607b2-9b7d-4af7-990f-1cff964d02a5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "support_chains": {
+      "name": "support_chains",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": ["name"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
+    },
     "transactions": {
       "name": "transactions",
       "columns": {
@@ -104,16 +132,36 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
+        "tx_hash_idx": {
+          "name": "tx_hash_idx",
+          "columns": ["tx_hash"],
+          "isUnique": false
+        },
         "from_addr_at_idx": {
           "name": "from_addr_at_idx",
           "columns": ["from_address", "block_signed_at"],
           "isUnique": false
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "transactions_chain_id_support_chains_id_fk": {
+          "name": "transactions_chain_id_support_chains_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "support_chains",
+          "columnsFrom": ["chain_id"],
+          "columnsTo": ["id"]
+        }
+      },
       "compositePrimaryKeys": {}
     }
   },

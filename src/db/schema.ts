@@ -29,6 +29,16 @@ import {
 //   "log_events": ""
 // }
 
+export const supportChains = mysqlTable(
+  'support_chains',
+  {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 255 })
+  },
+  chain => ({
+    nameIdx: index('name_idx').on(chain.name)
+  })
+);
 export const transactions = mysqlTable(
   'transactions',
   {
@@ -45,7 +55,8 @@ export const transactions = mysqlTable(
     value: varchar('value', { length: 255 }),
     valueQuote: decimal('value_quote', { precision: 20, scale: 10 }),
     feesPaid: varchar('fees_paid', { length: 255 }),
-    isInteract: boolean('is_interact')
+    isInteract: boolean('is_interact'),
+    chainId: int('chain_id').references(() => supportChains.id)
   },
   tx => ({
     txHashIdx: index('tx_hash_idx').on(tx.txHash),
