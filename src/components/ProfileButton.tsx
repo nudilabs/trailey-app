@@ -19,7 +19,7 @@ import {
   useColorModeValue,
   Divider
 } from '@chakra-ui/react';
-import { FiUser, FiChevronDown, FiSettings } from 'react-icons/fi';
+import { FiUser, FiChevronDown, FiSettings, FiPlus } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { IProfile } from '@/types/IProfile';
 
@@ -41,8 +41,14 @@ export default function ProfileButton({
 }) {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const hasBundle = profilesData.length > 0;
 
   const handleProfileClick = () => {
+    if (!hasBundle) {
+      router.push(`/profile`);
+      onClose();
+      return;
+    }
     setShowModal(true);
   };
 
@@ -55,32 +61,66 @@ export default function ProfileButton({
   };
 
   function getCurrentProfileName(): string {
-    if (profilesData.length > 0 && currentProfile < profilesData.length) {
+    if (hasBundle && currentProfile < profilesData.length) {
       return profilesData[currentProfile].name;
     }
-    return 'No Profile';
+    return 'Create Bundle';
   }
 
   return (
     <Flex direction="column" {...rest}>
       {isHover ? (
-        <Button
-          variant={'outline'}
-          rounded="lg"
-          leftIcon={<Icon fontSize="16" as={FiUser} />}
-          rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
-          w="full"
-          onClick={handleProfileClick}
-          display={{ base: 'none', md: 'flex' }}
-        >
-          {getCurrentProfileName()}
-        </Button>
+        hasBundle ? (
+          <Button
+            variant={hasBundle ? 'outline' : 'solid'}
+            colorScheme={hasBundle ? 'gray' : 'primary'}
+            rounded="lg"
+            leftIcon={
+              hasBundle ? (
+                <Icon fontSize="16" as={FiUser} />
+              ) : (
+                <Icon fontSize="16" as={FiPlus} />
+              )
+            }
+            rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
+            w="full"
+            onClick={handleProfileClick}
+            display={{ base: 'none', md: 'flex' }}
+          >
+            {getCurrentProfileName()}
+          </Button>
+        ) : (
+          <Button
+            variant={hasBundle ? 'outline' : 'solid'}
+            colorScheme={hasBundle ? 'gray' : 'primary'}
+            rounded="lg"
+            leftIcon={
+              hasBundle ? (
+                <Icon fontSize="16" as={FiUser} />
+              ) : (
+                <Icon fontSize="16" as={FiPlus} />
+              )
+            }
+            w="full"
+            onClick={handleProfileClick}
+            display={{ base: 'none', md: 'flex' }}
+          >
+            {getCurrentProfileName()}
+          </Button>
+        )
       ) : (
         <IconButton
-          variant={'outline'}
+          variant={hasBundle ? 'outline' : 'solid'}
+          colorScheme={hasBundle ? 'gray' : 'primary'}
           rounded="lg"
           aria-label="toggle dark mode"
-          icon={<Icon fontSize="16" as={FiUser} />}
+          icon={
+            hasBundle ? (
+              <Icon fontSize="16" as={FiUser} />
+            ) : (
+              <Icon fontSize="16" as={FiPlus} />
+            )
+          }
           onClick={handleProfileClick}
           cursor="pointer"
           display={{ base: 'none', md: 'flex' }}

@@ -135,9 +135,9 @@ export default function Home({
   }
 
   if (profilesData.length === 0) {
-    router.push('/profile');
+    router.push(`/account/${address}`);
+    return null;
   }
-
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
