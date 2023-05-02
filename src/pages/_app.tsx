@@ -5,8 +5,9 @@ import Layout from '@/components/Layout';
 import theme from '@/styles/theme';
 import { useState } from 'react';
 import { IProfile } from '@/types/IProfile';
+import { trpc } from '@/utils/trpc';
 
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   const [currentProfile, setCurrentProfile] = useState(0);
   const [profilesData, setProfilesData] = useState<IProfile[]>([]);
   const profileProps = {
@@ -22,4 +23,6 @@ export default function App({ Component, pageProps }: AppProps) {
       </Layout>
     </ChakraProvider>
   );
-}
+};
+
+export default trpc.withTRPC(App);
