@@ -4,6 +4,7 @@ import { db } from '@/db/drizzle-db';
 import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
+import { Receiver } from '@upstash/qstash';
 import moment from 'moment';
 import * as z from 'zod';
 
@@ -117,6 +118,13 @@ const getTxs = async (
 export default async function handler(req: NextRequest) {
   if (req.method !== 'POST')
     return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
+
+  // const signature = req.headers.get['upstash-signature'] as string | undefined;
+  // console.log({ signature });
+  // if (!signature) {
+  //   res.status(200).send('This request is not coming from qstash');
+  //   return res.end();
+  // }
 
   try {
     const json = await req.json();
