@@ -29,6 +29,8 @@ import {
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 
+import { trpc } from '../utils/trpc';
+
 const { chains, provider } = configureChains(
   [mainnet, polygon, optimism, arbitrum],
   [alchemyProvider({ apiKey: ENV.ALCHEMY_ID }), publicProvider()]
@@ -46,12 +48,12 @@ const wagmiClient = createClient({
   provider
 });
 
-export default function App({
+const App = ({
   Component,
   pageProps
 }: AppProps<{
   session: Session;
-}>) {
+}>) => {
   const [currentProfile, setCurrentProfile] = useState(0);
   const [profilesData, setProfilesData] = useState<IProfile[]>([]);
   const profileProps = {
@@ -115,4 +117,5 @@ export default function App({
       </SessionProvider>
     </WagmiConfig>
   );
-}
+};
+export default trpc.withTRPC(App);
