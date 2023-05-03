@@ -49,20 +49,24 @@ const getTxs = async (
   walletAddr: string,
   startPage: number,
   endPage: number,
-  chainId: number
+  chainId: number,
+  totalPage: number
 ) => {
   const txs = [];
-  const totalPage = endPage - startPage;
+  const totalGetPage = endPage - startPage;
 
   const batch = 7;
-  const batchCount = Math.ceil(totalPage / batch);
+  const batchCount = Math.ceil(totalGetPage / batch);
+  console.log('totalPage', totalGetPage);
+  console.log('batchCount', batchCount);
 
   for (let i = 0; i < batchCount; i++) {
     const promises = [];
 
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
-      if (page >= totalPage) break;
+      // if (page >= totalPage) break;
+      if (page >= endPage) break;
       promises.push(getTxsByPage(chainName, walletAddr, page));
     }
 
@@ -70,12 +74,8 @@ const getTxs = async (
     for (let j = 0; j < data.length; j++) {
       let tmpData = [];
       for (const item of data[j].data.items) {
-        // const isTxExist = await db
-        //   .select()
-        //   .from(transactions)
-        //   .where(eq(transactions.txHash, item.tx_hash));
+        if (item.from_address !== walletAddr.toLowerCase()) continue;
 
-        // if (isTxExist.length > 0) continue;
         const signDate = moment.utc(item.block_signed_at).toDate();
 
         let tmp: Transaction = {
@@ -83,7 +83,7 @@ const getTxs = async (
           blockHeight: item.block_height,
           txHash: item.tx_hash,
           txOffset: item.tx_offset,
-          success: item.success,
+          success: item.successful,
           fromAddress: item.from_address,
           fromAddressLabel: item.from_address_label,
           toAddress: item.to_address,
@@ -115,16 +115,48 @@ const getTxs = async (
   return txs;
 };
 
+// const isFromQueue = async (req: NextRequest) => {
+//   const signature = req.headers.get('upstash-signature') as string | undefined;
+//   // console.log({ signature });
+//   if (!signature) {
+//     return { valid: false,msg: "Signature is missing"};
+//   }
+
+//   const currentSigningKey = process.env.QSTASH_CURRENT_SIGNING_KEY;
+//   if (!currentSigningKey) {
+//     return { valid: false,msg: null};
+//   }
+//   const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY;
+//   if (!nextSigningKey) {
+//     return { valid: false,msg: null};
+//   }
+//   const receiver = new Receiver({
+//     currentSigningKey,
+//     nextSigningKey,
+//   });
+//   const chunks = [];
+//   for await (const chunk of req) {
+//     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+//   }
+//   const body = Buffer.concat(chunks).toString("utf-8");
+//   const valid = await receiver.verify({
+//     signature,
+//     body: body,
+//   });
+//   if (!valid) {
+//     res.status(403).send("Signature is invalid");
+//     return res.end();
+//   }
+
+//   res.status(200).json({ valid });
+//   return res.end();
+// }
+
+// };
+
 export default async function handler(req: NextRequest) {
   if (req.method !== 'POST')
     return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
-
-  // const signature = req.headers.get['upstash-signature'] as string | undefined;
-  // console.log({ signature });
-  // if (!signature) {
-  //   res.status(200).send('This request is not coming from qstash');
-  //   return res.end();
-  // }
 
   try {
     const json = await req.json();
@@ -138,7 +170,7 @@ export default async function handler(req: NextRequest) {
     console.log(supportedChain);
 
     if (supportedChain.length === 0)
-      return new Response(null, {
+      return NextResponse.json(null, {
         status: 400,
         statusText: 'unsupported chain'
       });
@@ -151,7 +183,8 @@ export default async function handler(req: NextRequest) {
       walletAddr,
       startPage,
       endPage,
-      chainId
+      chainId,
+      totalPage
     );
 
     // console.log(txs);
