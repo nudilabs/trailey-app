@@ -1,4 +1,5 @@
-import { getFormattedAddress } from '@/utils/format';
+import { IProfile } from '@/types/IProfile';
+import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
   Accordion,
   AccordionButton,
@@ -47,10 +48,13 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-  FormHelperText
+  FormHelperText,
+  RadioGroup,
+  Stack,
+  Radio
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   FiArrowRight,
   FiCopy,
@@ -68,27 +72,33 @@ import { isAddress } from 'viem';
 
 interface ProfilesProps {
   setCurrentProfile: React.Dispatch<React.SetStateAction<number>>;
+  currentProfile: number;
+  profilesData: IProfile[];
+  setProfilesData: React.Dispatch<React.SetStateAction<IProfile[]>>;
 }
 
-export default function Profiles({ setCurrentProfile }: ProfilesProps) {
+export default function Profiles({
+  setCurrentProfile,
+  currentProfile,
+  profilesData,
+  setProfilesData
+}: ProfilesProps) {
   const [profileInput, setProfileInput] = useState('');
-  const [addressInput, setAddressInput] = useState('');
   const handleProfileInputChange = (e: any) => setProfileInput(e.target.value);
+
+  const [addressInput, setAddressInput] = useState('');
   const handleAddressInputChange = (e: any) => setAddressInput(e.target.value);
+
+  const [type, setType] = useState('hot');
+
   const isError = !isAddress(addressInput);
   const [showModal, setShowModal] = useState(false);
 
-  const [profilesData, setProfilesData] = useState<
-    { name: string; wallets: { address: string }[] }[]
-  >([]);
+  // const [profilesData, setProfilesData] = useState<
+  //   { name: string; wallets: { address: string; type: string }[] }[]
+  // >([]);
   const router = useRouter();
   const toast = useToast();
-
-  useEffect(() => {
-    // Get item from local storage
-    const profiles = window.localStorage.getItem('profiles');
-    if (profiles) setProfilesData(JSON.parse(profiles));
-  }, []);
 
   const handleSelectProfileClick = (index: number) => {
     setCurrentProfile(index);
@@ -98,7 +108,7 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
 
   const handleAddProfileSubmit = (formData: {
     name: string;
-    wallets: { address: string }[];
+    wallets: { address: string; type: string }[];
   }) => {
     // Add the new profile data to the existing profiles array
     const updatedProfiles = [...profilesData, formData];
@@ -213,7 +223,9 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
                           });
                         }}
                       >
-                        {getFormattedAddress(wallet.address, 8)}
+                        {`${getEmojiForWalletType(
+                          wallet.type
+                        )} ${getFormattedAddress(wallet.address, 8)}`}
                       </TagLabel>
                     </Tooltip>
                   </Tag>
@@ -221,7 +233,6 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
               ))}
             </Grid>
           </CardBody>
-          <CardFooter></CardFooter>
         </Card>
       ))}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
@@ -240,19 +251,29 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
                   onChange={handleProfileInputChange}
                 />
               </FormControl>
-              <FormControl isInvalid={isError}>
-                <FormLabel>Address</FormLabel>
-                <Input
-                  type="text"
-                  value={addressInput}
-                  onChange={handleAddressInputChange}
-                />
-                {isError && (
-                  <FormErrorMessage>
-                    Please enter a valid address
-                  </FormErrorMessage>
-                )}
-              </FormControl>
+              <Flex direction="column" gap={4}>
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Address</FormLabel>
+                  <Input
+                    type="text"
+                    value={addressInput}
+                    onChange={handleAddressInputChange}
+                  />
+                  {isError && (
+                    <FormErrorMessage>
+                      Please enter a valid address
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+                <RadioGroup onChange={setType} value={type}>
+                  <FormLabel>Wallet Type</FormLabel>
+                  <Stack direction="row">
+                    <Radio value="hot">🔥 Hot</Radio>
+                    <Radio value="cold">🥶 Cold</Radio>
+                    <Radio value="vault">🔒 Vault</Radio>
+                  </Stack>
+                </RadioGroup>
+              </Flex>
             </Flex>
           </ModalBody>
           <Divider />
@@ -264,7 +285,7 @@ export default function Profiles({ setCurrentProfile }: ProfilesProps) {
                   if (!isError) {
                     handleAddProfileSubmit({
                       name: profileInput,
-                      wallets: [{ address: addressInput }]
+                      wallets: [{ address: addressInput, type: type }]
                     });
                     setShowModal(false);
                   }

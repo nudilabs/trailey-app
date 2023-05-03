@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import {
   IconButton,
   Box,
@@ -19,7 +19,11 @@ import {
   useColorMode,
   Spacer,
   Button,
-  Select
+  Select,
+  Divider,
+  Stack,
+  Text,
+  Tooltip
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -32,7 +36,8 @@ import {
   FiSun,
   FiMoon,
   FiUser,
-  FiChevronDown
+  FiChevronDown,
+  FiTwitter
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
@@ -41,17 +46,18 @@ import SearchBar from './SearchBar';
 import ProfileButton from './ProfileButton';
 import { IProfile } from '@/types/IProfile';
 
+import { motion } from 'framer-motion';
+import { CustomConnectButton } from './ConnectButton';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 interface LinkItemProps {
   name: string;
   icon: IconType;
-  href: string;
+  href?: string;
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: 'Home', icon: FiHome, href: '/' },
-  { name: 'Profile', icon: FiUser, href: '/profile' },
-  { name: 'Trending', icon: FiTrendingUp, href: '/trending' },
-  { name: 'Explore', icon: FiCompass, href: '/explore' },
-  { name: 'Settings', icon: FiSettings, href: '/settings' }
+  { name: 'Trending', icon: FiTrendingUp }
 ];
 
 export default function SidebarWithHeader({
@@ -69,7 +75,7 @@ export default function SidebarWithHeader({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.800')}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}
@@ -124,75 +130,147 @@ const SidebarContent = ({
   ...rest
 }: SidebarProps) => {
   const { toggleColorMode } = useColorMode();
-  const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
+  const toggleIcon = useColorModeValue(<FiSun />, <FiMoon />);
+  const toggleBorderColor = useColorModeValue('blackAlpha.50', 'whiteAlpha.50');
+  const darkModeButtonVariant = useColorModeValue('solid', 'ghost');
+  const lightModeButtonVariant = useColorModeValue('ghost', 'solid');
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
   const [isHover, setIsHover] = useState(false);
 
   const handleHover = (hover: boolean) => {
     setIsHover(hover);
   };
+
   return (
     <Flex
       direction="column"
-      bg={useColorModeValue('white', 'gray.900')}
+      bg={useColorModeValue('gray.50', 'gray.900')}
+      boxShadow={useColorModeValue('xl', 'dark-xl')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: isHover ? 60 : '68px' }}
+      w={{ base: 'full', md: 'auto' }}
+      minW={0}
       pos="fixed"
-      h="full"
+      h="100vh"
       {...rest}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
     >
-      <Flex alignItems="center" py={4} px={4} justifyContent="space-between">
-        <Image
-          src={isHover ? logo : logo.replace('logo', 'logo-small')}
-          alt="Dropbook Logo"
-          height={'32px'}
-          display={{ base: 'none', md: 'block' }}
+      <Flex direction="column" h="100%" p={4} gap={8}>
+        {/* Sidebar header */}
+        <Flex alignItems="center" justifyContent={'space-between'}>
+          <Image
+            src={isHover ? logo : logo.replace('logo', 'logo-small')}
+            alt="Biway Logo"
+            height={'40px'}
+            display={{ base: 'none', md: 'block' }}
+          />
+          <Image
+            src={logo}
+            alt="Biway Logo"
+            height={'40px'}
+            display={{ base: 'block', md: 'none' }}
+          />
+          <CloseButton
+            display={{ base: 'flex', md: 'none' }}
+            onClick={onClose}
+          />
+        </Flex>
+        {/* Profile button */}
+        <ProfileButton
+          onClose={onClose}
+          isHover={isHover}
+          currentProfile={currentProfile}
+          setCurrentProfile={setCurrentProfile}
+          profilesData={profilesData}
+          setProfilesData={setProfilesData}
         />
-        <Image
-          src={logo}
-          alt="Dropbook Logo"
-          height={'32px'}
-          display={{ base: 'block', md: 'none' }}
-        />
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
-      </Flex>
-      <ProfileButton
-        onClose={onClose}
-        isHover={isHover}
-        currentProfile={currentProfile}
-        setCurrentProfile={setCurrentProfile}
-        profilesData={profilesData}
-        setProfilesData={setProfilesData}
-      />
-      <Flex direction="column">
-        {LinkItems.map(link => (
+        <Divider />
+        {/* Navigation items */}
+        <Stack spacing={2}>
+          <Box display={{ base: 'flex', md: 'none' }}>
+            <SearchBar onClose={onClose} />
+          </Box>
+          {LinkItems.map(link => (
+            <NavItem
+              onClose={onClose}
+              isHover={isHover}
+              key={link.name}
+              icon={link.icon}
+              href={link.href}
+            >
+              {link.name}
+            </NavItem>
+          ))}
+        </Stack>
+        <Spacer display={{ base: 'none', md: 'block' }} />
+        <Divider display={{ base: 'block', md: 'none' }} />
+        <Stack spacing={2}>
           <NavItem
             onClose={onClose}
             isHover={isHover}
-            key={link.name}
-            icon={link.icon}
-            href={link.href}
+            key={'settings'}
+            icon={FiSettings}
+            href={'/settings'}
           >
-            {link.name}
+            Settings
           </NavItem>
-        ))}
-      </Flex>
-      <Spacer />
-      <Flex
-        alignItems="center"
-        py={8}
-        px={4}
-        display={{ base: 'flex', md: 'none' }}
-      >
-        <IconButton
-          variant="ghost"
-          aria-label="toggle dark mode"
-          onClick={toggleColorMode}
-          icon={toggleIcon}
-        />
+          <NavItem
+            onClose={onClose}
+            isHover={isHover}
+            key={'twitter'}
+            icon={FiTwitter}
+            href={'https://twitter.com/BiwayAnalytics'}
+          >
+            Twitter
+          </NavItem>
+          {/* Dark mode toggle */}
+          {/* <Box> */}
+          <Flex
+            direction={'row'}
+            borderRadius="xl"
+            borderColor={toggleBorderColor}
+            borderWidth="1px"
+            p={1}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+          >
+            <Button
+              variant={darkModeButtonVariant}
+              rounded="lg"
+              size="sm"
+              leftIcon={<FiSun fontSize="16" />}
+              justifyContent="center"
+              onClick={toggleColorMode}
+              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              w="100%"
+            >
+              Light
+            </Button>
+            <Button
+              variant={lightModeButtonVariant}
+              rounded="lg"
+              size="sm"
+              leftIcon={<FiMoon fontSize="16" />}
+              justifyContent="center"
+              onClick={toggleColorMode}
+              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              w="100%"
+            >
+              Dark
+            </Button>
+            <IconButton
+              size="sm"
+              rounded="lg"
+              aria-label="toggle dark mode"
+              icon={toggleIcon}
+              onClick={toggleColorMode}
+              cursor="pointer"
+              display={{ base: 'none', md: isHover ? 'none' : 'flex' }}
+            />
+          </Flex>
+          {/* </Box> */}
+        </Stack>
       </Flex>
     </Flex>
   );
@@ -202,7 +280,7 @@ interface NavItemProps extends FlexProps {
   onClose: () => void;
   isHover: boolean;
   icon: IconType;
-  href: string;
+  href?: string;
   children: ReactText;
   isActive?: boolean;
 }
@@ -221,27 +299,37 @@ const NavItem = ({
   const handleClick = (e: React.MouseEvent) => {
     onClose();
     e.preventDefault();
-    router.push(href);
+    if (href) router.push(href);
   };
 
   return (
-    <Flex direction="column" {...rest} px={4} py={1}>
+    <Flex direction="column" {...rest}>
       {isHover ? (
         <Button
           variant={isActive ? 'solid' : 'ghost'}
-          size="sm"
+          colorScheme={isActive ? 'secondary' : 'gray'}
+          isDisabled={!href}
+          rounded="lg"
           leftIcon={<Icon fontSize="16" as={icon} />}
           justifyContent="left"
           onClick={handleClick}
           cursor="pointer"
           display={{ base: 'none', md: 'flex' }}
         >
-          {children}
+          {href ? (
+            children
+          ) : (
+            <Tooltip label={'Coming soon'} placement="right">
+              {children}
+            </Tooltip>
+          )}
         </Button>
       ) : (
         <IconButton
           variant={isActive ? 'solid' : 'ghost'}
-          size="sm"
+          colorScheme={isActive ? 'secondary' : 'gray'}
+          isDisabled={!href}
+          rounded="lg"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={icon} />}
           onClick={handleClick}
@@ -251,8 +339,8 @@ const NavItem = ({
       )}
       <Button
         variant={isActive ? 'solid' : 'ghost'}
-        size="sm"
-        leftIcon={<Icon fontSize="16" as={icon} />}
+        colorScheme="secondary"
+        leftIcon={<Icon as={icon} />}
         justifyContent="left"
         onClick={handleClick}
         cursor="pointer"
@@ -268,8 +356,6 @@ interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const { toggleColorMode } = useColorMode();
-  const toggleIcon = useColorModeValue(<FiMoon />, <FiSun />);
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
   return (
     <Flex
@@ -278,8 +364,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       gap={{ base: 2, md: 4 }}
       alignItems="center"
       bg={{
-        base: useColorModeValue('white', 'gray.900'),
-        md: useColorModeValue('whiteAlpha.600', 'gray.900')
+        base: useColorModeValue('gray.50', 'gray.900'),
+        md: useColorModeValue('gray.50', 'gray.900')
       }}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
@@ -287,7 +373,16 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       {...rest}
     >
       <Flex alignItems="center" gap={2}>
-        <SearchBar />
+        <Box display={{ base: 'none', md: 'flex' }} width="440px">
+          <SearchBar kbd />
+        </Box>
+        <Box
+          h="32px"
+          borderRight="1px solid"
+          borderColor={useColorModeValue('gray.200', 'gray.700')}
+          pr={2}
+          display={{ base: 'none', md: 'flex' }}
+        />
         <IconButton
           display={{ base: 'flex', md: 'none' }}
           onClick={onOpen}
@@ -296,20 +391,21 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           icon={<FiMenu />}
         />
         <Box display={{ base: 'flex', md: 'none' }}>
-          <Image src={logo} alt="Dropbook Logo" width="128px" />
+          <Image src={logo} alt="Biway Logo" width="128px" />
         </Box>
       </Flex>
-
-      <HStack>
-        <IconButton variant="ghost" aria-label="open menu" icon={<FiBell />} />
-        <IconButton
-          variant="ghost"
-          aria-label="toggle dark mode"
-          onClick={toggleColorMode}
-          icon={toggleIcon}
-          display={{ base: 'none', md: 'flex' }}
-        />
-      </HStack>
+      {/* <ConnectButton
+        showBalance={false}
+        chainStatus={{
+          smallScreen: 'none',
+          largeScreen: 'icon'
+        }}
+        accountStatus={{
+          smallScreen: 'avatar',
+          largeScreen: 'full'
+        }}
+      /> */}
+      <CustomConnectButton />
     </Flex>
   );
 };

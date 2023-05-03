@@ -25,8 +25,8 @@ export default function Layout({
 
   const pageTitle =
     pathname === '/'
-      ? 'Home'
-      : pathname.charAt(1).toUpperCase() + pathname.slice(2);
+      ? 'Biway'
+      : `Biway | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,7 +54,7 @@ export default function Layout({
       {isLoading && (
         <Progress
           size="xs"
-          colorScheme="pink"
+          colorScheme="primary"
           isIndeterminate
           position="fixed"
           top="0"

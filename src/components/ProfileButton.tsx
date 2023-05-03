@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
   Flex,
   Button,
@@ -19,7 +19,7 @@ import {
   useColorModeValue,
   Divider
 } from '@chakra-ui/react';
-import { FiUser, FiChevronDown, FiSettings } from 'react-icons/fi';
+import { FiUser, FiChevronDown, FiSettings, FiPlus } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { IProfile } from '@/types/IProfile';
 
@@ -41,17 +41,14 @@ export default function ProfileButton({
 }) {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const localStorage = window.localStorage;
-    // Get item from local storage
-    const profiles = localStorage.getItem('profiles');
-    if (profiles) setProfilesData(JSON.parse(profiles));
-    const currentProfileId = localStorage.getItem('profileId');
-    if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
-  }, [currentProfile]);
+  const hasBundle = profilesData.length > 0;
 
   const handleProfileClick = () => {
+    if (!hasBundle) {
+      router.push(`/profile`);
+      onClose();
+      return;
+    }
     setShowModal(true);
   };
 
@@ -64,32 +61,66 @@ export default function ProfileButton({
   };
 
   function getCurrentProfileName(): string {
-    if (profilesData.length > 0 && currentProfile < profilesData.length) {
+    if (hasBundle && currentProfile < profilesData.length) {
       return profilesData[currentProfile].name;
     }
-    return 'No Profile';
+    return 'Create Bundle';
   }
 
   return (
-    <Flex direction="column" {...rest} px={4} py={4}>
+    <Flex direction="column" {...rest}>
       {isHover ? (
-        <Button
-          variant={'outline'}
-          size="sm"
-          leftIcon={<Icon fontSize="16" as={FiUser} />}
-          rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
-          w="full"
-          onClick={handleProfileClick}
-          display={{ base: 'none', md: 'flex' }}
-        >
-          {getCurrentProfileName()}
-        </Button>
+        hasBundle ? (
+          <Button
+            variant={hasBundle ? 'outline' : 'solid'}
+            colorScheme={hasBundle ? 'gray' : 'primary'}
+            rounded="lg"
+            leftIcon={
+              hasBundle ? (
+                <Icon fontSize="16" as={FiUser} />
+              ) : (
+                <Icon fontSize="16" as={FiPlus} />
+              )
+            }
+            rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
+            w="full"
+            onClick={handleProfileClick}
+            display={{ base: 'none', md: 'flex' }}
+          >
+            {getCurrentProfileName()}
+          </Button>
+        ) : (
+          <Button
+            variant={hasBundle ? 'outline' : 'solid'}
+            colorScheme={hasBundle ? 'gray' : 'primary'}
+            rounded="lg"
+            leftIcon={
+              hasBundle ? (
+                <Icon fontSize="16" as={FiUser} />
+              ) : (
+                <Icon fontSize="16" as={FiPlus} />
+              )
+            }
+            w="full"
+            onClick={handleProfileClick}
+            display={{ base: 'none', md: 'flex' }}
+          >
+            {getCurrentProfileName()}
+          </Button>
+        )
       ) : (
         <IconButton
-          variant={'outline'}
-          size="sm"
+          variant={hasBundle ? 'outline' : 'solid'}
+          colorScheme={hasBundle ? 'gray' : 'primary'}
+          rounded="lg"
           aria-label="toggle dark mode"
-          icon={<Icon fontSize="16" as={FiUser} />}
+          icon={
+            hasBundle ? (
+              <Icon fontSize="16" as={FiUser} />
+            ) : (
+              <Icon fontSize="16" as={FiPlus} />
+            )
+          }
           onClick={handleProfileClick}
           cursor="pointer"
           display={{ base: 'none', md: 'flex' }}
@@ -97,7 +128,6 @@ export default function ProfileButton({
       )}
       <Button
         variant={'outline'}
-        size="sm"
         leftIcon={<Icon fontSize="16" as={FiUser} />}
         rightIcon={<Icon fontSize="16" as={FiChevronDown} />}
         onClick={handleProfileClick}
@@ -128,20 +158,23 @@ export default function ProfileButton({
                 <Text
                   fontSize={{ base: 'xs', md: 'sm' }}
                   color={useColorModeValue('gray.500', 'gray.400')}
-                >{`My Profiles (${profilesData.length})`}</Text>
+                >{`My Profiles (${
+                  profilesData.length > 0 ? profilesData.length : 0
+                })`}</Text>
                 <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                  {profilesData.map((profile, index) => (
-                    <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
-                      <Button
-                        variant={'outline'}
-                        size="sm"
-                        w="full"
-                        onClick={() => handleSelectProfileClick(index)}
-                      >
-                        {profile.name}
-                      </Button>
-                    </GridItem>
-                  ))}
+                  {profilesData.length > 0 &&
+                    profilesData.map((profile, index) => (
+                      <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
+                        <Button
+                          variant={'outline'}
+                          size="sm"
+                          w="full"
+                          onClick={() => handleSelectProfileClick(index)}
+                        >
+                          {profile.name}
+                        </Button>
+                      </GridItem>
+                    ))}
                 </Grid>
               </Flex>
             </Flex>
