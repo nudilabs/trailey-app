@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
   Flex,
   Button,
@@ -42,15 +42,6 @@ export default function ProfileButton({
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const localStorage = window.localStorage;
-    // Get item from local storage
-    const profiles = localStorage.getItem('profiles');
-    if (profiles) setProfilesData(JSON.parse(profiles));
-    const currentProfileId = localStorage.getItem('profileId');
-    if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
-  }, [currentProfile]);
-
   const handleProfileClick = () => {
     setShowModal(true);
   };
@@ -71,11 +62,11 @@ export default function ProfileButton({
   }
 
   return (
-    <Flex direction="column" {...rest} px={4} py={4}>
+    <Flex direction="column" {...rest}>
       {isHover ? (
         <Button
           variant={'outline'}
-          size="sm"
+          rounded="lg"
           leftIcon={<Icon fontSize="16" as={FiUser} />}
           rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
           w="full"
@@ -87,7 +78,7 @@ export default function ProfileButton({
       ) : (
         <IconButton
           variant={'outline'}
-          size="sm"
+          rounded="lg"
           aria-label="toggle dark mode"
           icon={<Icon fontSize="16" as={FiUser} />}
           onClick={handleProfileClick}
@@ -97,7 +88,6 @@ export default function ProfileButton({
       )}
       <Button
         variant={'outline'}
-        size="sm"
         leftIcon={<Icon fontSize="16" as={FiUser} />}
         rightIcon={<Icon fontSize="16" as={FiChevronDown} />}
         onClick={handleProfileClick}
@@ -128,20 +118,23 @@ export default function ProfileButton({
                 <Text
                   fontSize={{ base: 'xs', md: 'sm' }}
                   color={useColorModeValue('gray.500', 'gray.400')}
-                >{`My Profiles (${profilesData.length})`}</Text>
+                >{`My Profiles (${
+                  profilesData.length > 0 ? profilesData.length : 0
+                })`}</Text>
                 <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                  {profilesData.map((profile, index) => (
-                    <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
-                      <Button
-                        variant={'outline'}
-                        size="sm"
-                        w="full"
-                        onClick={() => handleSelectProfileClick(index)}
-                      >
-                        {profile.name}
-                      </Button>
-                    </GridItem>
-                  ))}
+                  {profilesData.length > 0 &&
+                    profilesData.map((profile, index) => (
+                      <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
+                        <Button
+                          variant={'outline'}
+                          size="sm"
+                          w="full"
+                          onClick={() => handleSelectProfileClick(index)}
+                        >
+                          {profile.name}
+                        </Button>
+                      </GridItem>
+                    ))}
                 </Grid>
               </Flex>
             </Flex>

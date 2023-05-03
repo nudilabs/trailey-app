@@ -10,7 +10,13 @@ import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
-export default function SearchBar() {
+export default function SearchBar({
+  kbd,
+  onClose
+}: {
+  kbd?: boolean;
+  onClose?: () => void;
+}) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,6 +42,9 @@ export default function SearchBar() {
     if (searchTerm.trim()) {
       router.push(`/account/${searchTerm.trim()}`);
       setSearchTerm('');
+      if (onClose) {
+        onClose();
+      }
     }
   }
 
@@ -51,11 +60,11 @@ export default function SearchBar() {
   }
 
   return (
-    <InputGroup display={{ base: 'none', md: 'flex' }} width="440px">
+    <InputGroup>
       <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
         <FiSearch onClick={handleSearch} />
       </InputLeftElement>
-      <InputRightElement mr="1">
+      <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
         <Kbd>⌘K</Kbd>
       </InputRightElement>
       <Input

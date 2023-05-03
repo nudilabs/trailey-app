@@ -48,7 +48,7 @@ type OverviewData = {
 const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
   const goalColor = useColorModeValue('gray.500', 'gray.400');
   return (
-    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
+    <Card size={{ base: 'lg', md: 'xl' }}>
       <CardHeader>
         <Flex direction="row" alignItems="center" gap={4}>
           <Flex direction="row" alignItems="center" gap={4}>
@@ -73,15 +73,15 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
       </CardHeader>
       <CardBody>
         <TableContainer>
-          <Table variant="simple">
+          <Table variant="unstyled">
             <Thead>
               <Tr>
                 <Th>Address</Th>
-                <Th isNumeric>Bridged</Th>
-                <Th isNumeric>Avg Txns / Month</Th>
-                <Th isNumeric>Txns</Th>
-                <Th isNumeric>Contract Interact.</Th>
-                <Th isNumeric>Value</Th>
+                <Th>Bridged</Th>
+                <Th>Avg Txns / Month</Th>
+                <Th>Txns</Th>
+                <Th>Contract Interact.</Th>
+                <Th>Value</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -90,7 +90,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                   <Td>
                     <Link href={`/account/${data.address}`} passHref>
                       <Button
-                        colorScheme="pink"
+                        colorScheme="primary"
                         variant="link"
                         rightIcon={<FiArrowRight />}
                       >
@@ -98,7 +98,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                       </Button>
                     </Link>
                   </Td>
-                  <Td isNumeric>
+                  <Td>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.bridged.value}</Text>
                       <Tooltip label="🏆 Weekly Goal">
@@ -109,7 +109,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                       </Tooltip>
                     </Flex>
                   </Td>
-                  <Td isNumeric>
+                  <Td>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.average.value}</Text>
                       <Tooltip label="🏆 Weekly Goal">
@@ -120,7 +120,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                       </Tooltip>
                     </Flex>
                   </Td>
-                  <Td isNumeric>
+                  <Td>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.general.value}</Text>
                       <Tooltip label="🏆 Weekly Goal">
@@ -131,7 +131,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                       </Tooltip>
                     </Flex>
                   </Td>
-                  <Td isNumeric>
+                  <Td>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.smartContract.value}</Text>
                       <Tooltip label="🏆 Weekly Goal">
@@ -142,7 +142,7 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
                       </Tooltip>
                     </Flex>
                   </Td>
-                  <Td isNumeric>
+                  <Td>
                     <Flex direction="row" alignItems="center" gap={1}>
                       <Text>{data.txns.value.value}</Text>
                       <Tooltip label="🏆 Weekly Goal">

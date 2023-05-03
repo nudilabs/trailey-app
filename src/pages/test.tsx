@@ -1,11 +1,14 @@
 import { trpc } from '@/utils/trpc';
 
 const Test = () => {
-  const hello = trpc.hello.useQuery({ text: 'client' });
+  const tx = trpc.getTxCountByChainAndTimeSpan.useQuery({
+    chainName: 'eth-mainnet',
+    walletAddr: '0xae2Fc483527B8EF99EB5D9B44875F005ba1FaE13',
+    timeSpan: 65
+  });
   return (
     <div>
-      <h1>Test</h1>
-      <p>{hello.data?.greeting}</p>
+      <p>{tx.data?.message}</p>
     </div>
   );
 };

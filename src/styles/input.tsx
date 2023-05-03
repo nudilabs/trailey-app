@@ -5,19 +5,19 @@ const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(inputAnatomy.keys);
 
 const xs = defineStyle({
-  borderRadius: 'full'
+  // borderRadius: 'full'
 });
 
 const sm = defineStyle({
-  borderRadius: 'full'
+  borderRadius: 'xl'
 });
 
 const md = defineStyle({
-  borderRadius: 'full'
+  borderRadius: 'xl'
 });
 
 const lg = defineStyle({
-  borderRadius: 'full'
+  // borderRadius: 'full'
 });
 
 const sizes = {
