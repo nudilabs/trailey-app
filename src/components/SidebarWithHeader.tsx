@@ -151,7 +151,7 @@ const SidebarContent = ({
       w={{ base: 'full', md: 'auto' }}
       minW={0}
       pos="fixed"
-      h="100%"
+      h="100vh"
       {...rest}
       onMouseEnter={() => handleHover(true)}
       onMouseLeave={() => handleHover(false)}
@@ -188,6 +188,9 @@ const SidebarContent = ({
         <Divider />
         {/* Navigation items */}
         <Stack spacing={2}>
+          <Box display={{ base: 'flex', md: 'none' }}>
+            <SearchBar onClose={onClose} />
+          </Box>
           {LinkItems.map(link => (
             <NavItem
               onClose={onClose}
@@ -200,8 +203,8 @@ const SidebarContent = ({
             </NavItem>
           ))}
         </Stack>
-
-        <Spacer />
+        <Spacer display={{ base: 'none', md: 'block' }} />
+        <Divider display={{ base: 'block', md: 'none' }} />
         <Stack spacing={2}>
           <NavItem
             onClose={onClose}
@@ -222,59 +225,51 @@ const SidebarContent = ({
             Twitter
           </NavItem>
           {/* Dark mode toggle */}
-          {isHover ? (
-            <Flex
-              direction="row"
-              borderRadius="xl"
-              borderColor={toggleBorderColor}
-              borderWidth="1px"
-              p={1}
-              gap={1}
+          {/* <Box> */}
+          <Flex
+            direction={'row'}
+            borderRadius="xl"
+            borderColor={toggleBorderColor}
+            borderWidth="1px"
+            p={1}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+          >
+            <Button
+              variant={darkModeButtonVariant}
+              rounded="lg"
+              size="sm"
+              leftIcon={<FiSun fontSize="16" />}
+              justifyContent="center"
+              onClick={toggleColorMode}
+              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              w="100%"
             >
-              <Button
-                variant={darkModeButtonVariant}
-                rounded="lg"
-                size="sm"
-                leftIcon={<FiSun fontSize="16" />}
-                justifyContent="left"
-                display={{ base: 'none', md: 'flex' }}
-                onClick={toggleColorMode}
-              >
-                Light
-              </Button>
-              <Button
-                variant={lightModeButtonVariant}
-                rounded="lg"
-                size="sm"
-                leftIcon={<FiMoon fontSize="16" />}
-                justifyContent="left"
-                display={{ base: 'none', md: 'flex' }}
-                onClick={toggleColorMode}
-              >
-                Dark
-              </Button>
-            </Flex>
-          ) : (
-            <Flex
-              direction="row"
-              borderRadius="xl"
-              borderColor={toggleBorderColor}
-              borderWidth="1px"
-              p={1}
+              Light
+            </Button>
+            <Button
+              variant={lightModeButtonVariant}
+              rounded="lg"
+              size="sm"
+              leftIcon={<FiMoon fontSize="16" />}
+              justifyContent="center"
+              onClick={toggleColorMode}
+              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              w="100%"
             >
-              <IconButton
-                // variant={isActive ? 'solid' : 'ghost'}
-                // colorScheme={isActive ? 'primary' : 'gray'}
-                size="sm"
-                rounded="lg"
-                aria-label="toggle dark mode"
-                icon={toggleIcon}
-                // onClick={handleClick}
-                cursor="pointer"
-                display={{ base: 'none', md: 'flex' }}
-              />
-            </Flex>
-          )}
+              Dark
+            </Button>
+            <IconButton
+              size="sm"
+              rounded="lg"
+              aria-label="toggle dark mode"
+              icon={toggleIcon}
+              onClick={toggleColorMode}
+              cursor="pointer"
+              display={{ base: 'none', md: isHover ? 'none' : 'flex' }}
+            />
+          </Flex>
+          {/* </Box> */}
         </Stack>
       </Flex>
     </Flex>
@@ -344,8 +339,8 @@ const NavItem = ({
       )}
       <Button
         variant={isActive ? 'solid' : 'ghost'}
-        size="sm"
-        leftIcon={<Icon fontSize="16" as={icon} />}
+        colorScheme="secondary"
+        leftIcon={<Icon as={icon} />}
         justifyContent="left"
         onClick={handleClick}
         cursor="pointer"
@@ -378,7 +373,16 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       {...rest}
     >
       <Flex alignItems="center" gap={2}>
-        <SearchBar />
+        <Box display={{ base: 'none', md: 'flex' }} width="440px">
+          <SearchBar kbd />
+        </Box>
+        <Box
+          h="32px"
+          borderRight="1px solid"
+          borderColor={useColorModeValue('gray.200', 'gray.700')}
+          pr={2}
+          display={{ base: 'none', md: 'flex' }}
+        />
         <IconButton
           display={{ base: 'flex', md: 'none' }}
           onClick={onOpen}
