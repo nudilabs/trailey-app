@@ -4,7 +4,7 @@ import { db } from '@/db/drizzle-db';
 import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
-import { Receiver } from '@upstash/qstash';
+// import { Receiver } from '@upstash/qstash';
 import moment from 'moment';
 import * as z from 'zod';
 
@@ -114,45 +114,6 @@ const getTxs = async (
 
   return txs;
 };
-
-// const isFromQueue = async (req: NextRequest) => {
-//   const signature = req.headers.get('upstash-signature') as string | undefined;
-//   // console.log({ signature });
-//   if (!signature) {
-//     return { valid: false,msg: "Signature is missing"};
-//   }
-
-//   const currentSigningKey = process.env.QSTASH_CURRENT_SIGNING_KEY;
-//   if (!currentSigningKey) {
-//     return { valid: false,msg: null};
-//   }
-//   const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY;
-//   if (!nextSigningKey) {
-//     return { valid: false,msg: null};
-//   }
-//   const receiver = new Receiver({
-//     currentSigningKey,
-//     nextSigningKey,
-//   });
-//   const chunks = [];
-//   for await (const chunk of req) {
-//     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
-//   }
-//   const body = Buffer.concat(chunks).toString("utf-8");
-//   const valid = await receiver.verify({
-//     signature,
-//     body: body,
-//   });
-//   if (!valid) {
-//     res.status(403).send("Signature is invalid");
-//     return res.end();
-//   }
-
-//   res.status(200).json({ valid });
-//   return res.end();
-// }
-
-// };
 
 export default async function handler(req: NextRequest) {
   if (req.method !== 'POST')

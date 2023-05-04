@@ -1,4 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
+
+import { QStash } from '@/utils/qstash';
 // import { Receiver } from '@upstash/qstash';
 import { config as serverConfig } from '@/configs/server';
 import { SignJWT, jwtVerify } from 'jose';
@@ -9,53 +11,61 @@ import { SignJWT, jwtVerify } from 'jose';
 // }
 export class AuthError extends Error {}
 
-const verifyAuth = async (key: string, req: NextRequest) => {
-  const signature = req.headers.get('upstash-signature') as string | undefined;
-  console.log({ signature });
-  if (!signature) {
-    return false;
-  }
+// const verifyAuth = async (key: string, req: NextRequest) => {
+//   const signature = req.headers.get('upstash-signature') as string | undefined;
+//   console.log({ signature });
+//   if (!signature) {
+//     return false;
+//   }
 
-  try {
-    const { payload } = await jwtVerify(
-      signature,
-      new TextEncoder().encode(key)
-    );
-    console.log({ payload });
-    return true;
-  } catch {
-    // throw new AuthError('Your token has expired.');
-    return false;
-  }
-};
+//   try {
+//     const { payload } = await jwtVerify(
+//       signature,
+//       new TextEncoder().encode(key)
+//     );
+//     console.log({ payload });
+//     return true;
+//   } catch {
+//     // throw new AuthError('Your token has expired.');
+//     return false;
+//   }
+// };
 
-const rollingVerify = async (req: NextRequest) => {
-  const currentSigningKey = serverConfig.qstash.currSigKey;
-  if (!currentSigningKey) {
-    console.log('ckey is missing');
-    return NextResponse.json(null, {
-      status: 500,
-      statusText: 'ckey is missing'
-    });
-  }
-  const nextSigningKey = serverConfig.qstash.nextSigKey;
-  if (!nextSigningKey) {
-    console.log('nkey is missing');
-    return NextResponse.json(null, {
-      status: 500,
-      statusText: 'nkey is missing'
-    });
-  }
+// const rollingVerify = async (req: NextRequest) => {
+//   const currentSigningKey = serverConfig.qstash.currSigKey;
+//   if (!currentSigningKey) {
+//     console.log('ckey is missing');
+//     return NextResponse.json(null, {
+//       status: 500,
+//       statusText: 'ckey is missing'
+//     });
+//   }
+//   const nextSigningKey = serverConfig.qstash.nextSigKey;
+//   if (!nextSigningKey) {
+//     console.log('nkey is missing');
+//     return NextResponse.json(null, {
+//       status: 500,
+//       statusText: 'nkey is missing'
+//     });
+//   }
 
-  const valid = await verifyAuth(serverConfig.qstash.currSigKey, req);
-  if (valid) {
-    return true;
-  }
-  return await verifyAuth(serverConfig.qstash.nextSigKey, req);
-};
+//   const valid = await verifyAuth(serverConfig.qstash.currSigKey, req);
+//   if (valid) {
+//     return true;
+//   }
+//   return await verifyAuth(serverConfig.qstash.nextSigKey, req);
+// };
 
 export default async function handler(req: NextRequest, res: NextResponse) {
-  const valid = await rollingVerify(req);
+  // const valid = await rollingVerify(req);
+
+  const qstash = new QStash(
+    'test',
+    serverConfig.qstash.currSigKey,
+    serverConfig.qstash.nextSigKey
+  );
+
+  const valid = await qstash.auth(req);
 
   if (!valid) {
     return NextResponse.json(null, {
