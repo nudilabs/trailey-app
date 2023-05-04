@@ -82,9 +82,19 @@ export class QStash {
     return await this.authWithKey(this.nextSigningKey, req);
   }
 
-  public async publishMsg(body: any, url: string): Promise<any> {
+  public async publishMsg(
+    body: any,
+    url: string,
+    deDuplicationId: string,
+    callbackUrl?: string
+  ): Promise<any> {
     const client = new Client({ token: String(this.apiToken) });
-    const response = await client.publish({ url, body });
+    const response = await client.publishJSON({
+      url,
+      body,
+      deduplicationId: deDuplicationId,
+      callback: callbackUrl
+    });
     return response;
   }
 }
