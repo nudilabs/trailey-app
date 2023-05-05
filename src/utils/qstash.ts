@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 import { Client } from '@upstash/qstash';
+import { config as serverConfig } from '@/configs/server';
 
 export class SignatureError extends Error {
   constructor(message: string) {
@@ -83,17 +84,15 @@ export class QStash {
   }
 
   public async publishMsg(
+    path: string,
     body: any,
-    url: string,
-    deDuplicationId: string,
-    callbackUrl?: string
+    deduplicationId: string
   ): Promise<any> {
     const client = new Client({ token: String(this.apiToken) });
     const response = await client.publishJSON({
-      url,
+      url: serverConfig.serverUrl + path,
       body,
-      deduplicationId: deDuplicationId,
-      callback: callbackUrl
+      deduplicationId
     });
     return response;
   }

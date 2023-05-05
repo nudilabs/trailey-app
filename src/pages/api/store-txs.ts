@@ -4,6 +4,8 @@ import { db } from '@/db/drizzle-db';
 import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
+import { QStash } from '@/utils/qstash';
+import sha256 from 'crypto-js/sha256';
 // import { Receiver } from '@upstash/qstash';
 import moment from 'moment';
 import * as z from 'zod';
@@ -66,7 +68,7 @@ const getTxs = async (
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
       // if (page >= totalPage) break;
-      if (page >= endPage) break;
+      if (page >= endPage || page >= totalPage) break;
       promises.push(getTxsByPage(chainName, walletAddr, page));
     }
 
@@ -119,6 +121,20 @@ export default async function handler(req: NextRequest) {
   if (req.method !== 'POST')
     return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
 
+  const qstash = new QStash(
+    serverConfig.qstash.currSigKey,
+    serverConfig.qstash.nextSigKey,
+    serverConfig.qstash.token
+  );
+
+  const valid = await qstash.auth(req);
+
+  if (!valid)
+    return NextResponse.json(null, {
+      status: 401,
+      statusText: 'Unauthorized'
+    });
+
   try {
     const json = await req.json();
     const { chainName, walletAddr, totalPage, startPage, endPage } =
@@ -156,16 +172,29 @@ export default async function handler(req: NextRequest) {
     }
 
     if (endPage < totalPage) {
-      const resBody = {
+      const nextStore = {
         chainName,
         walletAddr,
         startPage: endPage,
-        endPage: endPage + 50,
+        endPage: endPage + 50 > totalPage ? totalPage : endPage + 50,
         totalPage
       };
-      return NextResponse.json(resBody, {
-        status: 200
-      });
+      //create hash for deduplication id from nextStore
+      const deduplicationId = sha256(JSON.stringify(nextStore)).toString();
+      await qstash.publishMsg('store-txs', nextStore, deduplicationId);
+      console.log('deduplicationId: ', deduplicationId);
+
+      return NextResponse.json(
+        {
+          status: 'continue store',
+          startPage: endPage,
+          endPage: endPage + 50 > totalPage ? totalPage : endPage + 50,
+          totalPage
+        },
+        {
+          status: 200
+        }
+      );
     }
 
     return NextResponse.json(null, { status: 200 });
