@@ -21,7 +21,8 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem
+  MenuItem,
+  SkeletonText
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import {
@@ -33,19 +34,25 @@ import {
 } from 'react-icons/fi';
 import TimeFilter from './TimeFilter';
 import Link from 'next/link';
+import { getFormattedAddress } from '@/utils/format';
+import { getEthFromWei } from '@/utils/format';
 
 type OverviewData = {
+  message: string;
+  txCount?: string | undefined;
+  txValueSum?: string | undefined;
+  contractCount?: string | undefined;
+  feesPaidSum?: string | undefined;
   address: string;
-  bridged: { value: number; goal: number };
-  txns: {
-    smartContract: { value: number; goal: number };
-    general: { value: number; goal: number };
-    average: { value: number; goal: number };
-    value: { value: number; goal: number };
-  };
 };
 
-const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
+const OverviewCard = ({
+  txData,
+  isLoading
+}: {
+  txData: OverviewData[];
+  isLoading: boolean;
+}) => {
   const goalColor = useColorModeValue('gray.500', 'gray.400');
   return (
     <Card size={{ base: 'lg', md: 'xl' }}>
@@ -78,83 +85,76 @@ const OverviewCard = ({ txData }: { txData: OverviewData[] }) => {
               <Tr>
                 <Th>Address</Th>
                 <Th>Bridged</Th>
-                <Th>Avg Txns / Month</Th>
                 <Th>Txns</Th>
                 <Th>Contract Interact.</Th>
-                <Th>Value</Th>
+                <Th>Value ($)</Th>
+                <Th>Gas Fees (ETH)</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {txData.map(data => (
-                <Tr key={data.address}>
-                  <Td>
-                    <Link href={`/account/${data.address}`} passHref>
-                      <Button
-                        colorScheme="primary"
-                        variant="link"
-                        rightIcon={<FiArrowRight />}
-                      >
-                        {data.address}
-                      </Button>
-                    </Link>
-                  </Td>
-                  <Td>
-                    <Flex direction="row" alignItems="center" gap={1}>
-                      <Text>{data.bridged.value}</Text>
-                      <Tooltip label="🏆 Weekly Goal">
-                        <Text
-                          fontSize="xs"
-                          color={goalColor}
-                        >{` / ${data.bridged.goal} ETH`}</Text>
-                      </Tooltip>
-                    </Flex>
-                  </Td>
-                  <Td>
-                    <Flex direction="row" alignItems="center" gap={1}>
-                      <Text>{data.txns.average.value}</Text>
-                      <Tooltip label="🏆 Weekly Goal">
-                        <Text
-                          fontSize="xs"
-                          color={goalColor}
-                        >{` / ${data.txns.average.goal}`}</Text>
-                      </Tooltip>
-                    </Flex>
-                  </Td>
-                  <Td>
-                    <Flex direction="row" alignItems="center" gap={1}>
-                      <Text>{data.txns.general.value}</Text>
-                      <Tooltip label="🏆 Weekly Goal">
-                        <Text
-                          fontSize="xs"
-                          color={goalColor}
-                        >{` / ${data.txns.general.goal}`}</Text>
-                      </Tooltip>
-                    </Flex>
-                  </Td>
-                  <Td>
-                    <Flex direction="row" alignItems="center" gap={1}>
-                      <Text>{data.txns.smartContract.value}</Text>
-                      <Tooltip label="🏆 Weekly Goal">
-                        <Text
-                          fontSize="xs"
-                          color={goalColor}
-                        >{` / ${data.txns.smartContract.goal}`}</Text>
-                      </Tooltip>
-                    </Flex>
-                  </Td>
-                  <Td>
-                    <Flex direction="row" alignItems="center" gap={1}>
-                      <Text>{data.txns.value.value}</Text>
-                      <Tooltip label="🏆 Weekly Goal">
-                        <Text
-                          fontSize="xs"
-                          color={goalColor}
-                        >{` / ${data.txns.value.goal} ETH`}</Text>
-                      </Tooltip>
-                    </Flex>
+              {isLoading ? (
+                <Tr>
+                  <Td colSpan={6}>
+                    <SkeletonText noOfLines={4} spacing="4" />
                   </Td>
                 </Tr>
-              ))}
+              ) : (
+                txData.map((data, i) => (
+                  <Tr key={i}>
+                    <Td>
+                      <Link href={`/account/${data.address}`} passHref>
+                        <Button
+                          colorScheme="primary"
+                          variant="link"
+                          rightIcon={<FiArrowRight />}
+                        >
+                          {getFormattedAddress(data.address)}
+                        </Button>
+                      </Link>
+                    </Td>
+                    <Td>
+                      <Flex direction="row" alignItems="center" gap={1}>
+                        <Text>0</Text>
+                        <Tooltip label="🏆 Weekly Goal">
+                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
+                        </Tooltip>
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <Flex direction="row" alignItems="center" gap={1}>
+                        <Text>{data.txCount}</Text>
+                        <Tooltip label="🏆 Weekly Goal">
+                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
+                        </Tooltip>
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <Flex direction="row" alignItems="center" gap={1}>
+                        <Text>{data.contractCount}</Text>
+                        <Tooltip label="🏆 Weekly Goal">
+                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
+                        </Tooltip>
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <Flex direction="row" alignItems="center" gap={1}>
+                        <Text>{Number(data.txValueSum).toFixed(2)}</Text>
+                        <Tooltip label="🏆 Weekly Goal">
+                          <Text fontSize="xs" color={goalColor}>{` / 0 `}</Text>
+                        </Tooltip>
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <Flex direction="row" alignItems="center" gap={1}>
+                        <Text>{getEthFromWei(data.feesPaidSum)}</Text>
+                        <Tooltip label="🏆 Weekly Goal">
+                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
+                        </Tooltip>
+                      </Flex>
+                    </Td>
+                  </Tr>
+                ))
+              )}
             </Tbody>
           </Table>
         </TableContainer>
