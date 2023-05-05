@@ -22,7 +22,7 @@ const Test = () => {
   //   });
   const txQueries = trpc.useQueries(t =>
     addresses.map(addr =>
-      t.getTxSummaryByChainAndTimeSpan({
+      t.getTxSummaryGroupByDay({
         chainName: addr.chainName,
         walletAddr: addr.walletAddr,
         timeSpan: addr.timeSpan
@@ -41,10 +41,7 @@ const Test = () => {
   return (
     <div>
       {txQueries.map((query, i) => (
-        <p key={i}>
-          {addresses[i].chainName} {addresses[i].walletAddr}{' '}
-          {addresses[i].timeSpan} {query.data?.message}
-        </p>
+        <p key={i}>{JSON.stringify(query)}</p>
       ))}
     </div>
   );

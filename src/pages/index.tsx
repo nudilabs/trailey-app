@@ -80,7 +80,8 @@ const chains: { [key: string]: string } = {
 const times: { [key: string]: number } = {
   '24h': 1,
   '7d': 7,
-  '30d': 30
+  '30d': 30,
+  all: 0
 };
 
 export default function Home({
@@ -106,7 +107,7 @@ export default function Home({
   const contractTxsSummaryQueries = trpc.useQueries(
     t =>
       profilesData[currentProfile]?.wallets?.map(addr =>
-        t.getTxSummaryByChainAndTimeSpan({
+        t.getTxSummary({
           chainName: chains[currentChain],
           walletAddr: addr.address,
           timeSpan: times[currentTime]
