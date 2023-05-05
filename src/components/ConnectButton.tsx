@@ -115,7 +115,8 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
                     size="sm"
                     rounded="xl"
                     onClick={openAccountModal}
-                    variant="outline"
+                    variant="connected"
+                    // colorScheme="green"
                   >
                     {account.displayName}
                   </Button>

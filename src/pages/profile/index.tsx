@@ -1,11 +1,6 @@
 import { IProfile } from '@/types/IProfile';
 import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  AccordionIcon,
   Box,
   Button,
   Card,

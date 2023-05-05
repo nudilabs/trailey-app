@@ -28,8 +28,25 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
 import { getFormattedAddress } from '@/utils/format';
+import TimeFilter from '@/components/TimeFilter';
+import { trpc } from '@/utils/trpc';
+import { useEffect, useState } from 'react';
 
 const MOCK_BRIDGED_DATA = [
   {
@@ -137,33 +154,6 @@ const MOCK_CHAINS = [
   }
 ];
 
-const data02 = [
-  {
-    name: 'zkSync',
-    value: 24
-  },
-  {
-    name: 'Scroll',
-    value: 45
-  },
-  {
-    name: 'Linea',
-    value: 13
-  },
-  {
-    name: 'Sui',
-    value: 98
-  },
-  {
-    name: 'Sei',
-    value: 39
-  },
-  {
-    name: 'Base',
-    value: 48
-  }
-];
-
 const COLORS = [
   '#0088FE',
   '#00C49F',
@@ -172,6 +162,23 @@ const COLORS = [
   '#AF19FF',
   '#FF0000'
 ];
+
+const chains: { [key: string]: string } = {
+  ethereum: 'eth-mainnet'
+};
+
+const times: { [key: string]: number } = {
+  '24h': 1,
+  '7d': 7,
+  '30d': 30,
+  all: 0
+};
+
+type Data = {
+  date: string;
+  txCount: number | undefined;
+  contractCount: number | undefined;
+};
 
 export default function Account({
   address,
@@ -183,6 +190,28 @@ export default function Account({
   avatarUrl: string | null;
 }) {
   const toast = useToast();
+  const [currentChain, setCurrentChain] = useState<string>('ethereum');
+  const [currentTime, setCurrentTime] = useState<string>('7d');
+  const router = useRouter();
+  const { chain, time } = router.query;
+
+  const txsSummaryQueries = trpc.getTxSummaryGroupByDay.useQuery({
+    chainName: chains[currentChain],
+    walletAddr: address,
+    timeSpan: times[currentTime]
+  });
+
+  console.log(txsSummaryQueries);
+
+  useEffect(() => {
+    if (chain) {
+      setCurrentChain(chain as string);
+    }
+    if (time) {
+      setCurrentTime(time as string);
+    }
+  }, [chain, time]);
+
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
@@ -235,37 +264,87 @@ export default function Account({
                       <CardHeader>
                         <Flex direction="row" justifyContent="space-between">
                           <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Most Active Chains
+                            Total Transactions
                           </Heading>
+                          <TimeFilter />
                         </Flex>
                       </CardHeader>
                       <CardBody>
                         <Grid templateColumns="repeat(12, 1fr)" gap={4}>
                           <GridItem
-                            colSpan={6}
+                            colSpan={12}
                             alignContent="center"
                             justifyContent="center"
                           >
                             <ResponsiveContainer width="100%" height={200}>
-                              <PieChart>
-                                <Pie
-                                  data={data02}
-                                  dataKey="value"
-                                  nameKey="name"
-                                  cx="50%"
-                                  cy="50%"
-                                  innerRadius={60}
-                                  outerRadius={80}
-                                  fill="#82ca9d"
-                                >
-                                  {data02.map((entry, index) => (
-                                    <Cell
-                                      key={`cell-${index}`}
-                                      fill={COLORS[index % COLORS.length]}
+                              <AreaChart
+                                width={730}
+                                height={250}
+                                data={txsSummaryQueries.data?.txsByDay}
+                                margin={{
+                                  top: 10,
+                                  right: 30,
+                                  left: 0,
+                                  bottom: 0
+                                }}
+                              >
+                                <defs>
+                                  <linearGradient
+                                    id="colorUv"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1"
+                                  >
+                                    <stop
+                                      offset="5%"
+                                      stopColor="#8884d8"
+                                      stopOpacity={0.8}
                                     />
-                                  ))}
-                                </Pie>
-                              </PieChart>
+                                    <stop
+                                      offset="95%"
+                                      stopColor="#8884d8"
+                                      stopOpacity={0}
+                                    />
+                                  </linearGradient>
+                                  <linearGradient
+                                    id="colorPv"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1"
+                                  >
+                                    <stop
+                                      offset="5%"
+                                      stopColor="#82ca9d"
+                                      stopOpacity={0.8}
+                                    />
+                                    <stop
+                                      offset="95%"
+                                      stopColor="#82ca9d"
+                                      stopOpacity={0}
+                                    />
+                                  </linearGradient>
+                                </defs>
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <Tooltip />
+                                <Area
+                                  type="monotone"
+                                  dataKey="txCount"
+                                  stroke="#8884d8"
+                                  fillOpacity={1}
+                                  fill="url(#colorUv)"
+                                />
+                                <Area
+                                  type="monotone"
+                                  dataKey="contractCount"
+                                  stroke="#82ca9d"
+                                  fillOpacity={1}
+                                  fill="url(#colorPv)"
+                                />
+                              </AreaChart>
                             </ResponsiveContainer>
                           </GridItem>
                           <GridItem colSpan={6}>
@@ -275,7 +354,7 @@ export default function Account({
                               justifyContent="center"
                               p={4}
                             >
-                              {data02.map((item, index) => (
+                              {/* {data02.map((item, index) => (
                                 <Flex
                                   direction="row"
                                   alignItems="center"
@@ -291,16 +370,13 @@ export default function Account({
                                   />
                                   <Text>{item.name}</Text>
                                 </Flex>
-                              ))}
+                              ))} */}
                             </Flex>
                           </GridItem>
                         </Grid>
                       </CardBody>
                     </Card>
                   </Flex>
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 4 }}>
-                  <TrendingCardSmall chainData={MOCK_CHAINS} />
                 </GridItem>
               </Grid>
             </TabPanel>
