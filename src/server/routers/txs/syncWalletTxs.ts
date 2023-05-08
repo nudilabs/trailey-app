@@ -39,9 +39,29 @@ export const syncWalletTxs = publicProcedure
       .orderBy(sql`block_height DESC`)
       .limit(1);
 
-    const latestBlockHeight = latestTx.length ? latestTx[0].blockHeight : 0;
+    // const latestBlockHeight = latestTx.length ? latestTx[0].blockHeight : 0;
+    const covalent = new Covalent(serverConfig.covalent.key);
+    const recentCovTxPage = await covalent.getWalletRecentTxs(
+      chainName,
+      walletAddr
+    );
+
+    let startPage = 0;
+    // "links": {
+    //     "prev"
+    //     :
+    //     null,
+    //     "next"
+    // }
+
+    if (latestTx.length === 0) {
+      if (recentCovTxPage.items.length === 0) {
+        return {
+          message: `No transactions found for wallet ${walletAddr} on chain ${chainName}`
+        };
+      }
+    }
 
     //get covalent recent txs
-    const covalent = new Covalent(serverConfig.covalent.key);
     const txs = await covalent.getWalletRecentTxs(chainName, walletAddr);
   });

@@ -53,10 +53,10 @@ const getTxs = async (
       promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
-    const data = await Promise.all(promises);
-    for (let j = 0; j < data.length; j++) {
+    const res = await Promise.all(promises);
+    for (let j = 0; j < res.length; j++) {
       let tmpData = [];
-      for (const item of data[j].data.items) {
+      for (const item of res[j]?.data?.items) {
         if (item.from_address !== walletAddr.toLowerCase()) continue;
 
         const signDate = moment.utc(item.block_signed_at).toDate();
@@ -74,6 +74,8 @@ const getTxs = async (
           value: item.value,
           valueQuote: item.value_quote,
           feesPaid: item.fees_paid,
+          gasQuote: item.gas_quote,
+          page: res[j]?.page,
           chainId
         };
 

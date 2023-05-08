@@ -15,6 +15,13 @@
       "when": 1683535302643,
       "tag": "0001_slim_prima",
       "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1683536718221,
+      "tag": "0002_salty_black_panther",
+      "breakpoints": false
     }
   ]
 }

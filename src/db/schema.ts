@@ -55,6 +55,7 @@ export const transactions = mysqlTable(
     value: varchar('value', { length: 255 }),
     valueQuote: decimal('value_quote', { precision: 20, scale: 10 }),
     feesPaid: varchar('fees_paid', { length: 255 }),
+    gasQuote: decimal('gas_quote', { precision: 20, scale: 10 }),
     isInteract: boolean('is_interact'),
     page: int('page'),
     chainId: int('chain_id').references(() => supportChains.id)

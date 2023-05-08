@@ -29,7 +29,7 @@ export class Covalent {
     const res = await this.fetchFromCovalent(url);
     try {
       const data = await res?.json();
-      return data;
+      return { data, page };
     } catch (e) {
       console.log('error from getWalletTxsByPage');
       console.log(e);
