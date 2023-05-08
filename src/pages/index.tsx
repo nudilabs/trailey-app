@@ -29,7 +29,7 @@ import { getSession, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/connectors/Trpc';
 
 type OverviewData = {
   message: string;
@@ -107,7 +107,7 @@ export default function Home({
   const contractTxsSummaryQueries = trpc.useQueries(
     t =>
       profilesData[currentProfile]?.wallets?.map(addr =>
-        t.getTxSummary({
+        t.txs.getSummary({
           chainName: chains[currentChain],
           walletAddr: addr.address,
           timeSpan: times[currentTime]

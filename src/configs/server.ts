@@ -4,7 +4,10 @@ export const config = {
   username: String(process.env.DB_USERNAME || 'root'),
   password: String(process.env.DB_PASSWORD || '12345'),
   //3rd party API
-  covalentKey: String(process.env.COVALENT_KEY || '123'),
+  covalent: {
+    key: String(process.env.COVALENT_KEY || '123'),
+    url: String(process.env.COVALENT_URL || 'https://api.covalenthq.com/v1/')
+  },
   qstash: {
     currSigKey: String(process.env.QSTASH_CURRENT_SIGNING_KEY || '123'),
     nextSigKey: String(process.env.QSTASH_NEXT_SIGNING_KEY || '123'),

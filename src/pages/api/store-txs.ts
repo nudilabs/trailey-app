@@ -4,8 +4,9 @@ import { db } from '@/db/drizzle-db';
 import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
-import { QStash } from '@/utils/qstash';
+import { QStash } from '@/connectors/Qstash';
 import sha256 from 'crypto-js/sha256';
+import { Covalent } from '@/connectors/Covalent';
 // import { Receiver } from '@upstash/qstash';
 import moment from 'moment';
 import * as z from 'zod';
@@ -24,28 +25,6 @@ const schema = z.object({
   totalPage: z.number().int().positive()
 });
 
-const getTxsByPage = async (
-  chainName: string,
-  walletAddr: string,
-  page: number
-) => {
-  const url = `https://api.covalenthq.com/v1/${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
-  let headers = new Headers();
-  headers.set('Authorization', 'Basic ' + btoa(serverConfig.covalentKey));
-  const res = await fetch(url, { method: 'GET', headers });
-  console.log(res.status);
-  try {
-    const data = await res.json();
-    return data;
-  } catch (e) {
-    // console.log(await res.json());
-    // const resD = await res.json();
-
-    console.log('error from covalent');
-    console.log(e);
-  }
-};
-
 const getTxs = async (
   chainName: string,
   walletAddr: string,
@@ -62,6 +41,8 @@ const getTxs = async (
   console.log('totalPage', totalGetPage);
   console.log('batchCount', batchCount);
 
+  const covalent = new Covalent(serverConfig.covalent.key);
+
   for (let i = 0; i < batchCount; i++) {
     const promises = [];
 
@@ -69,7 +50,7 @@ const getTxs = async (
       const page = startPage + i * batch + j;
       // if (page >= totalPage) break;
       if (page >= endPage || page >= totalPage) break;
-      promises.push(getTxsByPage(chainName, walletAddr, page));
+      promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
     const data = await Promise.all(promises);

@@ -1,9 +1,10 @@
-import { router } from '../trpc';
-import { getTxSummary, getTxSummaryGroupByDay } from './tx';
+import { createTRPCRouter } from '../trpc';
+import { txsRouter } from './txs';
 
-export const appRouter = router({
-  getTxSummary,
-  getTxSummaryGroupByDay
+export const appRouter = createTRPCRouter({
+  txs: txsRouter
+  // getTxSummary,
+  // getTxSummaryGroupByDay
 });
 
 // export type definition of API

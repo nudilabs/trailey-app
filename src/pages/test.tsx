@@ -1,4 +1,4 @@
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/connectors/Trpc';
 
 const addresses = [
   {
@@ -22,7 +22,7 @@ const Test = () => {
   //   });
   const txQueries = trpc.useQueries(t =>
     addresses.map(addr =>
-      t.getTxSummaryGroupByDay({
+      t.txs.getSummaryByDay({
         chainName: addr.chainName,
         walletAddr: addr.walletAddr,
         timeSpan: addr.timeSpan
