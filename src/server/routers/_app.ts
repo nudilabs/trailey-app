@@ -1,5 +1,5 @@
 import { router } from '../trpc';
-import { getTxSummary, getTxSummaryGroupByDay } from './tx';
+import { getTxSummary, getTxSummaryGroupByDay } from './txs';
 
 export const appRouter = router({
   getTxSummary,

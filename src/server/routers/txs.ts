@@ -2,8 +2,7 @@ import { z } from 'zod';
 import { procedure } from '../trpc';
 import { db } from '@/db/drizzle-db';
 import { supportChains, transactions } from '@/db/schema';
-import { and, eq, InferModel, sql } from 'drizzle-orm';
-import { getEthFromGwei, getEthFromWei } from '@/utils/format';
+import { and, eq, sql } from 'drizzle-orm';
 
 export const getTxSummary = procedure
   .input(

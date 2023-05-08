@@ -277,74 +277,112 @@ export default function Account({
                             justifyContent="center"
                           >
                             <ResponsiveContainer width="100%" height={200}>
-                              <AreaChart
+                              <LineChart
                                 width={730}
                                 height={250}
                                 data={txsSummaryQueries.data?.txsByDay}
                                 margin={{
-                                  top: 10,
+                                  top: 5,
                                   right: 30,
-                                  left: 0,
-                                  bottom: 0
+                                  left: 20,
+                                  bottom: 5
                                 }}
                               >
-                                <defs>
-                                  <linearGradient
-                                    id="colorUv"
-                                    x1="0"
-                                    y1="0"
-                                    x2="0"
-                                    y2="1"
-                                  >
-                                    <stop
-                                      offset="5%"
-                                      stopColor="#8884d8"
-                                      stopOpacity={0.8}
-                                    />
-                                    <stop
-                                      offset="95%"
-                                      stopColor="#8884d8"
-                                      stopOpacity={0}
-                                    />
-                                  </linearGradient>
-                                  <linearGradient
-                                    id="colorPv"
-                                    x1="0"
-                                    y1="0"
-                                    x2="0"
-                                    y2="1"
-                                  >
-                                    <stop
-                                      offset="5%"
-                                      stopColor="#82ca9d"
-                                      stopOpacity={0.8}
-                                    />
-                                    <stop
-                                      offset="95%"
-                                      stopColor="#82ca9d"
-                                      stopOpacity={0}
-                                    />
-                                  </linearGradient>
-                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />
                                 <YAxis />
-                                <CartesianGrid strokeDasharray="3 3" />
                                 <Tooltip />
-                                <Area
+                                <Legend />
+                                <Line
                                   type="monotone"
                                   dataKey="txCount"
                                   stroke="#8884d8"
-                                  fillOpacity={1}
-                                  fill="url(#colorUv)"
                                 />
-                                <Area
+                                <Line
                                   type="monotone"
                                   dataKey="contractCount"
                                   stroke="#82ca9d"
-                                  fillOpacity={1}
-                                  fill="url(#colorPv)"
                                 />
-                              </AreaChart>
+                              </LineChart>
+                            </ResponsiveContainer>
+                          </GridItem>
+                          <GridItem colSpan={6}>
+                            <Flex
+                              direction="column"
+                              height="100%"
+                              justifyContent="center"
+                              p={4}
+                            >
+                              {/* {data02.map((item, index) => (
+                                <Flex
+                                  direction="row"
+                                  alignItems="center"
+                                  key={index}
+                                  gap={2}
+                                >
+                                  <Circle
+                                    size={4}
+                                    style={{
+                                      backgroundColor:
+                                        COLORS[index % COLORS.length]
+                                    }}
+                                  />
+                                  <Text>{item.name}</Text>
+                                </Flex>
+                              ))} */}
+                            </Flex>
+                          </GridItem>
+                        </Grid>
+                      </CardBody>
+                    </Card>
+                  </Flex>
+                </GridItem>
+                <GridItem colSpan={{ base: 12, lg: 8 }}>
+                  <Flex direction="column" gap={4}>
+                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
+                      <CardHeader>
+                        <Flex direction="row" justifyContent="space-between">
+                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
+                            Total Transactions
+                          </Heading>
+                          <TimeFilter />
+                        </Flex>
+                      </CardHeader>
+                      <CardBody>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                          <GridItem
+                            colSpan={12}
+                            alignContent="center"
+                            justifyContent="center"
+                          >
+                            <ResponsiveContainer width="100%" height={200}>
+                              <LineChart
+                                width={730}
+                                height={250}
+                                data={txsSummaryQueries.data?.txsByDay}
+                                margin={{
+                                  top: 5,
+                                  right: 30,
+                                  left: 20,
+                                  bottom: 5
+                                }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Line
+                                  type="monotone"
+                                  dataKey="txCount"
+                                  stroke="#8884d8"
+                                />
+                                <Line
+                                  type="monotone"
+                                  dataKey="contractCount"
+                                  stroke="#82ca9d"
+                                />
+                              </LineChart>
                             </ResponsiveContainer>
                           </GridItem>
                           <GridItem colSpan={6}>
