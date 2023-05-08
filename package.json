@@ -31,6 +31,7 @@
     "@types/react-helmet": "^6.1.6",
     "@upstash/qstash": "^0.3.6",
     "@wagmi/core": "^0.10.9",
+    "crypto-js": "^4.1.1",
     "drizzle-orm": "^0.25.3",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
@@ -54,6 +55,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
     "drizzle-kit": "^0.17.6",
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^4.2.1",

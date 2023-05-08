@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { procedure } from '../trpc';
+import { and, eq, sql } from 'drizzle-orm';
+import { publicProcedure } from '@/server/trpc';
 import { db } from '@/db/drizzle-db';
 import { supportChains, transactions } from '@/db/schema';
-import { and, eq, sql } from 'drizzle-orm';
 
-export const getTxSummary = procedure
+export const getSummary = publicProcedure
   .input(
     z.object({
       chainName: z.string(),
@@ -55,7 +55,7 @@ export const getTxSummary = procedure
     };
   });
 
-export const getTxSummaryGroupByDay = procedure
+export const getSummaryByDay = publicProcedure
   .input(
     z.object({
       chainName: z.string(),

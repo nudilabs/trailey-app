@@ -45,7 +45,7 @@ import {
 } from 'recharts';
 import { getFormattedAddress } from '@/utils/format';
 import TimeFilter from '@/components/TimeFilter';
-import { trpc } from '@/utils/trpc';
+import { trpc } from '@/connectors/Trpc';
 import { useEffect, useState } from 'react';
 
 const MOCK_BRIDGED_DATA = [
@@ -195,13 +195,13 @@ export default function Account({
   const router = useRouter();
   const { chain, time } = router.query;
 
-  const txsSummaryQueries = trpc.getTxSummaryGroupByDay.useQuery({
+  const txsSummaryQueries = trpc.txs.getSummaryByDay.useQuery({
     chainName: chains[currentChain],
     walletAddr: address,
     timeSpan: times[currentTime]
   });
 
-  console.log(txsSummaryQueries);
+  // console.log(txsSummaryQueries);
 
   useEffect(() => {
     if (chain) {
