@@ -1,4 +1,4 @@
-import { defineStyle, defineStyleConfig } from '@chakra-ui/react';
+import { background, defineStyle, defineStyleConfig } from '@chakra-ui/react';
 
 const md = defineStyle({
   borderRadius: 'xl'
@@ -23,6 +23,23 @@ const outline = defineStyle({
   fontWeight: 'semibold' // change the font weight
 });
 
+const connected = defineStyle({
+  background: 'gray.200',
+  color: 'black',
+  fontWeight: 'semibold',
+  _hover: {
+    background: 'gray.300'
+  },
+
+  _dark: {
+    background: 'whiteAlpha.200',
+    color: 'white',
+    _hover: {
+      background: 'whiteAlpha.300'
+    }
+  }
+});
+
 const ghost = defineStyle({
   // borderRadius: 'full', // remove the border radius
   fontWeight: 'semibold', // change the font weight
@@ -34,6 +51,6 @@ const ghost = defineStyle({
 });
 
 export const buttonTheme = defineStyleConfig({
-  variants: { solid, ghost, outline },
+  variants: { solid, ghost, outline, connected },
   sizes: { md, sm, xs }
 });

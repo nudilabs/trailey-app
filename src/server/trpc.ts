@@ -16,6 +16,6 @@ const t = initTRPC.create();
  **/
 export const publicProcedure = t.procedure;
 
-export const router = t.router;
+export const createTRPCRouter = t.router;
 export const middleware = t.middleware;
-export const procedure = t.procedure;
+// export const procedure = t.procedure;

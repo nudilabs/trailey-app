@@ -12,6 +12,7 @@ import {
   Heading,
   Highlight,
   Image,
+  Spinner,
   Stack,
   Tab,
   TabList,
@@ -28,6 +29,16 @@ import { getSession, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
+import { trpc } from '@/connectors/Trpc';
+
+type OverviewData = {
+  message: string;
+  txCount?: string | undefined;
+  txValueSum?: string | undefined;
+  contractCount?: string | undefined;
+  feesPaidSum?: string | undefined;
+  address: string;
+};
 
 const MOCK_OVERVIEW_DATA = [
   {
@@ -62,6 +73,17 @@ interface Session {
   expires: string;
 }
 
+const chains: { [key: string]: string } = {
+  ethereum: 'eth-mainnet'
+};
+
+const times: { [key: string]: number } = {
+  '24h': 1,
+  '7d': 7,
+  '30d': 30,
+  all: 0
+};
+
 export default function Home({
   currentProfile,
   profilesData
@@ -70,14 +92,48 @@ export default function Home({
   profilesData: IProfile[];
 }) {
   const [address, setAddress] = useState<string | null>(null);
+  // const [txData, setTxData] = useState<OverviewData[]>([]);
+  const [currentChain, setCurrentChain] = useState<string>('ethereum');
+  const [currentTime, setCurrentTime] = useState<string>('7d');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const { data: session, status: sessionStatus } = useSession();
   const { openConnectModal } = useConnectModal();
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
+
   const router = useRouter();
+  const { chain, time } = router.query;
+
+  const contractTxsSummaryQueries = trpc.useQueries(
+    t =>
+      profilesData[currentProfile]?.wallets?.map(addr =>
+        t.txs.getSummary({
+          chainName: chains[currentChain],
+          walletAddr: addr.address,
+          timeSpan: times[currentTime]
+        })
+      ) || []
+  );
 
   useEffect(() => {
     setAddress((session as Session)?.address ?? null);
-  }, [sessionStatus]);
+
+    if (chain) {
+      setCurrentChain(chain as string);
+    }
+    if (time) {
+      setCurrentTime(time as string);
+    }
+  }, [sessionStatus, chain, time]);
+
+  const txData: OverviewData[] = contractTxsSummaryQueries.map((q, i) => ({
+    message: q.data?.message ?? '',
+    txCount: q.data?.txCount,
+    txValueSum: q.data?.txValueSum,
+    contractCount: q.data?.contractCount,
+    feesPaidSum: q.data?.feesPaidSum,
+    address: profilesData[currentProfile]?.wallets?.[i].address ?? ''
+  }));
 
   if (!session || !address) {
     return (
@@ -138,15 +194,10 @@ export default function Home({
     router.push(`/account/${address}`);
     return null;
   }
+
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Flex direction="row" gap={4}>
-        {/* <Image
-          src="/pfp.png"
-          alt="0x0asdaoisjdklas"
-          rounded={{ base: 'lg', md: 'xl' }}
-          boxSize={'80px'}
-        /> */}
         <Box
           rounded={{ base: 'lg', md: 'xl' }}
           boxSize={'80px'}
@@ -176,7 +227,7 @@ export default function Home({
                 </GridItem>
                 <GridItem colSpan={{ base: 12, md: 12 }}>
                   <Flex direction="column" gap={4}>
-                    <OverviewCard txData={MOCK_OVERVIEW_DATA} />
+                    <OverviewCard isLoading={isLoading} txData={txData} />
                   </Flex>
                 </GridItem>
               </Grid>
@@ -189,9 +240,6 @@ export default function Home({
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  // const session = await getSession(context);
-  // const token = await getToken({ req: context.req });
-  // const address = token?.sub ?? null;
   return {
     props: {}
   };

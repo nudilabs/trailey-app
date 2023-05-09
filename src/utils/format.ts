@@ -11,7 +11,20 @@ export function getEmojiForIndex(index: number) {
   }
 }
 
-export function getFormattedAddress(address: string, size = 6) {
+export function getEthFromWei(wei: number | string | undefined) {
+  if (!wei) return '0';
+  const value = Number(wei) / 10 ** 18;
+  return value.toFixed(4);
+}
+
+export function getEthFromGwei(gwei: number | string | undefined) {
+  if (!gwei) return '0';
+  const value = Number(gwei) / 10 ** 9;
+  return value.toFixed(4);
+}
+
+export function getFormattedAddress(address: string | undefined, size = 6) {
+  if (!address) return '';
   return `${address.slice(0, size)}...${address.slice(-(size - 2))}`;
 }
 

@@ -1,8 +1,10 @@
-import { router } from '../trpc';
-import { getTxCountByChainAndTimeSpan } from './tx';
+import { createTRPCRouter } from '../trpc';
+import { txsRouter } from './txs';
 
-export const appRouter = router({
-  getTxCountByChainAndTimeSpan
+export const appRouter = createTRPCRouter({
+  txs: txsRouter
+  // getTxSummary,
+  // getTxSummaryGroupByDay
 });
 
 // export type definition of API

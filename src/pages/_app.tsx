@@ -28,7 +28,7 @@ import {
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 
-import { trpc } from '../utils/trpc';
+import { trpc } from '../connectors/Trpc';
 
 const { chains, provider } = configureChains(
   [mainnet, polygon, optimism, arbitrum],
