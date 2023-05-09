@@ -23,7 +23,8 @@ export function getEthFromGwei(gwei: number | string | undefined) {
   return value.toFixed(4);
 }
 
-export function getFormattedAddress(address: string, size = 6) {
+export function getFormattedAddress(address: string | undefined, size = 6) {
+  if (!address) return '';
   return `${address.slice(0, size)}...${address.slice(-(size - 2))}`;
 }
 

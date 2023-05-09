@@ -7,6 +7,7 @@ import { publicClient } from '@/utils/client';
 
 import {
   Box,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -31,8 +32,11 @@ import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
   Legend,
   Line,
   LineChart,
@@ -47,101 +51,6 @@ import { getFormattedAddress } from '@/utils/format';
 import TimeFilter from '@/components/TimeFilter';
 import { trpc } from '@/connectors/Trpc';
 import { useEffect, useState } from 'react';
-
-const MOCK_BRIDGED_DATA = [
-  {
-    address: '0x293j...293k',
-    token: {
-      symbol: 'ETH',
-      amount: 0.1
-    },
-    value: 183
-  },
-  {
-    address: '0x293j...293k',
-    token: {
-      symbol: 'ETH',
-      amount: 0.1
-    },
-    value: 183
-  }
-];
-
-const MOCK_OVERVIEW_DATA = [
-  {
-    address: '0x293j...293k',
-    bridged: 20,
-    txns: {
-      smartContract: 5,
-      general: 28,
-      average: 5.5,
-      value: 28.5283
-    }
-  },
-  {
-    address: '0x293j...293k',
-    bridged: 20,
-    txns: {
-      smartContract: 5,
-      general: 28,
-      average: 5.5,
-      value: 28.5283
-    }
-  }
-];
-
-const MOCK_TXNS_FREQUENCY_DATA = [
-  {
-    address: '0x293j...293k',
-    txns: {
-      smartContract: 5,
-      general: 28
-    }
-  },
-  {
-    address: '0x293j...293k',
-    txns: {
-      smartContract: 5,
-      general: 28
-    }
-  }
-];
-
-const MOCK_TXNS_VALUE_DATA = [
-  {
-    address: '0x293j...293k',
-    txns: {
-      symbol: 'ETH',
-      amount: 28.5283
-    }
-  },
-  {
-    address: '0x293j...293k',
-    txns: {
-      symbol: 'ETH',
-      amount: 8.5283
-    }
-  }
-];
-
-const MOCK_TXNS_OVERTIME_DATA = [
-  {
-    address: '0x293j...293k',
-    txns: {
-      total: 33,
-      average: 5.5
-    },
-    duration: 6
-  },
-  {
-    address: '0x293j...293k',
-    txns: {
-      total: 33,
-      average: 5.5
-    },
-    duration: 6
-  }
-];
 
 const MOCK_CHAINS = [
   {
@@ -196,6 +105,12 @@ export default function Account({
   const { chain, time } = router.query;
 
   const txsSummaryQueries = trpc.txs.getSummaryByDay.useQuery({
+    chainName: chains[currentChain],
+    walletAddr: address,
+    timeSpan: times[currentTime]
+  });
+
+  const txsSummaryByContract = trpc.txs.getSummaryByContract.useQuery({
     chainName: chains[currentChain],
     walletAddr: address,
     timeSpan: times[currentTime]
@@ -277,33 +192,88 @@ export default function Account({
                             justifyContent="center"
                           >
                             <ResponsiveContainer width="100%" height={200}>
-                              <LineChart
+                              <ComposedChart
                                 width={730}
                                 height={250}
                                 data={txsSummaryQueries.data?.txsByDay}
-                                margin={{
-                                  top: 5,
-                                  right: 30,
-                                  left: 20,
-                                  bottom: 5
-                                }}
                               >
-                                <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />
                                 <YAxis />
                                 <Tooltip />
                                 <Legend />
-                                <Line
+                                <CartesianGrid stroke="#f5f5f5" />
+                                <Area
                                   type="monotone"
                                   dataKey="txCount"
+                                  fill="#8884d8"
                                   stroke="#8884d8"
                                 />
+                                {/* <Bar
+                                  dataKey="contractCount"
+                                  barSize={20}
+                                  fill="#413ea0"
+                                /> */}
                                 <Line
                                   type="monotone"
                                   dataKey="contractCount"
-                                  stroke="#82ca9d"
+                                  stroke="#ff7300"
                                 />
-                              </LineChart>
+                              </ComposedChart>
+                            </ResponsiveContainer>
+                          </GridItem>
+                        </Grid>
+                      </CardBody>
+                    </Card>
+                  </Flex>
+                </GridItem>
+                <GridItem colSpan={{ base: 12, lg: 4 }}>
+                  <Flex direction="column" gap={4}>
+                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
+                      <CardHeader>
+                        <Flex direction="row" justifyContent="space-between">
+                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
+                            Protocols Used
+                          </Heading>
+                          <TimeFilter />
+                        </Flex>
+                      </CardHeader>
+                      <CardBody>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                          <GridItem
+                            colSpan={6}
+                            alignContent="center"
+                            justifyContent="center"
+                          >
+                            <ResponsiveContainer width="100%" height={200}>
+                              <PieChart>
+                                <Pie
+                                  data={
+                                    txsSummaryByContract.data?.txsByContract
+                                  }
+                                  dataKey="txCount"
+                                  nameKey="contract"
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={60}
+                                  fill=""
+                                  label
+                                >
+                                  {txsSummaryByContract.data?.txsByContract.map(
+                                    (entry, index) =>
+                                      // Check if index is less than or equal to 8
+                                      index <= 8 && (
+                                        <Cell
+                                          key={`cell-${index}`}
+                                          fill={
+                                            index < 8
+                                              ? COLORS[index % COLORS.length]
+                                              : '#BBBBBB'
+                                          }
+                                        />
+                                      )
+                                  )}
+                                </Pie>
+                              </PieChart>
                             </ResponsiveContainer>
                           </GridItem>
                           <GridItem colSpan={6}>
@@ -313,23 +283,35 @@ export default function Account({
                               justifyContent="center"
                               p={4}
                             >
-                              {/* {data02.map((item, index) => (
-                                <Flex
-                                  direction="row"
-                                  alignItems="center"
-                                  key={index}
-                                  gap={2}
-                                >
-                                  <Circle
-                                    size={4}
-                                    style={{
-                                      backgroundColor:
-                                        COLORS[index % COLORS.length]
-                                    }}
-                                  />
-                                  <Text>{item.name}</Text>
-                                </Flex>
-                              ))} */}
+                              {txsSummaryByContract.data?.txsByContract.map(
+                                (item, index) =>
+                                  index < 8 && (
+                                    <Flex
+                                      direction="row"
+                                      alignItems="center"
+                                      key={index}
+                                      gap={2}
+                                    >
+                                      <Circle
+                                        size={4}
+                                        style={{
+                                          backgroundColor:
+                                            COLORS[index % COLORS.length]
+                                        }}
+                                      />
+                                      <Button
+                                        as="a"
+                                        variant="link"
+                                        href={`https://etherscan.io/address/${item.contract}`}
+                                        target="_blank"
+                                      >
+                                        <Text>
+                                          {getFormattedAddress(item.contract)}
+                                        </Text>
+                                      </Button>
+                                    </Flex>
+                                  )
+                              )}
                             </Flex>
                           </GridItem>
                         </Grid>
@@ -343,7 +325,7 @@ export default function Account({
                       <CardHeader>
                         <Flex direction="row" justifyContent="space-between">
                           <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Total Transactions
+                            Total Transaction Value
                           </Heading>
                           <TimeFilter />
                         </Flex>
@@ -355,34 +337,73 @@ export default function Account({
                             alignContent="center"
                             justifyContent="center"
                           >
-                            <ResponsiveContainer width="100%" height={200}>
-                              <LineChart
+                            <ResponsiveContainer width="100%" minHeight={200}>
+                              <BarChart
                                 width={730}
                                 height={250}
                                 data={txsSummaryQueries.data?.txsByDay}
-                                margin={{
-                                  top: 5,
-                                  right: 30,
-                                  left: 20,
-                                  bottom: 5
-                                }}
                               >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />
                                 <YAxis />
                                 <Tooltip />
                                 <Legend />
-                                <Line
-                                  type="monotone"
+                                <Bar dataKey="txValueSum" fill="#8884d8" />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </GridItem>
+                        </Grid>
+                      </CardBody>
+                    </Card>
+                  </Flex>
+                </GridItem>
+                <GridItem colSpan={{ base: 12, lg: 4 }}>
+                  <Flex direction="column" gap={4}>
+                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
+                      <CardHeader>
+                        <Flex direction="row" justifyContent="space-between">
+                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
+                            Bridges used
+                          </Heading>
+                          <TimeFilter />
+                        </Flex>
+                      </CardHeader>
+                      <CardBody>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                          <GridItem
+                            colSpan={6}
+                            alignContent="center"
+                            justifyContent="center"
+                          >
+                            <ResponsiveContainer width="100%" height={200}>
+                              <PieChart>
+                                <Pie
+                                  data={
+                                    txsSummaryByContract.data?.txsByContract
+                                  }
                                   dataKey="txCount"
-                                  stroke="#8884d8"
-                                />
-                                <Line
-                                  type="monotone"
-                                  dataKey="contractCount"
-                                  stroke="#82ca9d"
-                                />
-                              </LineChart>
+                                  nameKey="contract"
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={60}
+                                  fill=""
+                                  label
+                                >
+                                  {txsSummaryByContract.data?.txsByContract.map(
+                                    (entry: any, index: number) => (
+                                      // Check if index is less than or equal to 8
+                                      <Cell
+                                        key={`cell-${index}`}
+                                        fill={
+                                          index < 8
+                                            ? COLORS[index % COLORS.length]
+                                            : '#BBBBBB'
+                                        }
+                                      />
+                                    )
+                                  )}
+                                </Pie>
+                              </PieChart>
                             </ResponsiveContainer>
                           </GridItem>
                           <GridItem colSpan={6}>
@@ -392,24 +413,75 @@ export default function Account({
                               justifyContent="center"
                               p={4}
                             >
-                              {/* {data02.map((item, index) => (
-                                <Flex
-                                  direction="row"
-                                  alignItems="center"
-                                  key={index}
-                                  gap={2}
-                                >
-                                  <Circle
-                                    size={4}
-                                    style={{
-                                      backgroundColor:
-                                        COLORS[index % COLORS.length]
-                                    }}
-                                  />
-                                  <Text>{item.name}</Text>
-                                </Flex>
-                              ))} */}
+                              {txsSummaryByContract.data?.txsByContract.map(
+                                (item, index) =>
+                                  // Check if index is less than 8
+                                  index < 8 && (
+                                    <Flex
+                                      direction="row"
+                                      alignItems="center"
+                                      key={index}
+                                      gap={2}
+                                    >
+                                      <Circle
+                                        size={4}
+                                        style={{
+                                          backgroundColor:
+                                            COLORS[index % COLORS.length]
+                                        }}
+                                      />
+                                      <Button
+                                        as="a"
+                                        variant="link"
+                                        href={`https://etherscan.io/address/${item.contract}`}
+                                        target="_blank"
+                                      >
+                                        <Text>
+                                          {getFormattedAddress(item.contract)}
+                                        </Text>
+                                      </Button>
+                                    </Flex>
+                                  )
+                              )}
                             </Flex>
+                          </GridItem>
+                        </Grid>
+                      </CardBody>
+                    </Card>
+                  </Flex>
+                </GridItem>
+                <GridItem colSpan={{ base: 12, lg: 8 }}>
+                  <Flex direction="column" gap={4}>
+                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
+                      <CardHeader>
+                        <Flex direction="row" justifyContent="space-between">
+                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
+                            Total Fees Paid
+                          </Heading>
+                          <TimeFilter />
+                        </Flex>
+                      </CardHeader>
+                      <CardBody>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                          <GridItem
+                            colSpan={12}
+                            alignContent="center"
+                            justifyContent="center"
+                          >
+                            <ResponsiveContainer width="100%" minHeight={200}>
+                              <BarChart
+                                width={730}
+                                height={250}
+                                data={txsSummaryQueries.data?.txsByDay}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="feesPaidSum" fill="#8884d8" />
+                              </BarChart>
+                            </ResponsiveContainer>
                           </GridItem>
                         </Grid>
                       </CardBody>
