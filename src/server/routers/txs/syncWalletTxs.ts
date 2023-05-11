@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { publicProcedure } from '@/server/trpc';
 // import { db } from '@/db/drizzle-db';
 // import { supportChains, transactions } from '@/db/schema';
+import sha256 from 'crypto-js/sha256';
 import { Transaction } from '@/types/DB';
 import { config as serverConfig } from '@/configs/server';
 import { Covalent } from '@/connectors/Covalent';
@@ -87,13 +88,12 @@ export const syncWalletTxs = publicProcedure
     };
 
     //get recent page from covalent
-    let covRecentPage;
+    let covRecentPage: number;
     if (links.prev) {
-      const prevcovRecentPage = _.get(
-        links.prev.match(/\/page\/(\d+)\//),
-        '[1]'
-      );
-      covRecentPage = prevcovRecentPage ? Number(prevcovRecentPage) + 1 : 0;
+      const regex = /\/page\/(\d+)\//;
+      const match = links.prev.match(regex);
+      const prevCovRecentPage = match && match[1];
+      covRecentPage = prevCovRecentPage ? Number(prevCovRecentPage) + 1 : 0;
     } else {
       covRecentPage = 0;
     }
@@ -110,10 +110,10 @@ export const syncWalletTxs = publicProcedure
       //case 1.2: txs in covalent
       pubStoreMsg.startPage = 0;
 
-      if (Number(covRecentPage) < 50) {
+      if (Number(covRecentPage) < serverConfig.batchSize) {
         pubStoreMsg.endPage = covRecentPage;
       } else {
-        pubStoreMsg.endPage = 50;
+        pubStoreMsg.endPage = serverConfig.batchSize;
       }
 
       const qstash = new QStash(
@@ -121,6 +121,9 @@ export const syncWalletTxs = publicProcedure
         serverConfig.qstash.nextSigKey,
         serverConfig.qstash.token
       );
+      const deduplicationId = sha256(JSON.stringify(pubStoreMsg)).toString();
+      await qstash.publishMsg('store-txs', pubStoreMsg, deduplicationId);
+      console.log('deduplicationId: ', deduplicationId);
     } //case 2: txs in db
     else {
       //case 2.1: recent tx page  in db is less than from covalent
@@ -149,11 +152,21 @@ export const syncWalletTxs = publicProcedure
           const caseStartPage = dbRecentPage + 1;
 
           pubStoreMsg.startPage = caseStartPage;
-          if (caseStartPage - dbRecentPage < 50) {
+          if (caseStartPage - dbRecentPage < serverConfig.batchSize) {
             pubStoreMsg.endPage = covRecentPage;
           } else {
-            pubStoreMsg.endPage = caseStartPage + 50;
+            pubStoreMsg.endPage = caseStartPage + serverConfig.batchSize;
           }
+          const qstash = new QStash(
+            serverConfig.qstash.currSigKey,
+            serverConfig.qstash.nextSigKey,
+            serverConfig.qstash.token
+          );
+          const deduplicationId = sha256(
+            JSON.stringify(pubStoreMsg)
+          ).toString();
+          await qstash.publishMsg('store-txs', pubStoreMsg, deduplicationId);
+          console.log('deduplicationId: ', deduplicationId);
         } //case 2.2: recent tx page  in db is equa from covalent
         else if (dbRecentPage === covRecentPage) {
           const txsToInsert = await preData(

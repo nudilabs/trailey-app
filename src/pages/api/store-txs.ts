@@ -31,14 +31,22 @@ const getTxs = async (
   walletAddr: string,
   startPage: number,
   endPage: number,
-  chainId: number
-  // totalPage: number
+  chainId: number,
+  totalPage: number
 ) => {
   const txs = [];
-  const totalGetPage = endPage - startPage;
 
   const batch = serverConfig.batchSize;
+  // if(startPage+serverConfig)
+
+  let totalGetPage;
+  if (startPage + serverConfig.batchSize > totalPage) {
+    totalGetPage = totalPage - startPage;
+  } else {
+    totalGetPage = serverConfig.batchSize;
+  }
   const batchCount = Math.ceil(totalGetPage / batch);
+
   console.log('totalPage', totalGetPage);
   console.log('batchCount', batchCount);
 
@@ -49,7 +57,7 @@ const getTxs = async (
 
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
-      if (page > endPage) break;
+      if (!(page < totalPage)) break;
       promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
@@ -143,8 +151,8 @@ export default async function handler(req: NextRequest) {
       walletAddr,
       startPage,
       endPage,
-      chainId
-      // totalPage
+      chainId,
+      totalPage
     );
 
     console.log('txs', txs.length);
@@ -153,16 +161,19 @@ export default async function handler(req: NextRequest) {
       await db.insert(transactions).values(txs);
     }
 
-    const nextStartPage = endPage + 1;
-    const nextEndPage =
-      nextStartPage + 50 > totalPage ? totalPage - 1 : nextStartPage + 50;
+    const nextStartPage =
+      startPage + serverConfig.batchSize > totalPage
+        ? totalPage
+        : startPage + serverConfig.batchSize;
+    // const nextEndPage =
+    //   nextStartPage + 50 > totalPage ? totalPage - 1 : nextStartPage + 50;
 
     if (nextStartPage < totalPage) {
       const nextStore = {
         chainName,
         walletAddr,
         startPage: nextStartPage,
-        endPage: nextEndPage,
+        // endPage: nextEndPage,
         totalPage
       };
       //create hash for deduplication id from nextStore
