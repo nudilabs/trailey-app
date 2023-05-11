@@ -1,10 +1,54 @@
 import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
+import moment from 'moment';
+import _ from 'lodash';
 import { publicProcedure } from '@/server/trpc';
-import { db } from '@/db/drizzle-db';
-import { supportChains, transactions } from '@/db/schema';
+// import { db } from '@/db/drizzle-db';
+// import { supportChains, transactions } from '@/db/schema';
+import { Transaction } from '@/types/DB';
 import { config as serverConfig } from '@/configs/server';
 import { Covalent } from '@/connectors/Covalent';
+import { QStash } from '@/connectors/Qstash';
+import * as TxModel from '@/models/Transactions';
+import * as SupportChainsModel from '@/models/SupportChains';
+
+const preData = async (
+  txs: any,
+  chainId: number,
+  dbRecentPage: number,
+  latestTx: any
+) => {
+  //get dbrecent page txs from covalent
+
+  const txsToInsert = txs.map((tx: any) => {
+    if (
+      tx.block_height >= Number(latestTx[0].blockHeight) &&
+      tx.tx_hash !== latestTx[0].txHash
+    ) {
+      const signDate = moment.utc(tx.block_signed_at).toDate();
+      let tmp: Transaction = {
+        signedAt: signDate,
+        blockHeight: tx.block_height,
+        txHash: tx.tx_hash,
+        txOffset: tx.tx_offset,
+        success: tx.successful,
+        fromAddress: tx.from_address,
+        fromAddressLabel: tx.from_address_label,
+        toAddress: tx.to_address,
+        toAddressLabel: tx.to_address_label,
+        value: tx.value,
+        valueQuote: tx.value_quote,
+        feesPaid: tx.fees_paid,
+        gasQuote: tx.gas_quote,
+        page: dbRecentPage,
+        chainId
+      };
+      return tmp;
+    }
+  });
+
+  return txsToInsert;
+};
 
 export const syncWalletTxs = publicProcedure
   .input(
@@ -15,53 +59,114 @@ export const syncWalletTxs = publicProcedure
   )
   .mutation(async opts => {
     const { chainName, walletAddr } = opts.input;
-    const supportedChain = await db
-      .select()
-      .from(supportChains)
-      .where(eq(supportChains.name, chainName));
-    if (supportedChain.length === 0)
+    const supportChain = await SupportChainsModel.getChain(chainName);
+
+    if (supportChain.length === 0)
       return {
         message: `Chain ${chainName} is not supported`
       };
 
-    const chainId = supportedChain[0].id;
+    const chainId = supportChain[0].id;
 
     // select latest block height from wallet from transactions table
-    const latestTx = await db
-      .select()
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr)
-        )
-      )
-      .orderBy(sql`block_height DESC`)
-      .limit(1);
+    const latestTx = await TxModel.getLatest(chainId, walletAddr);
 
-    // const latestBlockHeight = latestTx.length ? latestTx[0].blockHeight : 0;
     const covalent = new Covalent(serverConfig.covalent.key);
     const recentCovTxPage = await covalent.getWalletRecentTxs(
       chainName,
       walletAddr
     );
+    const { links } = recentCovTxPage;
 
-    let startPage = 0;
-    // "links": {
-    //     "prev"
-    //     :
-    //     null,
-    //     "next"
-    // }
+    const pubStoreMsg = {
+      chainName,
+      walletAddr,
+      startPage: 0,
+      endPage: 0,
+      totalPage: 0
+    };
 
-    if (latestTx.length === 0) {
+    //get recent page from covalent
+    let covRecentPage;
+    if (links.prev) {
+      const prevcovRecentPage = _.get(
+        links.prev.match(/\/page\/(\d+)\//),
+        '[1]'
+      );
+      covRecentPage = prevcovRecentPage ? Number(prevcovRecentPage) + 1 : 0;
+    } else {
+      covRecentPage = 0;
+    }
+    pubStoreMsg.totalPage = covRecentPage + 1;
+
+    //case 1: no txs in db
+    if (!latestTx) {
+      //case 1.1: no txs in covalent
       if (recentCovTxPage.items.length === 0) {
         return {
           message: `No transactions found for wallet ${walletAddr} on chain ${chainName}`
         };
       }
-    }
+      //case 1.2: txs in covalent
+      pubStoreMsg.startPage = 0;
 
-    //get covalent recent txs
-    const txs = await covalent.getWalletRecentTxs(chainName, walletAddr);
+      if (Number(covRecentPage) < 50) {
+        pubStoreMsg.endPage = covRecentPage;
+      } else {
+        pubStoreMsg.endPage = 50;
+      }
+
+      const qstash = new QStash(
+        serverConfig.qstash.currSigKey,
+        serverConfig.qstash.nextSigKey,
+        serverConfig.qstash.token
+      );
+    } //case 2: txs in db
+    else {
+      //case 2.1: recent tx page  in db is less than from covalent
+      const dbRecentPage = Number(latestTx.page);
+      if (dbRecentPage && latestTx) {
+        const res = await covalent.getWalletTxsByPage(
+          chainName,
+          walletAddr,
+          dbRecentPage
+        );
+        const txs = res?.data.items;
+
+        if (dbRecentPage < covRecentPage) {
+          const txsToInsert = await preData(
+            txs,
+            chainId,
+            dbRecentPage,
+            latestTx
+          );
+
+          if (txsToInsert.length > 0) {
+            console.log('txsToInsert', txsToInsert);
+            await TxModel.insertTxs(txsToInsert);
+          }
+
+          const caseStartPage = dbRecentPage + 1;
+
+          pubStoreMsg.startPage = caseStartPage;
+          if (caseStartPage - dbRecentPage < 50) {
+            pubStoreMsg.endPage = covRecentPage;
+          } else {
+            pubStoreMsg.endPage = caseStartPage + 50;
+          }
+        } //case 2.2: recent tx page  in db is equa from covalent
+        else if (dbRecentPage === covRecentPage) {
+          const txsToInsert = await preData(
+            txs,
+            chainId,
+            dbRecentPage,
+            latestTx
+          );
+          if (txsToInsert.length > 0) {
+            console.log('txsToInsert', txsToInsert);
+            await TxModel.insertTxs(txsToInsert);
+          }
+        }
+      }
+    }
   });

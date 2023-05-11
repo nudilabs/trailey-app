@@ -14,5 +14,8 @@ export const config = {
     token: String(process.env.QSTASH_TOKEN || '123')
   },
   //server
-  serverUrl: String(process.env.SERVER_HOST || 'http://localhost:3000/api/')
+  serverUrl: String(process.env.SERVER_HOST || 'http://localhost:3000/api/'),
+
+  //indexer
+  batchSize: Number(process.env.INDEX_BATCH_SIZE || 7)
 };

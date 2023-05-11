@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle-db';
-import { InferModel } from 'drizzle-orm';
+import { Transaction } from '@/types/DB';
+// import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
 import { QStash } from '@/connectors/Qstash';
@@ -15,7 +16,7 @@ export const config = {
   runtime: 'edge'
 };
 
-type Transaction = InferModel<typeof transactions, 'insert'>;
+// type Transaction = InferModel<typeof transactions, 'insert'>;
 
 const schema = z.object({
   chainName: z.string(),
@@ -30,13 +31,13 @@ const getTxs = async (
   walletAddr: string,
   startPage: number,
   endPage: number,
-  chainId: number,
-  totalPage: number
+  chainId: number
+  // totalPage: number
 ) => {
   const txs = [];
   const totalGetPage = endPage - startPage;
 
-  const batch = 7;
+  const batch = serverConfig.batchSize;
   const batchCount = Math.ceil(totalGetPage / batch);
   console.log('totalPage', totalGetPage);
   console.log('batchCount', batchCount);
@@ -48,8 +49,7 @@ const getTxs = async (
 
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
-      // if (page >= totalPage) break;
-      if (page >= endPage || page >= totalPage) break;
+      if (page > endPage) break;
       promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
@@ -143,23 +143,26 @@ export default async function handler(req: NextRequest) {
       walletAddr,
       startPage,
       endPage,
-      chainId,
-      totalPage
+      chainId
+      // totalPage
     );
 
-    // console.log(txs);
     console.log('txs', txs.length);
 
     if (txs.length > 0) {
       await db.insert(transactions).values(txs);
     }
 
-    if (endPage < totalPage) {
+    const nextStartPage = endPage + 1;
+    const nextEndPage =
+      nextStartPage + 50 > totalPage ? totalPage - 1 : nextStartPage + 50;
+
+    if (nextStartPage < totalPage) {
       const nextStore = {
         chainName,
         walletAddr,
-        startPage: endPage,
-        endPage: endPage + 50 > totalPage ? totalPage : endPage + 50,
+        startPage: nextStartPage,
+        endPage: nextEndPage,
         totalPage
       };
       //create hash for deduplication id from nextStore
@@ -170,17 +173,15 @@ export default async function handler(req: NextRequest) {
       return NextResponse.json(
         {
           status: 'continue store',
-          startPage: endPage,
-          endPage: endPage + 50 > totalPage ? totalPage : endPage + 50,
-          totalPage
+          nextStore
         },
         {
           status: 200
         }
       );
+    } else {
+      return NextResponse.json(null, { status: 200 });
     }
-
-    return NextResponse.json(null, { status: 200 });
   } catch (e) {
     console.log('error from api');
     console.log(e);
