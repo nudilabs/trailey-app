@@ -77,6 +77,9 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
+import { get } from '@vercel/edge-config';
+import { Chain } from '@/types/Chains';
+
 const MOCK_CHAINS = [
   {
     name: 'Ethereum',
@@ -181,11 +184,13 @@ const curatedProtocols: { [key: string]: { name: string; img?: string } } = {
 export default function Account({
   address,
   ensName,
-  avatarUrl
+  avatarUrl,
+  chainConfigs
 }: {
   address: string;
   ensName: string;
   avatarUrl: string | null;
+  chainConfigs: Chain[];
 }) {
   const toast = useToast();
   const [currentChain, setCurrentChain] = useState<string>('ethereum');
@@ -340,7 +345,7 @@ export default function Account({
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <ChainSelector />
+                  <ChainSelector chainConfigs={chainConfigs} />
                   <Flex direction="row" alignItems="center" gap={1}>
                     <Text
                       color={useColorModeValue(
@@ -824,6 +829,7 @@ export const getServerSideProps = async (context: {
   );
   const p = context.params;
   const addressType = getAddressType(p.address);
+  const chainConfigs = get('chains');
 
   if (!addressType) {
     return {
@@ -834,10 +840,10 @@ export const getServerSideProps = async (context: {
   try {
     if (addressType === 'address') {
       const props = await fetchAddressProps(p.address);
-      return { props };
+      return { props: { chainConfigs, ...props } };
     } else if (addressType === 'ens') {
       const props = await fetchEnsProps(p.address);
-      return { props };
+      return { props: { chainConfigs, ...props } };
     }
   } catch (error) {
     console.error(error);
