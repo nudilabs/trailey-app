@@ -13,21 +13,31 @@ import {
   Tr,
   Th,
   Tbody,
-  Td
+  Td,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
+  useColorMode,
+  useColorModeValue,
+  Box,
+  Badge
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
-import { FiGrid } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import { FiChevronDown, FiGrid } from 'react-icons/fi';
+import { Chain } from '@/types/Chains';
 
-type ChainData = {
-  name: string;
-  icon: string;
-};
+const ChainSelector = () => {
+  const [chains, setChains] = useState<Chain[]>([]);
 
-const ChainSelector = ({ chainData }: { chainData: ChainData[] }) => {
   const router = useRouter();
   const [selectedChain, setSelectedChain] = useState(
-    router.query.chain || chainData[0].name.toLowerCase()
+    router.query.chain || chains[0].name.toLowerCase()
+  );
+  const currentChain = chains.find(
+    chain => chain.name.toLowerCase() === selectedChain
   );
 
   const handleSelectChain = (chain: string) => {
@@ -37,27 +47,46 @@ const ChainSelector = ({ chainData }: { chainData: ChainData[] }) => {
   };
 
   return (
-    <Card maxW="fit-content" rounded="full">
-      <CardBody p={1} gap={1}>
-        {chainData.map((chain, index) => (
-          <Button
-            size="sm"
-            key={chain.name}
-            variant={
-              selectedChain === chain.name.toLowerCase() ? 'solid' : 'ghost'
-            }
+    <Menu>
+      <MenuButton
+        _hover={{ bg: useColorModeValue('blackAlpha.50', 'whiteAlpha.50') }}
+        p={2}
+        rounded="lg"
+      >
+        <Flex align="center" gap={1}>
+          <Image
+            src={currentChain?.logo_url}
+            alt={currentChain?.name}
+            boxSize={6}
+            rounded="full"
+          />
+          <Box color={useColorModeValue('gray.400', 'gray.600')}>
+            <FiChevronDown />
+          </Box>
+          {currentChain?.is_testnet && (
+            <Badge colorScheme="red">{currentChain.name} Testnet</Badge>
+          )}
+        </Flex>
+      </MenuButton>
+      <MenuList>
+        {chains.map((chain, index) => (
+          <MenuItem
+            key={index}
+            gap={1}
+            alignContent={'center'}
             onClick={() => handleSelectChain(chain.name.toLowerCase())}
           >
             <Image
-              src={chain.icon}
+              src={chain.logo_url}
               alt={chain.name}
               boxSize={6}
               rounded="full"
             />
-          </Button>
+            {chain.name}
+          </MenuItem>
         ))}
-      </CardBody>
-    </Card>
+      </MenuList>
+    </Menu>
   );
 };
 

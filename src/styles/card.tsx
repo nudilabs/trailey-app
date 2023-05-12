@@ -9,10 +9,43 @@ const baseStyle = definePartsStyle({});
 
 const sizes = {
   // define custom styles for xl size
-  xl: definePartsStyle({
+  lg: definePartsStyle({
     container: {
-      borderRadius: '24px',
-      padding: '28px'
+      rounded: '3xl',
+      shadow: 'none',
+      borderWidth: 1,
+      borderColor: {
+        light: 'blackAlpha.200',
+        dark: 'whiteAlpha.800'
+      }
+    },
+    header: {
+      paddingBottom: 1
+    }
+  }),
+  md: definePartsStyle({
+    container: {
+      rounded: '2xl',
+      shadow: 'none',
+      borderWidth: 1,
+      borderColor: {
+        light: 'blackAlpha.200',
+        dark: 'whiteAlpha.800'
+      }
+    },
+    header: {
+      paddingBottom: 1
+    }
+  }),
+  sm: definePartsStyle({
+    container: {
+      rounded: '3xl',
+      shadow: 'none',
+      borderWidth: 1,
+      borderColor: {
+        light: 'blackAlpha.200',
+        dark: 'whiteAlpha.800'
+      }
     }
   })
 };

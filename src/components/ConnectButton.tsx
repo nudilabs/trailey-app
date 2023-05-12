@@ -1,5 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import {
+  Box,
   Button,
   Flex,
   IconButton,
@@ -8,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 // import { FiLogIn } from 'react-icons/fi';
 import { BiWallet } from 'react-icons/bi';
+import { Avatar } from './Avatar';
 export const CustomConnectButton = ({ text }: { text?: string }) => {
   const defaultButtonText = useBreakpointValue(
     {
@@ -86,37 +88,11 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
               }
               return (
                 <Flex gap={3}>
-                  {/* <Button
-                    size="sm"
-                    rounded="xl"
-                    onClick={openChainModal}
-                    display={{ base: 'none', lg: 'flex' }}
-                    variant="outline"
-                  >
-                    {chain.hasIcon && (
-                      <Flex
-                        bg={chain.iconBackground}
-                        w={4}
-                        h={4}
-                        rounded="full"
-                      >
-                        {chain.iconUrl && (
-                          <Image
-                            alt={chain.name ?? 'Chain icon'}
-                            src={chain.iconUrl}
-                            width={4}
-                            height={4}
-                          />
-                        )}
-                      </Flex>
-                    )}
-                  </Button> */}
                   <Button
                     size="sm"
                     rounded="xl"
                     onClick={openAccountModal}
                     variant="connected"
-                    // colorScheme="green"
                   >
                     {account.displayName}
                   </Button>

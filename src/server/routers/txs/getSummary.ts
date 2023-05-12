@@ -160,9 +160,9 @@ export const getSummaryByContract = publicProcedure
 
     const txsByContractFormatted = txsByContract.map(tx => {
       return {
-        contract: tx.contract,
+        contract: tx.contract as string,
         txCount: Number(tx.txCount),
-        txValueSum: tx.valueSum,
+        txValueSum: tx.valueSum as number,
         feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
       };
     });

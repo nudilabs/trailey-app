@@ -1,4 +1,10 @@
-import { Flex, Button, useColorModeValue } from '@chakra-ui/react';
+import {
+  Flex,
+  Button,
+  useColorModeValue,
+  Select,
+  useMediaQuery
+} from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -23,27 +29,44 @@ function TimeFilter() {
     router.push({ query });
   };
 
+  const [isLargerThanMobile] = useMediaQuery('(min-width: 640px)');
+
   return (
     <Flex
-      direction="row"
-      alignItems="center"
+      direction={isLargerThanMobile ? 'row' : 'column'}
+      alignItems={isLargerThanMobile ? 'center' : 'stretch'}
       gap={2}
       border="1px"
       borderColor={useColorModeValue('gray.200', 'gray.600')}
       borderRadius="full"
       p={1}
     >
-      {options.map(option => (
-        <Button
-          key={option.value}
-          size="xs"
-          colorScheme="primary"
-          variant={selectedTime === option.value ? 'solid' : 'ghost'}
-          onClick={() => handleSelectTime(option.value)}
+      {isLargerThanMobile ? (
+        options.map(option => (
+          <Button
+            key={option.value}
+            size="xs"
+            colorScheme="primary"
+            variant={selectedTime === option.value ? 'solid' : 'ghost'}
+            onClick={() => handleSelectTime(option.value)}
+          >
+            {option.label}
+          </Button>
+        ))
+      ) : (
+        <Select
+          value={selectedTime}
+          onChange={event => handleSelectTime(event.target.value)}
+          size="sm"
+          rounded="full"
         >
-          {option.label}
-        </Button>
-      ))}
+          {options.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Select>
+      )}
     </Flex>
   );
 }

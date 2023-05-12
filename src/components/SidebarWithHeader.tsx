@@ -23,7 +23,8 @@ import {
   Divider,
   Stack,
   Text,
-  Tooltip
+  Tooltip,
+  Container
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -48,7 +49,7 @@ import { IProfile } from '@/types/IProfile';
 
 import { motion } from 'framer-motion';
 import { CustomConnectButton } from './ConnectButton';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton, AvatarComponent } from '@rainbow-me/rainbowkit';
 
 interface LinkItemProps {
   name: string;
@@ -106,7 +107,7 @@ export default function SidebarWithHeader({
       </Drawer>
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: '68px' }} p={4}>
+      <Box ml={{ base: 0, md: '68px' }} p={8}>
         {children}
       </Box>
     </Box>

@@ -22,13 +22,15 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  SkeletonText
+  SkeletonText,
+  Progress
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import {
   FiArrowRight,
   FiExternalLink,
   FiFlag,
+  FiPlus,
   FiPlusCircle,
   FiSettings
 } from 'react-icons/fi';
@@ -36,6 +38,8 @@ import TimeFilter from './TimeFilter';
 import Link from 'next/link';
 import { getFormattedAddress } from '@/utils/format';
 import { getEthFromWei } from '@/utils/format';
+import { useRouter } from 'next/router';
+import { Avatar } from './Avatar';
 
 type OverviewData = {
   message: string;
@@ -54,41 +58,26 @@ const OverviewCard = ({
   isLoading: boolean;
 }) => {
   const goalColor = useColorModeValue('gray.500', 'gray.400');
+  const router = useRouter();
+
   return (
-    <Card size={{ base: 'lg', md: 'xl' }}>
+    <Card size="lg">
       <CardHeader>
         <Flex direction="row" alignItems="center" gap={4}>
-          <Flex direction="row" alignItems="center" gap={4}>
-            <Heading fontSize={{ base: 'md', lg: 'xl' }}>Overview</Heading>
-          </Flex>
+          <Heading fontSize={{ base: 'md', lg: 'xl' }}>Overview</Heading>
           <Spacer />
           <TimeFilter />
-          <Menu isLazy>
-            <MenuButton
-              as={IconButton}
-              aria-label="Options"
-              icon={<FiSettings />}
-              variant="outline"
-              size="sm"
-            />
-            <MenuList>
-              <MenuItem icon={<FiPlusCircle />}>Add Wallet</MenuItem>
-              <MenuItem icon={<FiFlag />}>Edit Goals</MenuItem>
-            </MenuList>
-          </Menu>
+          <IconButton aria-label="Add Wallet" icon={<FiPlus />} />
         </Flex>
       </CardHeader>
       <CardBody>
         <TableContainer>
-          <Table variant="unstyled">
+          <Table>
             <Thead>
               <Tr>
                 <Th>Address</Th>
-                <Th>Bridged</Th>
-                <Th>Txns</Th>
-                <Th>Contract Interact.</Th>
-                <Th>Value ($)</Th>
-                <Th>Gas Fees (ETH)</Th>
+                <Th>Txs</Th>
+                <Th>Value</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -102,55 +91,47 @@ const OverviewCard = ({
                 txData.map((data, i) => (
                   <Tr key={i}>
                     <Td>
-                      <Link href={`/account/${data.address}`} passHref>
+                      <Flex direction="row" alignItems="center" gap={2}>
+                        <Avatar address={data.address} size={24} />
                         <Button
                           colorScheme="primary"
                           variant="link"
                           rightIcon={<FiArrowRight />}
+                          onClick={() => {
+                            router.push(`/account/${data.address}`);
+                          }}
                         >
                           {getFormattedAddress(data.address)}
                         </Button>
-                      </Link>
-                    </Td>
-                    <Td>
-                      <Flex direction="row" alignItems="center" gap={1}>
-                        <Text>0</Text>
-                        <Tooltip label="🏆 Weekly Goal">
-                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
-                        </Tooltip>
                       </Flex>
                     </Td>
                     <Td>
-                      <Flex direction="row" alignItems="center" gap={1}>
-                        <Text>{data.txCount}</Text>
-                        <Tooltip label="🏆 Weekly Goal">
-                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
-                        </Tooltip>
-                      </Flex>
+                      <Tooltip label={getPercentile(Number(data.txCount))}>
+                        <Progress
+                          hasStripe
+                          size="sm"
+                          rounded="full"
+                          value={(Number(data.txCount) / percentile[50]) * 100}
+                          colorScheme={getProgressBarColor(
+                            Number(data.txCount)
+                          )}
+                        />
+                      </Tooltip>
                     </Td>
                     <Td>
-                      <Flex direction="row" alignItems="center" gap={1}>
-                        <Text>{data.contractCount}</Text>
-                        <Tooltip label="🏆 Weekly Goal">
-                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
-                        </Tooltip>
-                      </Flex>
-                    </Td>
-                    <Td>
-                      <Flex direction="row" alignItems="center" gap={1}>
-                        <Text>{Number(data.txValueSum).toFixed(2)}</Text>
-                        <Tooltip label="🏆 Weekly Goal">
-                          <Text fontSize="xs" color={goalColor}>{` / 0 `}</Text>
-                        </Tooltip>
-                      </Flex>
-                    </Td>
-                    <Td>
-                      <Flex direction="row" alignItems="center" gap={1}>
-                        <Text>{getEthFromWei(data.feesPaidSum)}</Text>
-                        <Tooltip label="🏆 Weekly Goal">
-                          <Text fontSize="xs" color={goalColor}>{` / 0`}</Text>
-                        </Tooltip>
-                      </Flex>
+                      <Tooltip label={getPercentile(Number(data.txValueSum))}>
+                        <Progress
+                          hasStripe
+                          size="sm"
+                          rounded="full"
+                          value={
+                            (Number(data.txValueSum) / percentile[50]) * 100
+                          }
+                          colorScheme={getProgressBarColor(
+                            Number(data.txValueSum)
+                          )}
+                        />
+                      </Tooltip>
                     </Td>
                   </Tr>
                 ))
@@ -164,3 +145,36 @@ const OverviewCard = ({
 };
 
 export default OverviewCard;
+
+const percentile = {
+  90: 100,
+  75: 50,
+  50: 40
+};
+
+const getPercentile = (value: number) => {
+  if (value < percentile[50])
+    return `${value}/${percentile[50]} txs until top 50%`;
+  else if (value < percentile[75])
+    return `${value}/${percentile[75]} txs until top 25%`;
+  else if (value < percentile[90])
+    return `${value}/${percentile[90]} txs until top 10%`;
+  else return `Top 10%`;
+};
+
+const getProgressBarColor = (value: number) => {
+  const val = (value / percentile[50]) * 100;
+  switch (true) {
+    case val < 25:
+      return 'red';
+    case val < 50:
+      return 'orange';
+    case val < 75:
+      return 'yellow';
+    case val < 100:
+      return 'green';
+    default:
+      if (value > percentile[75]) return 'purple';
+      return 'blue';
+  }
+};

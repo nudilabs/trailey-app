@@ -6,60 +6,92 @@ import { normalize } from 'viem/ens';
 import { publicClient } from '@/utils/client';
 
 import {
+  Badge,
   Box,
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
-  Circle,
   Flex,
   Grid,
   GridItem,
   Heading,
   IconButton,
   Image,
-  Link,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
+  Menu,
+  MenuButton,
+  MenuGroup,
+  MenuItem,
+  MenuList,
+  Stat,
+  StatArrow,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
+  Step,
+  StepDescription,
+  StepIcon,
+  StepIndicator,
+  StepNumber,
+  StepSeparator,
+  StepStatus,
+  StepTitle,
+  Stepper,
   Text,
+  Tooltip,
+  useBreakpointValue,
+  useColorModeValue,
+  useSteps,
   useToast
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { FiArrowRight, FiCopy, FiGrid } from 'react-icons/fi';
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ComposedChart,
-  Legend,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts';
-import { getFormattedAddress } from '@/utils/format';
+  FiArrowDownCircle,
+  FiBox,
+  FiChevronDown,
+  FiInfo,
+  FiPlusCircle,
+  FiRefreshCw
+} from 'react-icons/fi';
+import {
+  formatDecimals,
+  formatPrettyNumber,
+  getEthFromWei,
+  getFormattedAddress
+} from '@/utils/format';
 import TimeFilter from '@/components/TimeFilter';
 import { trpc } from '@/connectors/Trpc';
 import { useEffect, useState } from 'react';
+import { generateColorFromString } from '@/utils/format';
+import { Avatar } from '@/components/Avatar';
+import {
+  Legend,
+  Pie,
+  PieChart,
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+  ResponsiveContainer
+} from 'recharts';
 
 const MOCK_CHAINS = [
   {
     name: 'Ethereum',
-    icon: '/eth.png'
+    icon: '/eth.png',
+    isTestnet: false
+  },
+  {
+    name: 'Goerli',
+    icon: '/eth.png',
+    isTestnet: true
   },
   {
     name: 'Polygon',
-    icon: '/polygon.jpeg'
+    icon: '/polygon.jpeg',
+    isTestnet: false
   }
 ];
 
@@ -89,6 +121,63 @@ type Data = {
   contractCount: number | undefined;
 };
 
+const data = [
+  {
+    subject: 'Bridged Value',
+    A: 120,
+    B: 110,
+    fullMark: 150
+  },
+  {
+    subject: 'Protocols Used',
+    A: 85,
+    B: 90,
+    fullMark: 150
+  },
+  {
+    subject: 'Interactions',
+    A: 86,
+    B: 70,
+    fullMark: 150
+  },
+  {
+    subject: 'Fees Paid',
+    A: 99,
+    B: 100,
+    fullMark: 150
+  },
+
+  {
+    subject: 'Txs',
+    A: 98,
+    B: 130,
+    fullMark: 150
+  }
+];
+
+type txsByContract = {
+  contract: string;
+  txCount: number;
+  txValue: number;
+  feesPaidSum: string;
+};
+
+const steps = [
+  { title: 'Top 50%', description: `10 txs` },
+  { title: 'Top 25%', description: '50 txs' },
+  { title: 'Top 10%', description: '100 txs' }
+];
+
+const curatedProtocols: { [key: string]: { name: string; img?: string } } = {
+  '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b': {
+    name: 'Uniswap: Universal Router',
+    img: '/protocols/uniswap.png'
+  },
+  '0x5427fefa711eff984124bfbb1ab6fbf5e3da1820': {
+    name: 'Celer Network: cBridge V2'
+  }
+};
+
 export default function Account({
   address,
   ensName,
@@ -103,8 +192,27 @@ export default function Account({
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const router = useRouter();
   const { chain, time } = router.query;
+  const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
 
-  const txsSummaryQueries = trpc.txs.getSummaryByDay.useQuery({
+  // all time stats
+  const txsSummaryQueriesAllTime = trpc.txs.getSummary.useQuery({
+    chainName: chains[currentChain],
+    walletAddr: address,
+    timeSpan: 0
+  });
+  // last week stats
+  const txsSummaryQueriesLastWeek = trpc.txs.getSummary.useQuery({
+    chainName: chains[currentChain],
+    walletAddr: address,
+    timeSpan: 7
+  });
+  // progress
+  const { activeStep } = useSteps({
+    index: 1,
+    count: steps.length
+  });
+
+  const txsSummaryByDayQueries = trpc.txs.getSummaryByDay.useQuery({
     chainName: chains[currentChain],
     walletAddr: address,
     timeSpan: times[currentTime]
@@ -116,7 +224,100 @@ export default function Account({
     timeSpan: times[currentTime]
   });
 
-  // console.log(txsSummaryQueries);
+  const txsSummaryByContractAllTime = trpc.txs.getSummaryByContract.useQuery({
+    chainName: chains[currentChain],
+    walletAddr: address,
+    timeSpan: 0
+  });
+
+  const txsSummaryByContractLastWeek = trpc.txs.getSummaryByContract.useQuery({
+    chainName: chains[currentChain],
+    walletAddr: address,
+    timeSpan: 7
+  });
+
+  const protocolUsage: {
+    contract: string;
+    txCountAllTime: number;
+    txCountLastWeek: number;
+    txValueSumAllTime: number;
+    txValueSumLastWeek: number;
+    txCountChangePercentage: number;
+    txValueSumChangePercentage: number;
+  }[] = [];
+
+  txsSummaryByContractAllTime.data?.txsByContract.forEach(contract => {
+    const contractLastWeek =
+      txsSummaryByContractLastWeek.data?.txsByContract.find(
+        c => c.contract === contract.contract
+      );
+    const contractUsage = {
+      contract: contract.contract,
+      txCountAllTime: contract.txCount,
+      txCountLastWeek: contractLastWeek?.txCount || 0,
+      txValueSumAllTime: contract.txValueSum,
+      txValueSumLastWeek: contractLastWeek?.txValueSum || 0,
+      txCountChangePercentage: contractLastWeek
+        ? ((contract.txCount - contractLastWeek.txCount) /
+            contractLastWeek.txCount) *
+          100
+        : 0,
+      txValueSumChangePercentage: contractLastWeek
+        ? ((contract.txValueSum - contractLastWeek.txValueSum) /
+            contractLastWeek.txValueSum) *
+          100
+        : 0
+    };
+    protocolUsage.push(contractUsage);
+  });
+  protocolUsage.sort(
+    (a, b) => b.txCountChangePercentage - a.txCountChangePercentage
+  );
+
+  const topContract =
+    txsSummaryByContractAllTime.data?.txsByContract &&
+    txsSummaryByContractAllTime.data?.txsByContract.length > 0
+      ? txsSummaryByContractAllTime.data?.txsByContract[0].contract ?? ''
+      : '';
+
+  // all time stats
+  const totalTxs = txsSummaryQueriesAllTime.data?.txCount ?? 0;
+  const totalFees = txsSummaryQueriesAllTime.data?.feesPaidSum ?? 0;
+  const totalValue = Number(txsSummaryQueriesAllTime.data?.txValueSum) ?? 0;
+  // last week stats
+  const totalTxsLastWeek = txsSummaryQueriesLastWeek.data?.txCount ?? 0;
+  const totalFeesLastWeek = txsSummaryQueriesLastWeek.data?.feesPaidSum ?? 0;
+  const totalValueLastWeek = txsSummaryQueriesLastWeek.data?.txValueSum ?? 0;
+  // percentage change in txs
+  const txsChange =
+    totalTxsLastWeek > 0 && totalTxs > 0
+      ? ((totalTxs - totalTxsLastWeek) / totalTxsLastWeek) * 100
+      : 0;
+  // percentage change in fees
+  const feesChange =
+    totalFeesLastWeek > 0 && totalFees > 0
+      ? ((totalFees - totalFeesLastWeek) / totalFeesLastWeek) * 100
+      : 0;
+
+  // percentage change in value
+  const valueChange =
+    totalValueLastWeek > 0 && totalValue > 0
+      ? ((totalValue - totalValueLastWeek) / totalValueLastWeek) * 100
+      : 0;
+
+  // stepper
+  const stepperOrientation: 'horizontal' | 'vertical' | undefined =
+    useBreakpointValue(
+      {
+        base: 'vertical',
+        md: 'horizontal',
+        lg: 'vertical',
+        xl: 'horizontal'
+      },
+      {
+        fallback: 'md'
+      }
+    );
 
   useEffect(() => {
     if (chain) {
@@ -128,374 +329,427 @@ export default function Account({
   }, [chain, time]);
 
   return (
-    <Flex direction="column" paddingTop={4} gap={4}>
-      <Flex direction="row" gap={4}>
-        <Image
-          src={avatarUrl ? avatarUrl : '/pfp.png'}
-          alt={ensName}
-          rounded={{ base: 'lg', md: 'xl' }}
-          boxSize={'80px'}
-        />
-        <Flex direction="column">
-          <Heading>{ensName}</Heading>
-          <Flex direction="row" gap={2} alignItems="center" fontSize={12}>
-            <Link href={`https://etherscan.io/address/${address}`}>
-              <Text>{getFormattedAddress(address)}</Text>
-            </Link>
-            <IconButton
-              aria-label="Copy"
-              icon={<FiCopy />}
-              size="xs"
-              onClick={() => {
-                navigator.clipboard.writeText(address);
-                toast({
-                  title: 'Copied address to clipboard',
-                  status: 'info',
-                  position: 'top-right',
-                  duration: 2500,
-                  isClosable: true
-                });
-              }}
-            />
+    <Flex direction="column">
+      <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+        <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
+          <Flex direction="column" gap={4}>
+            <Card size="lg">
+              <CardHeader>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <ChainSelector />
+                  <Flex direction="row" alignItems="center" gap={1}>
+                    <Text
+                      color={useColorModeValue(
+                        'blackAlpha.500',
+                        'whiteAlpha.500'
+                      )}
+                      fontSize="xs"
+                    >
+                      Resynced 2 days ago
+                    </Text>
+                    <IconButton
+                      size="sm"
+                      variant="ghost"
+                      aria-label="refresh"
+                      icon={<FiRefreshCw />}
+                    />
+                  </Flex>
+                </Flex>
+              </CardHeader>
+              <CardBody>
+                <Flex direction="column" alignItems="center" gap={3}>
+                  <Avatar address={address} size={100} ensImage={avatarUrl} />
+                  <Flex direction="column" alignItems="center" gap={2}>
+                    <Heading
+                      size={ensName.length > 19 ? 'md' : 'lg'}
+                      textAlign="center"
+                      marginTop={2}
+                    >
+                      {ensName}
+                    </Heading>
+                    <Button
+                      color={subHeadingColor}
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(address);
+                        toast({
+                          title: 'Copied to clipboard',
+                          status: 'info',
+                          duration: 1500,
+                          isClosable: true,
+                          position: 'top-right'
+                        });
+                      }}
+                    >
+                      {getFormattedAddress(address)}
+                    </Button>
+                  </Flex>
+                  <Flex
+                    direction="row"
+                    width="100%"
+                    justifyContent="space-between"
+                  >
+                    <Stat textAlign="center">
+                      <StatNumber>{formatPrettyNumber(totalTxs)}</StatNumber>
+                      <StatLabel color={subHeadingColor}>
+                        Transactions
+                      </StatLabel>
+                      <Tooltip label="Percent change from 7 days ago" hasArrow>
+                        <StatHelpText>
+                          <StatArrow type="increase" />
+                          {txsChange.toFixed(2)}%
+                        </StatHelpText>
+                      </Tooltip>
+                    </Stat>
+                    <Stat textAlign="center">
+                      <StatNumber>
+                        <Text
+                          as="a"
+                          href={`https://etherscan.io/address/${topContract}`}
+                          target="_blank"
+                        >
+                          ${formatDecimals(totalValue)}
+                        </Text>
+                      </StatNumber>
+                      <StatLabel>Total Tx Value</StatLabel>
+                      <Tooltip label="Percent change from 7 days ago" hasArrow>
+                        <StatHelpText>
+                          <StatArrow type="increase" />
+                          {valueChange.toFixed(2)}%
+                        </StatHelpText>
+                      </Tooltip>
+                    </Stat>
+                    <Stat textAlign="center">
+                      <StatNumber>{getEthFromWei(totalFees)}</StatNumber>
+                      <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
+                      <Tooltip label="Percent change from 7 days ago" hasArrow>
+                        <StatHelpText>
+                          <StatArrow type="increase" />
+                          {feesChange.toFixed(2)}%
+                        </StatHelpText>
+                      </Tooltip>
+                    </Stat>
+                  </Flex>
+                </Flex>
+              </CardBody>
+              <CardFooter>
+                <Text
+                  color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
+                  fontSize="xs"
+                >
+                  Powered by Biway Analytics
+                </Text>
+              </CardFooter>
+            </Card>
+            <Button
+              variant="solid"
+              colorScheme="primary"
+              leftIcon={<FiPlusCircle />}
+              rounded="3xl"
+            >
+              Add to Bundle
+            </Button>
+            <Card size="lg">
+              <CardHeader>
+                <Flex direction="row" justifyContent="space-between">
+                  <Heading size="md">Achievements</Heading>
+                  <Tooltip label="More Info" hasArrow>
+                    <IconButton
+                      aria-label="Previous"
+                      icon={<FiInfo />}
+                      variant="link"
+                    />
+                  </Tooltip>
+                </Flex>
+              </CardHeader>
+              <CardBody>
+                <Flex direction="row">
+                  <Box
+                    bgColor="primary.500"
+                    rounded="full"
+                    width={12}
+                    height={12}
+                  />
+                  <Box
+                    bgColor="primary.400"
+                    rounded="full"
+                    width={12}
+                    height={12}
+                    ml={-2}
+                  />
+                  <Box
+                    bgColor="primary.300"
+                    rounded="full"
+                    width={12}
+                    height={12}
+                    ml={-2}
+                  />
+                </Flex>
+              </CardBody>
+            </Card>
           </Flex>
-        </Flex>
-      </Flex>
-      <Flex>
-        <Tabs w="100%" isLazy colorScheme="primary">
-          <TabList>
-            <Tab>Portfolio</Tab>
-            <Tab>History</Tab>
-          </TabList>
+        </GridItem>
+        <GridItem colSpan={{ base: 12, lg: 6, xl: 8 }}>
+          <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+            <GridItem colSpan={{ base: 12 }}>
+              <Card size="lg">
+                <CardBody>
+                  <Flex direction="row" gap={4} alignItems="center">
+                    <Stepper
+                      index={activeStep}
+                      colorScheme="primary"
+                      orientation={stepperOrientation}
+                      width="100%"
+                    >
+                      {steps.map((step, index) => (
+                        <Step key={index}>
+                          <StepIndicator>
+                            <StepStatus
+                              complete={<StepIcon />}
+                              incomplete={<StepNumber />}
+                              active={<StepNumber />}
+                            />
+                          </StepIndicator>
 
-          <TabPanels>
-            <TabPanel>
-              <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                <GridItem colSpan={{ base: 12, lg: 12 }}>
-                  <ChainSelector chainData={MOCK_CHAINS} />
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 8 }}>
-                  <Flex direction="column" gap={4}>
-                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
-                      <CardHeader>
-                        <Flex direction="row" justifyContent="space-between">
-                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Total Transactions
-                          </Heading>
-                          <TimeFilter />
-                        </Flex>
-                      </CardHeader>
-                      <CardBody>
-                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                          <GridItem
-                            colSpan={12}
-                            alignContent="center"
-                            justifyContent="center"
-                          >
-                            <ResponsiveContainer width="100%" height={200}>
-                              <ComposedChart
-                                width={730}
-                                height={250}
-                                data={txsSummaryQueries.data?.txsByDay}
-                              >
-                                <XAxis dataKey="date" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <CartesianGrid stroke="#f5f5f5" />
-                                <Area
-                                  type="monotone"
-                                  dataKey="txCount"
-                                  fill="#8884d8"
-                                  stroke="#8884d8"
-                                />
-                                {/* <Bar
-                                  dataKey="contractCount"
-                                  barSize={20}
-                                  fill="#413ea0"
-                                /> */}
-                                <Line
-                                  type="monotone"
-                                  dataKey="contractCount"
-                                  stroke="#ff7300"
-                                />
-                              </ComposedChart>
-                            </ResponsiveContainer>
-                          </GridItem>
-                        </Grid>
-                      </CardBody>
-                    </Card>
+                          <Box flexShrink="0">
+                            <StepTitle>{step.title}</StepTitle>
+                            <StepDescription>
+                              {step.description}
+                            </StepDescription>
+                          </Box>
+
+                          <StepSeparator />
+                        </Step>
+                      ))}
+                    </Stepper>
+                    <Tooltip label="More Info" hasArrow>
+                      <IconButton
+                        aria-label="Previous"
+                        icon={<FiInfo />}
+                        variant="link"
+                      />
+                    </Tooltip>
                   </Flex>
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 4 }}>
-                  <Flex direction="column" gap={4}>
-                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
-                      <CardHeader>
-                        <Flex direction="row" justifyContent="space-between">
-                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Protocols Used
-                          </Heading>
-                          <TimeFilter />
-                        </Flex>
-                      </CardHeader>
-                      <CardBody>
-                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                          <GridItem
-                            colSpan={6}
-                            alignContent="center"
-                            justifyContent="center"
+                </CardBody>
+              </Card>
+            </GridItem>
+
+            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
+              <Flex direction="column" gap={4}>
+                <Card size="lg">
+                  <CardBody>
+                    <Flex direction="row" alignItems="center" gap={4}>
+                      <Box
+                        color="primary.500"
+                        bg={useColorModeValue('blackAlpha.50', 'whiteAlpha.50')}
+                        p={4}
+                        rounded="full"
+                      >
+                        <FiBox fontSize="18px" />
+                      </Box>
+                      <Stat>
+                        <StatLabel>Total Tx Value</StatLabel>
+                        <StatNumber>
+                          <Text
+                            as="a"
+                            href={`https://etherscan.io/address/${topContract}`}
+                            target="_blank"
                           >
-                            <ResponsiveContainer width="100%" height={200}>
-                              <PieChart>
-                                <Pie
-                                  data={
-                                    txsSummaryByContract.data?.txsByContract
-                                  }
-                                  dataKey="txCount"
-                                  nameKey="contract"
-                                  cx="50%"
-                                  cy="50%"
-                                  outerRadius={60}
-                                  fill=""
-                                  label
-                                >
-                                  {txsSummaryByContract.data?.txsByContract.map(
-                                    (entry, index) =>
-                                      // Check if index is less than or equal to 8
-                                      index <= 8 && (
-                                        <Cell
-                                          key={`cell-${index}`}
-                                          fill={
-                                            index < 8
-                                              ? COLORS[index % COLORS.length]
-                                              : '#BBBBBB'
-                                          }
-                                        />
-                                      )
+                            ${formatDecimals(totalValue)}
+                          </Text>
+                        </StatNumber>
+                        {curatedProtocols[topContract] && (
+                          <StatHelpText>
+                            {curatedProtocols[topContract].name}
+                          </StatHelpText>
+                        )}
+                      </Stat>
+                      <Tooltip label="More Info" hasArrow>
+                        <IconButton
+                          aria-label="Previous"
+                          icon={<FiInfo />}
+                          variant="link"
+                        />
+                      </Tooltip>
+                    </Flex>
+                  </CardBody>
+                </Card>
+                <Card size="lg">
+                  <CardBody>
+                    <Flex direction="row" alignItems="center" gap={4}>
+                      <Box
+                        color="primary.500"
+                        bg={useColorModeValue('blackAlpha.50', 'whiteAlpha.50')}
+                        p={4}
+                        rounded="full"
+                      >
+                        <FiArrowDownCircle fontSize="18px" />
+                      </Box>
+                      <Stat>
+                        <StatLabel>Bridged Value</StatLabel>
+                        <StatNumber>
+                          <Text
+                            as="a"
+                            href={`https://etherscan.io/address/${topContract}`}
+                            target="_blank"
+                          >
+                            123456
+                          </Text>
+                        </StatNumber>
+                        <StatHelpText>Top 10%</StatHelpText>
+                      </Stat>
+                      <Tooltip label="More Info" hasArrow>
+                        <IconButton
+                          aria-label="Previous"
+                          icon={<FiInfo />}
+                          variant="link"
+                        />
+                      </Tooltip>
+                    </Flex>
+                  </CardBody>
+                </Card>
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
+              <Card size="lg">
+                <CardHeader>
+                  <Flex direction="row" justifyContent="space-between">
+                    <Heading size="md">Stats</Heading>
+                    <Tooltip label="More Info" hasArrow>
+                      <IconButton
+                        aria-label="Previous"
+                        icon={<FiInfo />}
+                        variant="link"
+                      />
+                    </Tooltip>
+                  </Flex>
+                </CardHeader>
+                <CardBody>
+                  <Flex
+                    direction="row"
+                    alignItems="center"
+                    gap={4}
+                    height="160px"
+                  >
+                    <ResponsiveContainer>
+                      <RadarChart data={data}>
+                        <PolarGrid />
+                        <PolarAngleAxis dataKey="subject" />
+                        {/* <PolarRadiusAxis angle={30} domain={[0, 150]} /> */}
+                        <Radar
+                          name="Average"
+                          dataKey="B"
+                          stroke="#38A169"
+                          fill="#38A169"
+                          fillOpacity={0.1}
+                        />
+                        <Radar
+                          name={getFormattedAddress(address)}
+                          dataKey="A"
+                          stroke="#E53E3E"
+                          fill="#E53E3E"
+                          fillOpacity={0.25}
+                        />
+                        <Legend />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </Flex>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={{ base: 12 }}>
+              <Card size="lg">
+                <CardHeader>
+                  <Flex direction="row" justifyContent="space-between">
+                    <Heading size="md">Top Protocols Usage</Heading>
+                    <Tooltip
+                      label="The % change is the increase in usage since last week"
+                      hasArrow
+                    >
+                      <IconButton
+                        aria-label="Previous"
+                        icon={<FiInfo />}
+                        variant="link"
+                      />
+                    </Tooltip>
+                  </Flex>
+                </CardHeader>
+                <CardBody>
+                  <Flex direction="row" gap={4} overflow="scroll">
+                    {protocolUsage.map((protocol, index) => (
+                      <>
+                        {curatedProtocols[protocol.contract] && (
+                          <Card key={index} size="md" minWidth="240px">
+                            <CardBody>
+                              <Flex direction="column">
+                                <Flex direction="row" alignItems="center">
+                                  {curatedProtocols[protocol.contract]?.img && (
+                                    <Image
+                                      src={
+                                        curatedProtocols[protocol.contract]?.img
+                                      }
+                                      boxSize="24px"
+                                      mr={1}
+                                      alt={
+                                        curatedProtocols[protocol.contract]
+                                          ?.name
+                                      }
+                                    />
                                   )}
-                                </Pie>
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </GridItem>
-                          <GridItem colSpan={6}>
-                            <Flex
-                              direction="column"
-                              height="100%"
-                              justifyContent="center"
-                              p={4}
-                            >
-                              {txsSummaryByContract.data?.txsByContract.map(
-                                (item, index) =>
-                                  index < 8 && (
-                                    <Flex
-                                      direction="row"
-                                      alignItems="center"
-                                      key={index}
-                                      gap={2}
-                                    >
-                                      <Circle
-                                        size={4}
-                                        style={{
-                                          backgroundColor:
-                                            COLORS[index % COLORS.length]
-                                        }}
-                                      />
-                                      <Button
-                                        as="a"
-                                        variant="link"
-                                        href={`https://etherscan.io/address/${item.contract}`}
-                                        target="_blank"
-                                      >
-                                        <Text>
-                                          {getFormattedAddress(item.contract)}
-                                        </Text>
-                                      </Button>
-                                    </Flex>
-                                  )
-                              )}
-                            </Flex>
-                          </GridItem>
-                        </Grid>
-                      </CardBody>
-                    </Card>
+                                  <Text
+                                    fontSize="xs"
+                                    fontWeight="bold"
+                                    color={subHeadingColor}
+                                  >
+                                    {curatedProtocols[protocol.contract]
+                                      ?.name ||
+                                      getFormattedAddress(protocol.contract)}
+                                  </Text>
+                                </Flex>
+                                <Flex direction="row" alignItems="center">
+                                  <Heading fontSize="xl" fontWeight="bold">
+                                    {protocol.txCountAllTime} txs
+                                  </Heading>
+                                  <Badge
+                                    ml={2}
+                                    colorScheme={
+                                      protocol.txCountChangePercentage > 0
+                                        ? 'green'
+                                        : 'gray'
+                                    }
+                                    rounded="md"
+                                  >
+                                    {protocol.txCountChangePercentage}%
+                                  </Badge>
+                                </Flex>
+                                <Flex direction="row" alignItems="center">
+                                  <Text
+                                    fontSize="xs"
+                                    fontWeight="bold"
+                                    color={subHeadingColor}
+                                  >
+                                    $
+                                    {formatDecimals(protocol.txValueSumAllTime)}{' '}
+                                    (volume)
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                            </CardBody>
+                          </Card>
+                        )}
+                      </>
+                    ))}
                   </Flex>
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 8 }}>
-                  <Flex direction="column" gap={4}>
-                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
-                      <CardHeader>
-                        <Flex direction="row" justifyContent="space-between">
-                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Total Transaction Value
-                          </Heading>
-                          <TimeFilter />
-                        </Flex>
-                      </CardHeader>
-                      <CardBody>
-                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                          <GridItem
-                            colSpan={12}
-                            alignContent="center"
-                            justifyContent="center"
-                          >
-                            <ResponsiveContainer width="100%" minHeight={200}>
-                              <BarChart
-                                width={730}
-                                height={250}
-                                data={txsSummaryQueries.data?.txsByDay}
-                              >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="txValueSum" fill="#8884d8" />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </GridItem>
-                        </Grid>
-                      </CardBody>
-                    </Card>
-                  </Flex>
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 4 }}>
-                  <Flex direction="column" gap={4}>
-                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
-                      <CardHeader>
-                        <Flex direction="row" justifyContent="space-between">
-                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Bridges used
-                          </Heading>
-                          <TimeFilter />
-                        </Flex>
-                      </CardHeader>
-                      <CardBody>
-                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                          <GridItem
-                            colSpan={6}
-                            alignContent="center"
-                            justifyContent="center"
-                          >
-                            <ResponsiveContainer width="100%" height={200}>
-                              <PieChart>
-                                <Pie
-                                  data={
-                                    txsSummaryByContract.data?.txsByContract
-                                  }
-                                  dataKey="txCount"
-                                  nameKey="contract"
-                                  cx="50%"
-                                  cy="50%"
-                                  outerRadius={60}
-                                  fill=""
-                                  label
-                                >
-                                  {txsSummaryByContract.data?.txsByContract.map(
-                                    (entry: any, index: number) => (
-                                      // Check if index is less than or equal to 8
-                                      <Cell
-                                        key={`cell-${index}`}
-                                        fill={
-                                          index < 8
-                                            ? COLORS[index % COLORS.length]
-                                            : '#BBBBBB'
-                                        }
-                                      />
-                                    )
-                                  )}
-                                </Pie>
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </GridItem>
-                          <GridItem colSpan={6}>
-                            <Flex
-                              direction="column"
-                              height="100%"
-                              justifyContent="center"
-                              p={4}
-                            >
-                              {txsSummaryByContract.data?.txsByContract.map(
-                                (item, index) =>
-                                  // Check if index is less than 8
-                                  index < 8 && (
-                                    <Flex
-                                      direction="row"
-                                      alignItems="center"
-                                      key={index}
-                                      gap={2}
-                                    >
-                                      <Circle
-                                        size={4}
-                                        style={{
-                                          backgroundColor:
-                                            COLORS[index % COLORS.length]
-                                        }}
-                                      />
-                                      <Button
-                                        as="a"
-                                        variant="link"
-                                        href={`https://etherscan.io/address/${item.contract}`}
-                                        target="_blank"
-                                      >
-                                        <Text>
-                                          {getFormattedAddress(item.contract)}
-                                        </Text>
-                                      </Button>
-                                    </Flex>
-                                  )
-                              )}
-                            </Flex>
-                          </GridItem>
-                        </Grid>
-                      </CardBody>
-                    </Card>
-                  </Flex>
-                </GridItem>
-                <GridItem colSpan={{ base: 12, lg: 8 }}>
-                  <Flex direction="column" gap={4}>
-                    <Card size={{ base: 'sm', md: 'md', lg: 'lg' }}>
-                      <CardHeader>
-                        <Flex direction="row" justifyContent="space-between">
-                          <Heading fontSize={{ base: 'md', lg: 'xl' }}>
-                            Total Fees Paid
-                          </Heading>
-                          <TimeFilter />
-                        </Flex>
-                      </CardHeader>
-                      <CardBody>
-                        <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                          <GridItem
-                            colSpan={12}
-                            alignContent="center"
-                            justifyContent="center"
-                          >
-                            <ResponsiveContainer width="100%" minHeight={200}>
-                              <BarChart
-                                width={730}
-                                height={250}
-                                data={txsSummaryQueries.data?.txsByDay}
-                              >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="feesPaidSum" fill="#8884d8" />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </GridItem>
-                        </Grid>
-                      </CardBody>
-                    </Card>
-                  </Flex>
-                </GridItem>
-              </Grid>
-            </TabPanel>
-            <TabPanel>
-              <p>two!</p>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Flex>
+                </CardBody>
+              </Card>
+            </GridItem>
+          </Grid>
+        </GridItem>
+      </Grid>
     </Flex>
   );
 }
