@@ -47,7 +47,7 @@ const ChainSelector = ({ chainConfigs }: { chainConfigs: Chain[] }) => {
             <FiChevronDown />
           </Box>
           {currentChain?.is_testnet && (
-            <Badge colorScheme="red">{currentChain.name} Testnet</Badge>
+            <Badge colorScheme="red">{currentChain.label}</Badge>
           )}
         </Flex>
       </MenuButton>
@@ -61,7 +61,7 @@ const ChainSelector = ({ chainConfigs }: { chainConfigs: Chain[] }) => {
           >
             <Image
               src={chain.logo_url}
-              alt={chain.name}
+              alt={chain.label}
               boxSize={6}
               rounded="full"
             />
