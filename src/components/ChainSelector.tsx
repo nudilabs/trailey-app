@@ -65,7 +65,7 @@ const ChainSelector = ({ chainConfigs }: { chainConfigs: Chain[] }) => {
               boxSize={6}
               rounded="full"
             />
-            {chain.name}
+            {chain.label}
           </MenuItem>
         ))}
       </MenuList>
