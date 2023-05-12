@@ -1,7 +1,6 @@
 import ChainSelector from '@/components/ChainSelector';
 import OverviewCard from '@/components/OverviewCard';
 import { IProfile } from '@/types/IProfile';
-import { generateColorFromString } from '@/utils/format';
 import {
   Box,
   Button,

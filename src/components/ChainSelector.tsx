@@ -45,16 +45,6 @@ const ChainSelector = () => {
     const query = { ...router.query, chain };
     router.push({ query });
   };
-
-  useEffect(() => {
-    const fetchChains = async () => {
-      const response = await fetch('/chains');
-      const data = await response.json();
-      setChains(data);
-    };
-    fetchChains();
-  });
-
   return (
     <Menu>
       <MenuButton
