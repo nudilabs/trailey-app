@@ -830,6 +830,7 @@ export const getServerSideProps = async (context: {
   const p = context.params;
   const addressType = getAddressType(p.address);
   const chainConfigs = get('chains');
+  console.log('chainConfigs', chainConfigs);
 
   if (!addressType) {
     return {
