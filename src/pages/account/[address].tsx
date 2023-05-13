@@ -687,7 +687,7 @@ const fetchAddressProps = async (address: string) => {
   const [avatarUrl] = await Promise.all([avatarUrlPromise()]);
 
   return {
-    ensName: ensName ? ensName : 'Unidentified',
+    ensName: ensName ?? 'Unidentified',
     address,
     avatarUrl
   };

@@ -1,59 +1,14 @@
-import BridgedCard from '@/components/BridgedCard';
-import ChainSelector from '@/components/ChainSelector';
-import OverviewCard from '@/components/OverviewCard';
-import TrendingCardSmall from '@/components/TrendingCardSmall';
-import TxnsFrequency from '@/components/TxnsFrequency';
-import TxnsOvertimeCard from '@/components/TxnsOvertimeCard';
-import TxnsCard from '@/components/TxnsOvertimeCard';
-import TxnsValueCard from '@/components/TxnsValueCard';
-import { getFormattedAddress } from '@/utils/format';
 import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
   Flex,
-  Grid,
-  GridItem,
   Heading,
-  IconButton,
-  Image,
   Input,
-  Link,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  Tooltip,
-  useToast,
-  useColorModeValue,
-  Tag,
-  TagLabel,
-  TagCloseButton,
-  TagLeftIcon
+  Text
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import {
-  FiArrowRight,
-  FiCopy,
-  FiDroplet,
-  FiGrid,
-  FiPlus,
-  FiPlusCircle,
-  FiSettings,
-  FiStopCircle,
-  FiX
-} from 'react-icons/fi';
 
 const MOCK_GOALS_DATA = [
   {
