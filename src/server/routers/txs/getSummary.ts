@@ -41,7 +41,6 @@ export const getSummary = publicProcedure
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          eq(transactions.success, true),
           timeSpan === 0
             ? sql`1`
             : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`
