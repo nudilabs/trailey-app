@@ -46,9 +46,7 @@ const ChainSelector = ({ chainConfigs }: { chainConfigs: Chain[] }) => {
           <Box color={useColorModeValue('gray.400', 'gray.600')}>
             <FiChevronDown />
           </Box>
-          {currentChain?.is_testnet && (
-            <Badge colorScheme="red">{currentChain.label}</Badge>
-          )}
+          {currentChain?.is_testnet && <Badge colorScheme="red">Testnet</Badge>}
         </Flex>
       </MenuButton>
       <MenuList>

@@ -180,6 +180,9 @@ export function formatPrettyNumber(num: number) {
   }
 }
 
-export function formatDecimals(num: number, decimals = 2) {
+export function formatDecimals(num: number | undefined, decimals = 2) {
+  if (num === undefined) {
+    return 0; // or undefined, or any other value you prefer
+  }
   return Number(num).toFixed(decimals);
 }

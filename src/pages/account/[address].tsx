@@ -1,6 +1,4 @@
-import BridgedCard from '@/components/BridgedCard';
 import ChainSelector from '@/components/ChainSelector';
-import TrendingCardSmall from '@/components/TrendingCardSmall';
 import { isAddress } from 'viem';
 import { normalize } from 'viem/ens';
 import { publicClient } from '@/utils/client';
@@ -19,11 +17,6 @@ import {
   Heading,
   IconButton,
   Image,
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuItem,
-  MenuList,
   Stat,
   StatArrow,
   StatHelpText,
@@ -49,7 +42,6 @@ import { useRouter } from 'next/router';
 import {
   FiArrowDownCircle,
   FiBox,
-  FiChevronDown,
   FiInfo,
   FiPlusCircle,
   FiRefreshCw
@@ -60,18 +52,15 @@ import {
   getEthFromWei,
   getFormattedAddress
 } from '@/utils/format';
-import TimeFilter from '@/components/TimeFilter';
+
 import { trpc } from '@/connectors/Trpc';
 import { useEffect, useState } from 'react';
-import { generateColorFromString } from '@/utils/format';
+
 import { Avatar } from '@/components/Avatar';
 import {
   Legend,
-  Pie,
-  PieChart,
   PolarAngleAxis,
   PolarGrid,
-  PolarRadiusAxis,
   Radar,
   RadarChart,
   ResponsiveContainer
@@ -80,48 +69,11 @@ import {
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
 
-const MOCK_CHAINS = [
-  {
-    name: 'Ethereum',
-    icon: '/eth.png',
-    isTestnet: false
-  },
-  {
-    name: 'Goerli',
-    icon: '/eth.png',
-    isTestnet: true
-  },
-  {
-    name: 'Polygon',
-    icon: '/polygon.jpeg',
-    isTestnet: false
-  }
-];
-
-const COLORS = [
-  '#0088FE',
-  '#00C49F',
-  '#FFBB28',
-  '#FF8042',
-  '#AF19FF',
-  '#FF0000'
-];
-
-const chains: { [key: string]: string } = {
-  ethereum: 'eth-mainnet'
-};
-
 const times: { [key: string]: number } = {
   '24h': 1,
   '7d': 7,
   '30d': 30,
   all: 0
-};
-
-type Data = {
-  date: string;
-  txCount: number | undefined;
-  contractCount: number | undefined;
 };
 
 const data = [
@@ -158,28 +110,11 @@ const data = [
   }
 ];
 
-type txsByContract = {
-  contract: string;
-  txCount: number;
-  txValue: number;
-  feesPaidSum: string;
-};
-
 const steps = [
   { title: 'Top 50%', description: `10 txs` },
   { title: 'Top 25%', description: '50 txs' },
   { title: 'Top 10%', description: '100 txs' }
 ];
-
-const curatedProtocols: { [key: string]: { name: string; img?: string } } = {
-  '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b': {
-    name: 'Uniswap: Universal Router',
-    img: '/protocols/uniswap.png'
-  },
-  '0x5427fefa711eff984124bfbb1ab6fbf5e3da1820': {
-    name: 'Celer Network: cBridge V2'
-  }
-};
 
 export default function Account({
   address,
@@ -193,7 +128,7 @@ export default function Account({
   chainConfigs: Chain[];
 }) {
   const toast = useToast();
-  const [currentChain, setCurrentChain] = useState<string>('ethereum');
+  const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const router = useRouter();
   const { chain, time } = router.query;
@@ -201,13 +136,13 @@ export default function Account({
 
   // all time stats
   const txsSummaryQueriesAllTime = trpc.txs.getSummary.useQuery({
-    chainName: chains[currentChain],
+    chainName: currentChain.name,
     walletAddr: address,
     timeSpan: 0
   });
   // last week stats
   const txsSummaryQueriesLastWeek = trpc.txs.getSummary.useQuery({
-    chainName: chains[currentChain],
+    chainName: currentChain.name,
     walletAddr: address,
     timeSpan: 7
   });
@@ -217,67 +152,17 @@ export default function Account({
     count: steps.length
   });
 
-  const txsSummaryByDayQueries = trpc.txs.getSummaryByDay.useQuery({
-    chainName: chains[currentChain],
-    walletAddr: address,
-    timeSpan: times[currentTime]
-  });
-
-  const txsSummaryByContract = trpc.txs.getSummaryByContract.useQuery({
-    chainName: chains[currentChain],
-    walletAddr: address,
-    timeSpan: times[currentTime]
-  });
-
   const txsSummaryByContractAllTime = trpc.txs.getSummaryByContract.useQuery({
-    chainName: chains[currentChain],
+    chainName: currentChain.name,
     walletAddr: address,
     timeSpan: 0
   });
 
   const txsSummaryByContractLastWeek = trpc.txs.getSummaryByContract.useQuery({
-    chainName: chains[currentChain],
+    chainName: currentChain.name,
     walletAddr: address,
     timeSpan: 7
   });
-
-  const protocolUsage: {
-    contract: string;
-    txCountAllTime: number;
-    txCountLastWeek: number;
-    txValueSumAllTime: number;
-    txValueSumLastWeek: number;
-    txCountChangePercentage: number;
-    txValueSumChangePercentage: number;
-  }[] = [];
-
-  txsSummaryByContractAllTime.data?.txsByContract.forEach(contract => {
-    const contractLastWeek =
-      txsSummaryByContractLastWeek.data?.txsByContract.find(
-        c => c.contract === contract.contract
-      );
-    const contractUsage = {
-      contract: contract.contract,
-      txCountAllTime: contract.txCount,
-      txCountLastWeek: contractLastWeek?.txCount || 0,
-      txValueSumAllTime: contract.txValueSum,
-      txValueSumLastWeek: contractLastWeek?.txValueSum || 0,
-      txCountChangePercentage: contractLastWeek
-        ? ((contract.txCount - contractLastWeek.txCount) /
-            contractLastWeek.txCount) *
-          100
-        : 0,
-      txValueSumChangePercentage: contractLastWeek
-        ? ((contract.txValueSum - contractLastWeek.txValueSum) /
-            contractLastWeek.txValueSum) *
-          100
-        : 0
-    };
-    protocolUsage.push(contractUsage);
-  });
-  protocolUsage.sort(
-    (a, b) => b.txCountChangePercentage - a.txCountChangePercentage
-  );
 
   const topContract =
     txsSummaryByContractAllTime.data?.txsByContract &&
@@ -326,7 +211,8 @@ export default function Account({
 
   useEffect(() => {
     if (chain) {
-      setCurrentChain(chain as string);
+      const currentChain = chainConfigs.find(c => c.name === chain);
+      setCurrentChain(currentChain ?? chainConfigs[0]);
     }
     if (time) {
       setCurrentTime(time as string);
@@ -567,11 +453,6 @@ export default function Account({
                             ${formatDecimals(totalValue)}
                           </Text>
                         </StatNumber>
-                        {curatedProtocols[topContract] && (
-                          <StatHelpText>
-                            {curatedProtocols[topContract].name}
-                          </StatHelpText>
-                        )}
                       </Stat>
                       <Tooltip label="More Info" hasArrow>
                         <IconButton
@@ -685,24 +566,27 @@ export default function Account({
                 </CardHeader>
                 <CardBody>
                   <Flex direction="row" gap={4} overflow="scroll">
-                    {protocolUsage.map((protocol, index) => (
-                      <>
-                        {curatedProtocols[protocol.contract] && (
+                    {currentChain.protocols &&
+                      currentChain.protocols.map((protocol, index) => {
+                        const protocolUsageAllTime =
+                          txsSummaryByContractAllTime.data?.txsByContract.find(
+                            tx => tx.contract === protocol.contract
+                          );
+                        const protocolUsageLastWeek =
+                          txsSummaryByContractLastWeek.data?.txsByContract.find(
+                            tx => tx.contract === protocol.contract
+                          );
+                        return (
                           <Card key={index} size="md" minWidth="240px">
                             <CardBody>
                               <Flex direction="column">
                                 <Flex direction="row" alignItems="center">
-                                  {curatedProtocols[protocol.contract]?.img && (
+                                  {protocol.logo_url && (
                                     <Image
-                                      src={
-                                        curatedProtocols[protocol.contract]?.img
-                                      }
+                                      src={protocol.logo_url}
                                       boxSize="24px"
                                       mr={1}
-                                      alt={
-                                        curatedProtocols[protocol.contract]
-                                          ?.name
-                                      }
+                                      alt={protocol.label}
                                     />
                                   )}
                                   <Text
@@ -710,25 +594,30 @@ export default function Account({
                                     fontWeight="bold"
                                     color={subHeadingColor}
                                   >
-                                    {curatedProtocols[protocol.contract]
-                                      ?.name ||
-                                      getFormattedAddress(protocol.contract)}
+                                    {protocol.label}
                                   </Text>
                                 </Flex>
                                 <Flex direction="row" alignItems="center">
                                   <Heading fontSize="xl" fontWeight="bold">
-                                    {protocol.txCountAllTime} txs
+                                    {protocolUsageAllTime?.txCount ?? 0} txs
                                   </Heading>
                                   <Badge
                                     ml={2}
                                     colorScheme={
-                                      protocol.txCountChangePercentage > 0
+                                      getPercentageChangeSinceLastWeek(
+                                        protocolUsageAllTime?.txCount,
+                                        protocolUsageLastWeek?.txCount
+                                      ) > 0
                                         ? 'green'
                                         : 'gray'
                                     }
                                     rounded="md"
                                   >
-                                    {protocol.txCountChangePercentage}%
+                                    {getPercentageChangeSinceLastWeek(
+                                      protocolUsageAllTime?.txCount,
+                                      protocolUsageLastWeek?.txCount
+                                    )}
+                                    %
                                   </Badge>
                                 </Flex>
                                 <Flex direction="row" alignItems="center">
@@ -738,16 +627,17 @@ export default function Account({
                                     color={subHeadingColor}
                                   >
                                     $
-                                    {formatDecimals(protocol.txValueSumAllTime)}{' '}
-                                    (volume)
+                                    {formatDecimals(
+                                      protocolUsageAllTime?.txValueSum
+                                    )}{' '}
+                                    (value)
                                   </Text>
                                 </Flex>
                               </Flex>
                             </CardBody>
                           </Card>
-                        )}
-                      </>
-                    ))}
+                        );
+                      })}
                   </Flex>
                 </CardBody>
               </Card>
@@ -758,6 +648,17 @@ export default function Account({
     </Flex>
   );
 }
+
+const getPercentageChangeSinceLastWeek = (
+  allTime?: number,
+  lastWeek?: number
+) => {
+  if (allTime === undefined || lastWeek === undefined) {
+    return 0;
+  }
+  const percentageChange = ((allTime - lastWeek) / lastWeek) * 100;
+  return Number(percentageChange.toFixed(2));
+};
 
 const getAddressType = (address: string): string | null => {
   if (isAddress(address)) {
@@ -829,7 +730,8 @@ export const getServerSideProps = async (context: {
   );
   const p = context.params;
   const addressType = getAddressType(p.address);
-  const chainConfigs = await get('chains');
+  // const chainConfigs = await get('chains');
+  const chainConfigs = testChainConfigs;
 
   if (!addressType) {
     return {
@@ -852,3 +754,42 @@ export const getServerSideProps = async (context: {
     };
   }
 };
+
+const testChainConfigs = [
+  {
+    name: 'eth-mainnet',
+    chain_id: '1',
+    is_testnet: false,
+    label: 'Ethereum Mainnet',
+    category_label: 'Ethereum',
+    logo_url: '/eth.png',
+    black_logo_url: '/eth.png',
+    white_logo_url: '/eth.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [
+      {
+        contract: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+        label: 'Uniswap',
+        logo_url: '/protocols/uniswap.png'
+      },
+      {
+        contract: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
+        label: 'Pepe',
+        logo_url: '/protocols/uniswap.png'
+      }
+    ]
+  },
+  {
+    name: 'eth-goerli',
+    chain_id: '5',
+    is_testnet: true,
+    label: 'Ethereum Goerli Testnet',
+    category_label: 'Ethereum',
+    logo_url: '/eth.png',
+    black_logo_url: '/eth.png',
+    white_logo_url: '/eth.png',
+    is_appchain: false,
+    appchain_of: null
+  }
+];

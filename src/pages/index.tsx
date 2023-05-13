@@ -220,7 +220,7 @@ export default function Home({
     <Flex direction="column" paddingTop={4} gap={4}>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
         {/* START TOP STATS */}
-        <GridItem
+        {/* <GridItem
           display={{ base: 'none', md: 'block' }}
           colSpan={{ base: 6, md: 3 }}
         >
@@ -323,115 +323,108 @@ export default function Home({
               </Flex>
             </CardBody>
           </Card>
-        </GridItem>
+        </GridItem> */}
         {/* END TOP STATS */}
         <GridItem colSpan={{ base: 12, lg: 4 }}>
-          <Card size="lg">
-            <CardHeader>
-              <Flex
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Heading size="md">Profile</Heading>
-                <IconButton aria-label="Profile" icon={<FiEdit />} />
-              </Flex>
-            </CardHeader>
-            <CardBody>
-              <Flex direction="column" gap={4}>
-                <AvatarGroup
-                  wallets={profilesData[currentProfile].wallets}
-                  max={5}
-                />
-                {profilesData[currentProfile] && (
-                  <Flex direction="column">
-                    <Heading>{profilesData[currentProfile].name}</Heading>
-                    <Text color={subHeadingColor}>
-                      {profilesData[currentProfile].wallets.length} Wallets
-                    </Text>
+          <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+            <GridItem colSpan={{ base: 12, lg: 12 }}>
+              <Card size="lg">
+                <CardHeader>
+                  <Flex
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Heading size="md">Profile</Heading>
+                    <IconButton aria-label="Profile" icon={<FiEdit />} />
                   </Flex>
-                )}
-              </Flex>
-            </CardBody>
-          </Card>
+                </CardHeader>
+                <CardBody>
+                  <Flex direction="column" gap={4}>
+                    <AvatarGroup
+                      wallets={profilesData[currentProfile].wallets}
+                      max={5}
+                    />
+                    {profilesData[currentProfile] && (
+                      <Flex direction="column">
+                        <Heading>{profilesData[currentProfile].name}</Heading>
+                        <Text color={subHeadingColor}>
+                          {profilesData[currentProfile].wallets.length} Wallets
+                        </Text>
+                      </Flex>
+                    )}
+                  </Flex>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={{ base: 6, md: 3, lg: 6 }}>
+              <Card size="lg">
+                <CardBody>
+                  <Stat>
+                    <StatLabel>Wallets</StatLabel>
+                    <StatNumber>
+                      {profilesData[currentProfile].wallets.length}
+                    </StatNumber>
+                    <StatHelpText>
+                      <StatArrow type="increase" />
+                      100
+                    </StatHelpText>
+                  </Stat>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={{ base: 6, md: 3, lg: 6 }}>
+              <Card size="lg">
+                <CardBody>
+                  <Stat>
+                    <StatLabel>Wallets</StatLabel>
+                    <StatNumber>
+                      {profilesData[currentProfile].wallets.length}
+                    </StatNumber>
+                    <StatHelpText>
+                      <StatArrow type="increase" />
+                      100
+                    </StatHelpText>
+                  </Stat>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={{ base: 6, md: 3, lg: 6 }}>
+              <Card size="lg">
+                <CardBody>
+                  <Stat>
+                    <StatLabel>Wallets</StatLabel>
+                    <StatNumber>
+                      {profilesData[currentProfile].wallets.length}
+                    </StatNumber>
+                    <StatHelpText>
+                      <StatArrow type="increase" />
+                      100
+                    </StatHelpText>
+                  </Stat>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={{ base: 6, md: 3, lg: 6 }}>
+              <Card size="lg">
+                <CardBody>
+                  <Stat>
+                    <StatLabel>Wallets</StatLabel>
+                    <StatNumber>
+                      {profilesData[currentProfile].wallets.length}
+                    </StatNumber>
+                    <StatHelpText>
+                      <StatArrow type="increase" />
+                      100
+                    </StatHelpText>
+                  </Stat>
+                </CardBody>
+              </Card>
+            </GridItem>
+          </Grid>
         </GridItem>
         {/* START BOTTOM STATS */}
-        <GridItem
-          display={{ base: 'block', md: 'none' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Stat>
-                <StatLabel>Wallets</StatLabel>
-                <StatNumber>
-                  {profilesData[currentProfile].wallets.length}
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  100
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem
-          display={{ base: 'block', md: 'none' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Stat>
-                <StatLabel>Wallets</StatLabel>
-                <StatNumber>
-                  {profilesData[currentProfile].wallets.length}
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  100
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem
-          display={{ base: 'block', md: 'none' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Stat>
-                <StatLabel>Wallets</StatLabel>
-                <StatNumber>
-                  {profilesData[currentProfile].wallets.length}
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  100
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem
-          display={{ base: 'block', md: 'none' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Stat>
-                <StatLabel>Wallets</StatLabel>
-                <StatNumber>
-                  {profilesData[currentProfile].wallets.length}
-                </StatNumber>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  100
-                </StatHelpText>
-              </Stat>
-            </CardBody>
-          </Card>
-        </GridItem>
+
         {/* END BOTTOM STATS */}
         <GridItem colSpan={{ base: 12, lg: 8 }}>
           <OverviewCard isLoading={isLoading} txData={txData} />
