@@ -22,7 +22,7 @@ const schema = z.object({
   chainName: z.string(),
   walletAddr: z.string(),
   startPage: z.number().int(),
-  endPage: z.number().int(),
+  // endPage: z.number().int(),
   totalPage: z.number().int().positive()
 });
 
@@ -30,7 +30,7 @@ const getTxs = async (
   chainName: string,
   walletAddr: string,
   startPage: number,
-  endPage: number,
+  // endPage: number,
   chainId: number,
   totalPage: number
 ) => {
@@ -40,10 +40,10 @@ const getTxs = async (
   // if(startPage+serverConfig)
 
   let totalGetPage;
-  if (startPage + serverConfig.batchSize > totalPage) {
+  if (startPage + serverConfig.pagePerBatch > totalPage) {
     totalGetPage = totalPage - startPage;
   } else {
-    totalGetPage = serverConfig.batchSize;
+    totalGetPage = serverConfig.pagePerBatch;
   }
   const batchCount = Math.ceil(totalGetPage / batch);
 
@@ -57,14 +57,16 @@ const getTxs = async (
 
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
-      if (!(page < totalPage)) break;
+      if (!(page < totalPage) || i * batch + j >= totalGetPage) break;
+      console.log('round', i * batch + j);
       promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
     const res = await Promise.all(promises);
+    // console.log('res', res.length);
     for (let j = 0; j < res.length; j++) {
       let tmpData = [];
-      for (const item of res[j]?.data?.items) {
+      for (const item of res[j]?.data?.data.items) {
         if (item.from_address !== walletAddr.toLowerCase()) continue;
 
         const signDate = moment.utc(item.block_signed_at).toDate();
@@ -109,6 +111,7 @@ const getTxs = async (
 };
 
 export default async function handler(req: NextRequest) {
+  console.log('store-txs trigger');
   if (req.method !== 'POST')
     return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
 
@@ -119,7 +122,6 @@ export default async function handler(req: NextRequest) {
   );
 
   const valid = await qstash.auth(req);
-
   if (!valid)
     return NextResponse.json(null, {
       status: 401,
@@ -128,8 +130,7 @@ export default async function handler(req: NextRequest) {
 
   try {
     const json = await req.json();
-    const { chainName, walletAddr, totalPage, startPage, endPage } =
-      schema.parse(json);
+    const { chainName, walletAddr, totalPage, startPage } = schema.parse(json);
 
     const supportedChain = await db
       .select()
@@ -150,7 +151,7 @@ export default async function handler(req: NextRequest) {
       chainName,
       walletAddr,
       startPage,
-      endPage,
+      // endPage,
       chainId,
       totalPage
     );
@@ -162,11 +163,13 @@ export default async function handler(req: NextRequest) {
     }
 
     const nextStartPage =
-      startPage + serverConfig.batchSize > totalPage
+      startPage + serverConfig.pagePerBatch > totalPage
         ? totalPage
-        : startPage + serverConfig.batchSize;
+        : startPage + serverConfig.pagePerBatch;
     // const nextEndPage =
     //   nextStartPage + 50 > totalPage ? totalPage - 1 : nextStartPage + 50;
+    console.log('nextStartPage', nextStartPage);
+    console.log('totalPage', totalPage);
 
     if (nextStartPage < totalPage) {
       const nextStore = {
@@ -176,9 +179,10 @@ export default async function handler(req: NextRequest) {
         // endPage: nextEndPage,
         totalPage
       };
+      console.log('nextStore', nextStore);
       //create hash for deduplication id from nextStore
       const deduplicationId = sha256(JSON.stringify(nextStore)).toString();
-      await qstash.publishMsg('store-txs', nextStore, deduplicationId);
+      await qstash.publishMsg('store-txs', nextStore);
       console.log('deduplicationId: ', deduplicationId);
 
       return NextResponse.json(

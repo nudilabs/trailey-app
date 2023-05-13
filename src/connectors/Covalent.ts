@@ -37,7 +37,7 @@ export class Covalent {
   }
 
   public async getWalletRecentTxs(chainName: string, walletAddr: string) {
-    const url = `${this.endPointUrl}${chainName}/address/${walletAddr}/transactions_3/`;
+    const url = `${this.endPointUrl}${chainName}/address/${walletAddr}/transactions_v3/`;
     const res = await this.fetchFromCovalent(url);
     try {
       const data = await res?.json();

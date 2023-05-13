@@ -17,5 +17,6 @@ export const config = {
   serverUrl: String(process.env.SERVER_HOST || 'http://localhost:3000/api/'),
 
   //indexer
-  batchSize: Number(process.env.INDEX_BATCH_SIZE || 7)
+  batchSize: Number(process.env.INDEX_BATCH_SIZE || 7),
+  pagePerBatch: Number(process.env.INDEX_PAGE_PER_BATCH || 50)
 };

@@ -28,7 +28,6 @@ export class QStash {
     const signature = req.headers.get('upstash-signature') as
       | string
       | undefined;
-    console.log({ signature });
     if (!signature) {
       throw new SignatureError('signature is missing');
     }
@@ -52,7 +51,7 @@ export class QStash {
         throw new SignatureError(`invalid issuer: ${payload.iss}`);
       }
 
-      if (typeof req.url !== 'undefined' && payload.sub !== req.url) {
+      if (typeof req.url === undefined && payload.sub !== req.url) {
         throw new SignatureError(
           `invalid subject: ${payload.sub}, want: ${req.url}`
         );
@@ -61,7 +60,6 @@ export class QStash {
 
       if (payload.exp && payload.nbf) {
         if (now > payload.exp) {
-          console.log({ now, exp: payload.exp });
           throw new SignatureError('token has expired');
         }
         if (now < payload.nbf) {
@@ -70,8 +68,9 @@ export class QStash {
       }
 
       return true;
-    } catch {
-      throw new SignatureError('signature does not match');
+    } catch (e) {
+      // throw new SignatureError('signature does not match');
+      return false;
     }
   }
 
@@ -83,16 +82,11 @@ export class QStash {
     return await this.authWithKey(this.nextSigningKey, req);
   }
 
-  public async publishMsg(
-    path: string,
-    body: any,
-    deduplicationId: string
-  ): Promise<any> {
+  public async publishMsg(path: string, body: any): Promise<any> {
     const client = new Client({ token: String(this.apiToken) });
     const response = await client.publishJSON({
       url: serverConfig.serverUrl + path,
-      body,
-      deduplicationId
+      body
     });
     return response;
   }
