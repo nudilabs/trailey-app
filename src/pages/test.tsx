@@ -3,13 +3,8 @@ import { trpc } from '@/connectors/Trpc';
 const addresses = [
   {
     chainName: 'eth-mainnet',
-    walletAddr: '0xae2Fc483527B8EF99EB5D9B44875F005ba1FaE13',
+    walletAddr: '0x523AA9E71e90b8986933A494214EAc2fc60f8a2a',
     timeSpan: 65
-  },
-  {
-    chainName: 'eth-mainnet',
-    walletAddr: '0xae2Fc483527B8EF99EB5D9B44875F005ba1FaE13',
-    timeSpan: 60
   }
 ];
 
@@ -22,7 +17,7 @@ const Test = () => {
   //   });
   const txQueries = trpc.useQueries(t =>
     addresses.map(addr =>
-      t.txs.getSummaryByDay({
+      t.txs.getSummaryByContract({
         chainName: addr.chainName,
         walletAddr: addr.walletAddr,
         timeSpan: addr.timeSpan

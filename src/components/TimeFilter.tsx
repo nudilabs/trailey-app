@@ -1,6 +1,6 @@
 import { Flex, Button, useColorModeValue } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function TimeFilter() {
   const options = [
@@ -12,6 +12,10 @@ function TimeFilter() {
 
   const router = useRouter();
   const [selectedTime, setSelectedTime] = useState(router.query.time || '7d');
+
+  useEffect(() => {
+    setSelectedTime(router.query.time || '7d');
+  }, [router.query.time]);
 
   const handleSelectTime = (time: string) => {
     setSelectedTime(time);

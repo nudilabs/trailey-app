@@ -3,6 +3,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { publicProcedure } from '@/server/trpc';
 import { db } from '@/db/drizzle-db';
 import { supportChains, transactions } from '@/db/schema';
+import { getEthFromWei } from '@/utils/format';
 
 export const getSummary = publicProcedure
   .input(
@@ -45,7 +46,8 @@ export const getSummary = publicProcedure
             ? sql`1`
             : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`
         )
-      );
+      )
+      .orderBy(sql`DATE(block_signed_at) DESC`);
     return {
       txCount: data[0].txCount,
       contractCount: data[0].contractCount,
@@ -104,11 +106,69 @@ export const getSummaryByDay = publicProcedure
         txCount: tx.txCount,
         contractCount: tx.contractCount,
         txValueSum: tx.valueSum,
-        feesPaidSum: tx.feesPaidSum
+        feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
       };
     });
     return {
       txsByDay: txsByDayFormatted,
+      message: `Found transaction data for chain ${supportedChain[0].name} in the last ${timeSpan} days.`
+    };
+  });
+
+export const getSummaryByContract = publicProcedure
+  .input(
+    z.object({
+      chainName: z.string(),
+      walletAddr: z.string(),
+      timeSpan: z.number()
+    })
+  )
+  .query(async opts => {
+    const { chainName, walletAddr, timeSpan } = opts.input;
+    const supportedChain = await db
+      .select()
+      .from(supportChains)
+      .where(eq(supportChains.name, chainName));
+    if (supportedChain.length === 0)
+      return {
+        txsByContract: [],
+        message: `Chain ${chainName} is not supported`
+      };
+
+    const chainId = supportedChain[0].id;
+    const txsByContract = await db
+      .select({
+        contract: sql`to_address`,
+        txCount: sql`count(tx_hash)`,
+        valueSum: sql`sum(value_quote)`,
+        feesPaidSum: sql`sum(fees_paid)` // CHECK THIS, does it include failed TXs?
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.chainId, chainId),
+          eq(transactions.fromAddress, walletAddr),
+          eq(transactions.success, true),
+          timeSpan === 0
+            ? sql`1`
+            : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`,
+          eq(transactions.isInteract, true)
+        )
+      )
+      .groupBy(sql`to_address`)
+      .orderBy(sql`count(tx_hash) DESC`);
+
+    const txsByContractFormatted = txsByContract.map(tx => {
+      return {
+        contract: tx.contract,
+        txCount: Number(tx.txCount),
+        txValueSum: tx.valueSum,
+        feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
+      };
+    });
+    console.log(txsByContractFormatted);
+    return {
+      txsByContract: txsByContractFormatted,
       message: `Found transaction data for chain ${supportedChain[0].name} in the last ${timeSpan} days.`
     };
   });
