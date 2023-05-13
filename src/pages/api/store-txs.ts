@@ -1,10 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle-db';
-import { InferModel } from 'drizzle-orm';
+import { Transaction } from '@/types/DB';
+// import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
-import { Receiver } from '@upstash/qstash';
+import { QStash } from '@/connectors/Qstash';
+import sha256 from 'crypto-js/sha256';
+import { Covalent } from '@/connectors/Covalent';
+// import { Receiver } from '@upstash/qstash';
 import moment from 'moment';
 import * as z from 'zod';
 
@@ -12,68 +16,57 @@ export const config = {
   runtime: 'edge'
 };
 
-type Transaction = InferModel<typeof transactions, 'insert'>;
+// type Transaction = InferModel<typeof transactions, 'insert'>;
 
 const schema = z.object({
   chainName: z.string(),
   walletAddr: z.string(),
   startPage: z.number().int(),
-  endPage: z.number().int(),
+  // endPage: z.number().int(),
   totalPage: z.number().int().positive()
 });
-
-const getTxsByPage = async (
-  chainName: string,
-  walletAddr: string,
-  page: number
-) => {
-  const url = `https://api.covalenthq.com/v1/${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
-  let headers = new Headers();
-  headers.set('Authorization', 'Basic ' + btoa(serverConfig.covalentKey));
-  const res = await fetch(url, { method: 'GET', headers });
-  console.log(res.status);
-  try {
-    const data = await res.json();
-    return data;
-  } catch (e) {
-    // console.log(await res.json());
-    // const resD = await res.json();
-
-    console.log('error from covalent');
-    console.log(e);
-  }
-};
 
 const getTxs = async (
   chainName: string,
   walletAddr: string,
   startPage: number,
-  endPage: number,
+  // endPage: number,
   chainId: number,
   totalPage: number
 ) => {
   const txs = [];
-  const totalGetPage = endPage - startPage;
 
-  const batch = 7;
+  const batch = serverConfig.batchSize;
+  // if(startPage+serverConfig)
+
+  let totalGetPage;
+  if (startPage + serverConfig.pagePerBatch > totalPage) {
+    totalGetPage = totalPage - startPage;
+  } else {
+    totalGetPage = serverConfig.pagePerBatch;
+  }
   const batchCount = Math.ceil(totalGetPage / batch);
+
   console.log('totalPage', totalGetPage);
   console.log('batchCount', batchCount);
+
+  const covalent = new Covalent(serverConfig.covalent.key);
 
   for (let i = 0; i < batchCount; i++) {
     const promises = [];
 
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
-      // if (page >= totalPage) break;
-      if (page >= endPage) break;
-      promises.push(getTxsByPage(chainName, walletAddr, page));
+      if (!(page < totalPage) || i * batch + j >= totalGetPage) break;
+      console.log('round', i * batch + j);
+      promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
-    const data = await Promise.all(promises);
-    for (let j = 0; j < data.length; j++) {
+    const res = await Promise.all(promises);
+    // console.log('res', res.length);
+    for (let j = 0; j < res.length; j++) {
       let tmpData = [];
-      for (const item of data[j].data.items) {
+      for (const item of res[j]?.data?.data.items) {
         if (item.from_address !== walletAddr.toLowerCase()) continue;
 
         const signDate = moment.utc(item.block_signed_at).toDate();
@@ -91,6 +84,8 @@ const getTxs = async (
           value: item.value,
           valueQuote: item.value_quote,
           feesPaid: item.fees_paid,
+          gasQuote: item.gas_quote,
+          page: res[j]?.page,
           chainId
         };
 
@@ -115,53 +110,27 @@ const getTxs = async (
   return txs;
 };
 
-// const isFromQueue = async (req: NextRequest) => {
-//   const signature = req.headers.get('upstash-signature') as string | undefined;
-//   // console.log({ signature });
-//   if (!signature) {
-//     return { valid: false,msg: "Signature is missing"};
-//   }
-
-//   const currentSigningKey = process.env.QSTASH_CURRENT_SIGNING_KEY;
-//   if (!currentSigningKey) {
-//     return { valid: false,msg: null};
-//   }
-//   const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY;
-//   if (!nextSigningKey) {
-//     return { valid: false,msg: null};
-//   }
-//   const receiver = new Receiver({
-//     currentSigningKey,
-//     nextSigningKey,
-//   });
-//   const chunks = [];
-//   for await (const chunk of req) {
-//     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
-//   }
-//   const body = Buffer.concat(chunks).toString("utf-8");
-//   const valid = await receiver.verify({
-//     signature,
-//     body: body,
-//   });
-//   if (!valid) {
-//     res.status(403).send("Signature is invalid");
-//     return res.end();
-//   }
-
-//   res.status(200).json({ valid });
-//   return res.end();
-// }
-
-// };
-
 export default async function handler(req: NextRequest) {
+  console.log('store-txs trigger');
   if (req.method !== 'POST')
     return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
 
+  const qstash = new QStash(
+    serverConfig.qstash.currSigKey,
+    serverConfig.qstash.nextSigKey,
+    serverConfig.qstash.token
+  );
+
+  const valid = await qstash.auth(req);
+  if (!valid)
+    return NextResponse.json(null, {
+      status: 401,
+      statusText: 'Unauthorized'
+    });
+
   try {
     const json = await req.json();
-    const { chainName, walletAddr, totalPage, startPage, endPage } =
-      schema.parse(json);
+    const { chainName, walletAddr, totalPage, startPage } = schema.parse(json);
 
     const supportedChain = await db
       .select()
@@ -182,32 +151,52 @@ export default async function handler(req: NextRequest) {
       chainName,
       walletAddr,
       startPage,
-      endPage,
+      // endPage,
       chainId,
       totalPage
     );
 
-    // console.log(txs);
     console.log('txs', txs.length);
 
     if (txs.length > 0) {
       await db.insert(transactions).values(txs);
     }
 
-    if (endPage < totalPage) {
-      const resBody = {
+    const nextStartPage =
+      startPage + serverConfig.pagePerBatch > totalPage
+        ? totalPage
+        : startPage + serverConfig.pagePerBatch;
+    // const nextEndPage =
+    //   nextStartPage + 50 > totalPage ? totalPage - 1 : nextStartPage + 50;
+    console.log('nextStartPage', nextStartPage);
+    console.log('totalPage', totalPage);
+
+    if (nextStartPage < totalPage) {
+      const nextStore = {
         chainName,
         walletAddr,
-        startPage: endPage,
-        endPage: endPage + 50,
+        startPage: nextStartPage,
+        // endPage: nextEndPage,
         totalPage
       };
-      return NextResponse.json(resBody, {
-        status: 200
-      });
-    }
+      console.log('nextStore', nextStore);
+      //create hash for deduplication id from nextStore
+      const deduplicationId = sha256(JSON.stringify(nextStore)).toString();
+      await qstash.publishMsg('store-txs', nextStore);
+      console.log('deduplicationId: ', deduplicationId);
 
-    return NextResponse.json(null, { status: 200 });
+      return NextResponse.json(
+        {
+          status: 'continue store',
+          nextStore
+        },
+        {
+          status: 200
+        }
+      );
+    } else {
+      return NextResponse.json(null, { status: 200 });
+    }
   } catch (e) {
     console.log('error from api');
     console.log(e);

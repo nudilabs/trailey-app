@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `gas_quote` decimal(20,10);

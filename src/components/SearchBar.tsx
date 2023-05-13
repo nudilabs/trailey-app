@@ -1,14 +1,21 @@
 import {
+  Box,
   Input,
   InputGroup,
   InputLeftElement,
   InputRightElement,
   Kbd,
-  useColorModeValue
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useColorModeValue,
+  Button,
+  Flex
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
-import { FiSearch } from 'react-icons/fi';
+import { FiChevronDown, FiSearch } from 'react-icons/fi';
 
 export default function SearchBar({
   kbd,
@@ -18,8 +25,11 @@ export default function SearchBar({
   onClose?: () => void;
 }) {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [showRecentSearches, setShowRecentSearches] = useState(false);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -38,13 +48,37 @@ export default function SearchBar({
     };
   }, []);
 
+  useEffect(() => {
+    const recentSearchesFromStorage = localStorage.getItem('recentSearches');
+
+    if (recentSearchesFromStorage) {
+      setRecentSearches(JSON.parse(recentSearchesFromStorage));
+    }
+  }, []);
+
+  function handleRecentSearchClick(searchTerm: string) {
+    router.push(`/account/${searchTerm}`);
+    setSearchTerm(searchTerm);
+    if (onClose) {
+      onClose();
+    }
+  }
+
   function handleSearch() {
     if (searchTerm.trim()) {
       router.push(`/account/${searchTerm.trim()}`);
+
+      // Add the search term to the recent searches
+      setRecentSearches([searchTerm.trim(), ...recentSearches]);
+
+      // Save the recent searches to local storage
+      localStorage.setItem(
+        'recentSearches',
+        JSON.stringify([searchTerm.trim(), ...recentSearches])
+      );
       setSearchTerm('');
-      if (onClose) {
-        onClose();
-      }
+
+      setShowRecentSearches(false);
     }
   }
 
@@ -60,20 +94,60 @@ export default function SearchBar({
   }
 
   return (
-    <InputGroup>
-      <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
-        <FiSearch onClick={handleSearch} />
-      </InputLeftElement>
-      <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
-        <Kbd>⌘K</Kbd>
-      </InputRightElement>
-      <Input
-        placeholder="Search address or ens..."
-        value={searchTerm}
-        onChange={handleChange}
-        ref={inputRef}
-        onKeyDown={handleKeyDown}
-      />
-    </InputGroup>
+    <Box position="relative" w="100%">
+      <InputGroup>
+        <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
+          <FiSearch onClick={handleSearch} />
+        </InputLeftElement>
+        <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
+          <Kbd>⌘K</Kbd>
+        </InputRightElement>
+        <Input
+          placeholder="Search address or ens..."
+          value={searchTerm}
+          onChange={handleChange}
+          ref={inputRef}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setShowRecentSearches(true)}
+        />
+      </InputGroup>
+      {recentSearches.length > 0 && (
+        <Flex position="absolute" w="100%" top="100%" zIndex="1" marginTop={1}>
+          <Menu
+            isOpen={showRecentSearches}
+            onClose={() => setShowRecentSearches(false)}
+          >
+            <MenuList>
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                px="3"
+                py="2"
+              >
+                <Box>Recent</Box>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setRecentSearches([]);
+                    localStorage.removeItem('recentSearches');
+                  }}
+                >
+                  Clear
+                </Button>
+              </Flex>
+              {recentSearches.map((searchTerm, i) => (
+                <MenuItem
+                  key={i}
+                  onClick={() => handleRecentSearchClick(searchTerm)}
+                >
+                  {searchTerm}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
+        </Flex>
+      )}
+    </Box>
   );
 }
