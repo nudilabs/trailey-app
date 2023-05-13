@@ -41,7 +41,6 @@ export const getSummary = publicProcedure
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          eq(transactions.success, true),
           timeSpan === 0
             ? sql`1`
             : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`
@@ -160,9 +159,9 @@ export const getSummaryByContract = publicProcedure
 
     const txsByContractFormatted = txsByContract.map(tx => {
       return {
-        contract: tx.contract,
+        contract: tx.contract as string,
         txCount: Number(tx.txCount),
-        txValueSum: tx.valueSum,
+        txValueSum: tx.valueSum as number,
         feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
       };
     });
