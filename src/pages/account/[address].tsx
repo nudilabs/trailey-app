@@ -134,6 +134,20 @@ export default function Account({
   const { chain, time } = router.query;
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
 
+  // resync wallet
+  const { mutate } = trpc.txs.syncWalletTxs.useMutation();
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    const data = mutate({
+      chainName: currentChain.name,
+      walletAddr: address
+    });
+    // Handle form submission logic here
+    // console.log('Input 1:', chainName);
+    console.log('data', data);
+    // console.log('Input 2:', walletAddr);
+  };
+
   // all time stats
   const txsSummaryQueriesAllTime = trpc.txs.getSummary.useQuery({
     chainName: currentChain.name,
@@ -247,6 +261,7 @@ export default function Account({
                       variant="ghost"
                       aria-label="refresh"
                       icon={<FiRefreshCw />}
+                      onClick={handleSubmit}
                     />
                   </Flex>
                 </Flex>

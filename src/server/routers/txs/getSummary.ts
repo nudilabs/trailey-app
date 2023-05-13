@@ -165,7 +165,6 @@ export const getSummaryByContract = publicProcedure
         feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
       };
     });
-    console.log(txsByContractFormatted);
     return {
       txsByContract: txsByContractFormatted,
       message: `Found transaction data for chain ${supportedChain[0].name} in the last ${timeSpan} days.`
