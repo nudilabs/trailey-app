@@ -68,6 +68,7 @@ import {
 
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
+import ProfileCard from '@/components/ProfileCard';
 
 const times: { [key: string]: number } = {
   '24h': 1,
@@ -238,119 +239,21 @@ export default function Account({
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
           <Flex direction="column" gap={4}>
-            <Card size="lg">
-              <CardHeader>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <ChainSelector chainConfigs={chainConfigs} />
-                  <Flex direction="row" alignItems="center" gap={1}>
-                    <Text
-                      color={useColorModeValue(
-                        'blackAlpha.500',
-                        'whiteAlpha.500'
-                      )}
-                      fontSize="xs"
-                    >
-                      Resynced 2 days ago
-                    </Text>
-                    <IconButton
-                      size="sm"
-                      variant="ghost"
-                      aria-label="refresh"
-                      icon={<FiRefreshCw />}
-                      onClick={handleSubmit}
-                    />
-                  </Flex>
-                </Flex>
-              </CardHeader>
-              <CardBody>
-                <Flex direction="column" alignItems="center" gap={3}>
-                  <Avatar address={address} size={100} ensImage={avatarUrl} />
-                  <Flex direction="column" alignItems="center" gap={2}>
-                    <Heading
-                      size={ensName.length > 19 ? 'md' : 'lg'}
-                      textAlign="center"
-                      marginTop={2}
-                    >
-                      {ensName}
-                    </Heading>
-                    <Button
-                      color={subHeadingColor}
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(address);
-                        toast({
-                          title: 'Copied to clipboard',
-                          status: 'info',
-                          duration: 1500,
-                          isClosable: true,
-                          position: 'top-right'
-                        });
-                      }}
-                    >
-                      {getFormattedAddress(address)}
-                    </Button>
-                  </Flex>
-                  <Flex
-                    direction="row"
-                    width="100%"
-                    justifyContent="space-between"
-                  >
-                    <Stat textAlign="center">
-                      <StatNumber>{formatPrettyNumber(totalTxs)}</StatNumber>
-                      <StatLabel color={subHeadingColor}>
-                        Transactions
-                      </StatLabel>
-                      <Tooltip label="Percent change from 7 days ago" hasArrow>
-                        <StatHelpText>
-                          <StatArrow type="increase" />
-                          {txsChange.toFixed(2)}%
-                        </StatHelpText>
-                      </Tooltip>
-                    </Stat>
-                    <Stat textAlign="center">
-                      <StatNumber>
-                        <Text
-                          as="a"
-                          href={`https://etherscan.io/address/${topContract}`}
-                          target="_blank"
-                        >
-                          ${formatDecimals(totalValue)}
-                        </Text>
-                      </StatNumber>
-                      <StatLabel>Total Tx Value</StatLabel>
-                      <Tooltip label="Percent change from 7 days ago" hasArrow>
-                        <StatHelpText>
-                          <StatArrow type="increase" />
-                          {valueChange.toFixed(2)}%
-                        </StatHelpText>
-                      </Tooltip>
-                    </Stat>
-                    <Stat textAlign="center">
-                      <StatNumber>{getEthFromWei(totalFees)}</StatNumber>
-                      <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
-                      <Tooltip label="Percent change from 7 days ago" hasArrow>
-                        <StatHelpText>
-                          <StatArrow type="increase" />
-                          {feesChange.toFixed(2)}%
-                        </StatHelpText>
-                      </Tooltip>
-                    </Stat>
-                  </Flex>
-                </Flex>
-              </CardBody>
-              <CardFooter>
-                <Text
-                  color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
-                  fontSize="xs"
-                >
-                  Powered by Biway Analytics
-                </Text>
-              </CardFooter>
-            </Card>
+            <ProfileCard
+              account={{
+                address: address,
+                ensName: ensName,
+                avatarUrl: avatarUrl
+              }}
+              chainConfigs={chainConfigs}
+              totalTxs={totalTxs}
+              txsChange={txsChange}
+              totalValue={totalValue}
+              valueChange={valueChange}
+              totalFees={totalFees}
+              feesChange={feesChange}
+              handleSubmit={handleSubmit}
+            />
             <Button
               variant="solid"
               colorScheme="primary"
