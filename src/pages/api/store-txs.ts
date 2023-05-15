@@ -2,13 +2,10 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle-db';
 import { Transaction } from '@/types/DB';
-// import { InferModel } from 'drizzle-orm';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
 import { QStash } from '@/connectors/Qstash';
-import sha256 from 'crypto-js/sha256';
 import { Covalent } from '@/connectors/Covalent';
-// import { Receiver } from '@upstash/qstash';
 import moment from 'moment';
 import * as z from 'zod';
 
@@ -58,12 +55,11 @@ const getTxs = async (
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
       if (!(page < totalPage) || i * batch + j >= totalGetPage) break;
-      console.log('round', i * batch + j);
+      // console.log('round', i * batch + j);
       promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
     }
 
     const res = await Promise.all(promises);
-    // console.log('res', res.length);
     for (let j = 0; j < res.length; j++) {
       let tmpData = [];
       for (const item of res[j]?.data?.data.items) {
@@ -136,7 +132,6 @@ export default async function handler(req: NextRequest) {
       .select()
       .from(supportChains)
       .where(eq(supportChains.name, chainName));
-    console.log(supportedChain);
 
     if (supportedChain.length === 0)
       return NextResponse.json(null, {
@@ -146,7 +141,6 @@ export default async function handler(req: NextRequest) {
 
     const chainId = supportedChain[0].id;
 
-    // console.log({ chainName, walletAddr, totalPage });
     const txs: Transaction[] = await getTxs(
       chainName,
       walletAddr,
@@ -155,8 +149,6 @@ export default async function handler(req: NextRequest) {
       chainId,
       totalPage
     );
-
-    console.log('txs', txs.length);
 
     if (txs.length > 0) {
       await db.insert(transactions).values(txs);
@@ -179,11 +171,8 @@ export default async function handler(req: NextRequest) {
         // endPage: nextEndPage,
         totalPage
       };
-      console.log('nextStore', nextStore);
       //create hash for deduplication id from nextStore
-      const deduplicationId = sha256(JSON.stringify(nextStore)).toString();
       await qstash.publishMsg('store-txs', nextStore);
-      console.log('deduplicationId: ', deduplicationId);
 
       return NextResponse.json(
         {
