@@ -12,8 +12,6 @@ import {
   GridItem,
   Heading,
   Highlight,
-  Image,
-  Spinner,
   Stack,
   Stat,
   StatLabel,
