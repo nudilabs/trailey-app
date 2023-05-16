@@ -12,6 +12,8 @@ import {
   GridItem,
   Heading,
   Highlight,
+  Image,
+  Spinner,
   Stack,
   Stat,
   StatLabel,
@@ -50,11 +52,10 @@ import AvatarGroup from '@/components/AvatarGroup';
 import { FiEdit, FiPlusCircle, FiUmbrella } from 'react-icons/fi';
 
 type OverviewData = {
-  message: string;
-  txCount?: string | undefined;
-  txValueSum?: string | undefined;
-  contractCount?: string | undefined;
-  feesPaidSum?: string | undefined;
+  txCount?: { value: number; percentChange: number };
+  valueQuoteSum?: { value: number; percentChange: number };
+  contractCount?: { value: number; percentChange: number };
+  gasQuoteSum?: { value: number; percentChange: number };
   address: string;
 };
 
@@ -123,13 +124,12 @@ export default function Home({
   const router = useRouter();
   const { chain, time } = router.query;
 
-  const contractTxsSummaryQueries = trpc.useQueries(
+  const txSummaries = trpc.useQueries(
     t =>
       profilesData[currentProfile]?.wallets?.map(addr =>
         t.txs.getSummary({
           chainName: chains[currentChain],
-          walletAddr: addr.address,
-          timeSpan: times[currentTime]
+          walletAddr: addr.address
         })
       ) || []
   );
@@ -145,13 +145,12 @@ export default function Home({
     }
   }, [sessionStatus, chain, time]);
 
-  const txData: OverviewData[] = contractTxsSummaryQueries.map((q, i) => ({
-    message: q.data?.message ?? '',
+  const txData: OverviewData[] = txSummaries.map((q, i) => ({
     txCount: q.data?.txCount,
-    txValueSum: q.data?.txValueSum,
+    txValueSum: q.data?.valueQuoteSum,
     contractCount: q.data?.contractCount,
-    feesPaidSum: q.data?.feesPaidSum,
-    address: profilesData[currentProfile]?.wallets?.[i].address ?? ''
+    feesPaidSum: q.data?.gasQuoteSum,
+    address: profilesData[currentProfile]?.wallets?.[i].address
   }));
 
   if (!session || !address) {
@@ -217,6 +216,112 @@ export default function Home({
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+        {/* START TOP STATS */}
+        {/* <GridItem
+          display={{ base: 'none', md: 'block' }}
+          colSpan={{ base: 6, md: 3 }}
+        >
+          <Card size="lg">
+            <CardBody>
+              <Flex direction="row" gap={4} alignItems="center">
+                <IconButton
+                  aria-label="Profile"
+                  icon={<FiUmbrella />}
+                  display={{ base: 'none', md: 'flex' }}
+                />
+                <Stat>
+                  <StatLabel>Wallets</StatLabel>
+                  <StatNumber>
+                    {profilesData[currentProfile].wallets.length}
+                  </StatNumber>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    100
+                  </StatHelpText>
+                </Stat>
+              </Flex>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem
+          display={{ base: 'none', md: 'block' }}
+          colSpan={{ base: 6, md: 3 }}
+        >
+          <Card size="lg">
+            <CardBody>
+              <Flex direction="row" gap={4} alignItems="center">
+                <IconButton
+                  aria-label="Profile"
+                  icon={<FiUmbrella />}
+                  display={{ base: 'none', md: 'flex' }}
+                />
+                <Stat>
+                  <StatLabel>Wallets</StatLabel>
+                  <StatNumber>
+                    {profilesData[currentProfile].wallets.length}
+                  </StatNumber>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    100
+                  </StatHelpText>
+                </Stat>
+              </Flex>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem
+          display={{ base: 'none', md: 'block' }}
+          colSpan={{ base: 6, md: 3 }}
+        >
+          <Card size="lg">
+            <CardBody>
+              <Flex direction="row" gap={4} alignItems="center">
+                <IconButton
+                  aria-label="Profile"
+                  icon={<FiUmbrella />}
+                  display={{ base: 'none', md: 'flex' }}
+                />
+                <Stat>
+                  <StatLabel>Wallets</StatLabel>
+                  <StatNumber>
+                    {profilesData[currentProfile].wallets.length}
+                  </StatNumber>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    100
+                  </StatHelpText>
+                </Stat>
+              </Flex>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem
+          display={{ base: 'none', md: 'block' }}
+          colSpan={{ base: 6, md: 3 }}
+        >
+          <Card size="lg">
+            <CardBody>
+              <Flex direction="row" gap={4} alignItems="center">
+                <IconButton
+                  aria-label="Profile"
+                  icon={<FiUmbrella />}
+                  display={{ base: 'none', md: 'flex' }}
+                />
+                <Stat>
+                  <StatLabel>Wallets</StatLabel>
+                  <StatNumber>
+                    {profilesData[currentProfile].wallets.length}
+                  </StatNumber>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    100
+                  </StatHelpText>
+                </Stat>
+              </Flex>
+            </CardBody>
+          </Card>
+        </GridItem> */}
+        {/* END TOP STATS */}
         <GridItem colSpan={{ base: 12, lg: 4 }}>
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             <GridItem colSpan={{ base: 12, lg: 12 }}>

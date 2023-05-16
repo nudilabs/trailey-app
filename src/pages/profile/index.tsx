@@ -108,7 +108,10 @@ export default function Profiles({
     // Add the new profile data to the existing profiles array
     const updatedProfiles = [...profilesData, formData];
     setProfilesData(updatedProfiles);
-    window.localStorage.setItem('profiles', JSON.stringify(updatedProfiles));
+    window.localStorage.setItem(
+      'biway.profiles',
+      JSON.stringify(updatedProfiles)
+    );
 
     // Navigate back to the main page
     router.push(`/profile/${updatedProfiles.length - 1}`);
@@ -117,7 +120,10 @@ export default function Profiles({
   const handleDeleteProfile = (index: number) => {
     const updatedProfiles = profilesData.filter((_, i) => i !== index);
     setProfilesData(updatedProfiles);
-    window.localStorage.setItem('profiles', JSON.stringify(updatedProfiles));
+    window.localStorage.setItem(
+      'biway.profiles',
+      JSON.stringify(updatedProfiles)
+    );
     setCurrentProfile(0);
     window.localStorage.setItem('profileId', '0');
   };

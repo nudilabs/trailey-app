@@ -172,17 +172,26 @@ export function emojiAvatarForAddress(address: string) {
   return avatars[avatarIndex ?? 0];
 }
 
-export function formatPrettyNumber(num: number) {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'k';
+export function formatPrettyNumber(num: number | string, decimals = 2) {
+  // Convert num to a number if it's a string
+  const numValue = typeof num === 'string' ? parseFloat(num) : num;
+
+  if (numValue >= 1000000) {
+    return (numValue / 1000000).toFixed(decimals) + 'm';
+  } else if (numValue >= 1000) {
+    return (numValue / 1000).toFixed(decimals) + 'k';
   } else {
-    return num.toString();
+    return numValue.toFixed(decimals);
   }
 }
 
-export function formatDecimals(num: number | undefined, decimals = 2) {
+export function formatDecimals(num: number | undefined | string, decimals = 2) {
   if (num === undefined) {
     return 0; // or undefined, or any other value you prefer
   }
-  return Number(num).toFixed(decimals);
+  const numAsNumber = Number(num);
+  if (isNaN(numAsNumber)) {
+    return 0; // or undefined, or any other value you prefer
+  }
+  return numAsNumber.toFixed(decimals);
 }

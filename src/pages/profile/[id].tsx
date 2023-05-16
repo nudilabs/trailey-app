@@ -102,7 +102,10 @@ export default function Profile({
         i === parseInt(id) ? newProfile : p
       );
       setProfilesData(newProfilesData);
-      window.localStorage.setItem('profiles', JSON.stringify(newProfilesData));
+      window.localStorage.setItem(
+        'biway.profiles',
+        JSON.stringify(newProfilesData)
+      );
     }
   };
 
@@ -115,7 +118,10 @@ export default function Profile({
         i === parseInt(id) ? newProfile : p
       );
       setProfilesData(newProfilesData);
-      window.localStorage.setItem('profiles', JSON.stringify(newProfilesData));
+      window.localStorage.setItem(
+        'biway.profiles',
+        JSON.stringify(newProfilesData)
+      );
     }
   };
 
@@ -127,13 +133,16 @@ export default function Profile({
         i === parseInt(id) ? newProfile : p
       );
       setProfilesData(newProfilesData);
-      window.localStorage.setItem('profiles', JSON.stringify(newProfilesData));
+      window.localStorage.setItem(
+        'biway.profiles',
+        JSON.stringify(newProfilesData)
+      );
     }
   };
 
   useEffect(() => {
     // Get item from local storage
-    const profiles = window.localStorage.getItem('profiles');
+    const profiles = window.localStorage.getItem('biway.profiles');
     if (profiles) {
       const parsedProfiles = JSON.parse(profiles);
       setProfilesData(parsedProfiles);

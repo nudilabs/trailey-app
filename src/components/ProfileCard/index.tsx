@@ -26,30 +26,20 @@ import {
   getEthFromWei,
   getFormattedAddress
 } from '@/utils/format';
-import { Account } from '@/types/Account';
+import { IAccount } from '@/types/Account';
 import { Chain } from '@/types/Chains';
 
 type ProfileCardProps = {
-  account: Account;
+  account: IAccount;
   chainConfigs: Chain[];
-  totalTxs: number;
-  txsChange: number;
-  totalValue: number;
-  valueChange: number;
-  totalFees: number;
-  feesChange: number;
+  txSummary: any;
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
 };
 
 export default function ProfileCard({
   account,
   chainConfigs,
-  totalTxs,
-  txsChange,
-  totalValue,
-  valueChange,
-  totalFees,
-  feesChange,
+  txSummary,
   handleSubmit
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
@@ -114,36 +104,51 @@ export default function ProfileCard({
           </Flex>
           <Flex direction="row" width="100%" justifyContent="space-between">
             <Stat textAlign="center">
-              <StatNumber>{formatPrettyNumber(totalTxs)}</StatNumber>
+              <StatNumber>
+                {formatPrettyNumber(txSummary?.txCount.value ?? 0, 0)}
+              </StatNumber>
               <StatLabel color={subHeadingColor}>Transactions</StatLabel>
-              <Tooltip label="Percent change from 7 days ago" hasArrow>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  {txsChange.toFixed(2)}%
-                </StatHelpText>
-              </Tooltip>
+              {txSummary?.valueQuoteSum.percentChange > 0 && (
+                <Tooltip label="Percent change from 7 days ago" hasArrow>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    {formatDecimals(txSummary?.txCount.percentChange ?? 0)}%
+                  </StatHelpText>
+                </Tooltip>
+              )}
             </Stat>
             <Stat textAlign="center">
               <StatNumber>
-                <Text>${formatDecimals(totalValue)}</Text>
+                <Text>
+                  ${formatPrettyNumber(txSummary?.valueQuoteSum.value ?? 0)}
+                </Text>
               </StatNumber>
               <StatLabel>Total Tx Value</StatLabel>
-              <Tooltip label="Percent change from 7 days ago" hasArrow>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  {valueChange.toFixed(2)}%
-                </StatHelpText>
-              </Tooltip>
+              {txSummary?.valueQuoteSum.percentChange > 0 && (
+                <Tooltip label="Percent change from 7 days ago" hasArrow>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    {formatDecimals(
+                      txSummary?.valueQuoteSum.percentChange ?? 0
+                    )}
+                    %
+                  </StatHelpText>
+                </Tooltip>
+              )}
             </Stat>
             <Stat textAlign="center">
-              <StatNumber>{getEthFromWei(totalFees)}</StatNumber>
+              <StatNumber>
+                ${formatPrettyNumber(txSummary?.gasQuoteSum.value ?? 0)}
+              </StatNumber>
               <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
-              <Tooltip label="Percent change from 7 days ago" hasArrow>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  {feesChange.toFixed(2)}%
-                </StatHelpText>
-              </Tooltip>
+              {txSummary?.valueQuoteSum.percentChange > 0 && (
+                <Tooltip label="Percent change from 7 days ago" hasArrow>
+                  <StatHelpText>
+                    <StatArrow type="increase" />
+                    {formatDecimals(txSummary?.gasQuoteSum.percentChange ?? 0)}%
+                  </StatHelpText>
+                </Tooltip>
+              )}
             </Stat>
           </Flex>
         </Flex>
