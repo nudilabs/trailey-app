@@ -18,5 +18,5 @@ export const config = {
 
   //indexer
   batchSize: Number(process.env.INDEX_BATCH_SIZE || 7),
-  pagePerBatch: Number(process.env.INDEX_PAGE_PER_BATCH || 50)
+  pagePerBatch: Number(process.env.PAGE_PER_BATCH || 50)
 };

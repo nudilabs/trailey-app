@@ -25,9 +25,11 @@ export class Covalent {
     walletAddr: string,
     page: number
   ) {
+    console.log('fetch getWalletTxsByPage', page);
     const url = `${this.endPointUrl}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
     const res = await this.fetchFromCovalent(url);
     try {
+      // console.log('res status', res?.status);
       const data = await res?.json();
       return { data, page };
     } catch (e) {
