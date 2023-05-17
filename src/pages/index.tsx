@@ -12,6 +12,8 @@ import {
   GridItem,
   Heading,
   Highlight,
+  Image,
+  Spinner,
   Stack,
   Stat,
   StatLabel,
@@ -48,15 +50,6 @@ import { trpc } from '@/connectors/Trpc';
 import { Avatar } from '@/components/Avatar';
 import AvatarGroup from '@/components/AvatarGroup';
 import { FiEdit, FiPlusCircle, FiUmbrella } from 'react-icons/fi';
-
-type OverviewData = {
-  message: string;
-  txCount?: string | undefined;
-  txValueSum?: string | undefined;
-  contractCount?: string | undefined;
-  feesPaidSum?: string | undefined;
-  address: string;
-};
 
 const MOCK_OVERVIEW_DATA = [
   {
@@ -110,7 +103,6 @@ export default function Home({
   profilesData: IProfile[];
 }) {
   const [address, setAddress] = useState<string | null>(null);
-  // const [txData, setTxData] = useState<OverviewData[]>([]);
   const [currentChain, setCurrentChain] = useState<string>('ethereum');
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -123,16 +115,20 @@ export default function Home({
   const router = useRouter();
   const { chain, time } = router.query;
 
-  const contractTxsSummaryQueries = trpc.useQueries(
+  const txSummaries = trpc.useQueries(
     t =>
       profilesData[currentProfile]?.wallets?.map(addr =>
         t.txs.getSummary({
           chainName: chains[currentChain],
-          walletAddr: addr.address,
-          timeSpan: times[currentTime]
+          walletAddr: addr.address
         })
       ) || []
   );
+
+  const txSummariesWithAddress = txSummaries.map((txSummary, index) => ({
+    ...txSummary,
+    address: profilesData[currentProfile]?.wallets[index]?.address
+  }));
 
   useEffect(() => {
     setAddress((session as Session)?.address ?? null);
@@ -144,15 +140,6 @@ export default function Home({
       setCurrentTime(time as string);
     }
   }, [sessionStatus, chain, time]);
-
-  const txData: OverviewData[] = contractTxsSummaryQueries.map((q, i) => ({
-    message: q.data?.message ?? '',
-    txCount: q.data?.txCount,
-    txValueSum: q.data?.txValueSum,
-    contractCount: q.data?.contractCount,
-    feesPaidSum: q.data?.feesPaidSum,
-    address: profilesData[currentProfile]?.wallets?.[i].address ?? ''
-  }));
 
   if (!session || !address) {
     return (
@@ -315,11 +302,11 @@ export default function Home({
             </GridItem>
           </Grid>
         </GridItem>
-        {/* START BOTTOM STATS */}
-
-        {/* END BOTTOM STATS */}
         <GridItem colSpan={{ base: 12, lg: 8 }}>
-          <OverviewCard isLoading={isLoading} txData={txData} />
+          <OverviewCard
+            isLoading={isLoading}
+            txSummaries={txSummariesWithAddress}
+          />
         </GridItem>
       </Grid>
     </Flex>

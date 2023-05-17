@@ -63,12 +63,21 @@ import {
   PolarGrid,
   Radar,
   RadarChart,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Tooltip as TooltipRecharts
 } from 'recharts';
 
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
 import ProfileCard from '@/components/ProfileCard';
+import { IAccount } from '@/types/Account';
+import AchievementsCard from '@/components/AchievementsCard';
+import ProgressTrackerCard from '@/components/ProgressTrackerCard';
+import TopProtocolsUsageCard from '@/components/TopProtocolsUsageCard';
+import AddToBundleBtn from '@/components/AddToBundleButton';
+import { IProfile } from '@/types/IProfile';
+import { TxSummary, TxSummaryByContract } from '@/types/TxSummary';
+import Head from 'next/head';
 
 const times: { [key: string]: number } = {
   '24h': 1,
@@ -77,40 +86,6 @@ const times: { [key: string]: number } = {
   all: 0
 };
 
-const data = [
-  {
-    subject: 'Bridged Value',
-    A: 120,
-    B: 110,
-    fullMark: 150
-  },
-  {
-    subject: 'Protocols Used',
-    A: 85,
-    B: 90,
-    fullMark: 150
-  },
-  {
-    subject: 'Interactions',
-    A: 86,
-    B: 70,
-    fullMark: 150
-  },
-  {
-    subject: 'Fees Paid',
-    A: 99,
-    B: 100,
-    fullMark: 150
-  },
-
-  {
-    subject: 'Txs',
-    A: 98,
-    B: 130,
-    fullMark: 150
-  }
-];
-
 const steps = [
   { title: 'Top 50%', description: `10 txs` },
   { title: 'Top 25%', description: '50 txs' },
@@ -118,22 +93,23 @@ const steps = [
 ];
 
 export default function Account({
-  address,
-  ensName,
-  avatarUrl,
-  chainConfigs
+  account,
+  chainConfigs,
+  setProfilesData,
+  profilesData,
+  currentProfile
 }: {
-  address: string;
-  ensName: string;
-  avatarUrl: string | null;
+  account: IAccount;
   chainConfigs: Chain[];
+  setProfilesData: (newProfilesData: IProfile[]) => void;
+  profilesData: IProfile[];
+  currentProfile: number;
 }) {
   const toast = useToast();
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const router = useRouter();
   const { chain, time } = router.query;
-  const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
 
   // resync wallet
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
@@ -141,7 +117,7 @@ export default function Account({
     e.preventDefault();
     const data = mutate({
       chainName: currentChain.name,
-      walletAddr: address
+      walletAddr: account.address
     });
     // Handle form submission logic here
     // console.log('Input 1:', chainName);
@@ -149,80 +125,53 @@ export default function Account({
     // console.log('Input 2:', walletAddr);
   };
 
-  // all time stats
-  const txsSummaryQueriesAllTime = trpc.txs.getSummary.useQuery({
+  const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery({
     chainName: currentChain.name,
-    walletAddr: address,
-    timeSpan: 0
-  });
-  // last week stats
-  const txsSummaryQueriesLastWeek = trpc.txs.getSummary.useQuery({
-    chainName: currentChain.name,
-    walletAddr: address,
-    timeSpan: 7
-  });
-  // progress
-  const { activeStep } = useSteps({
-    index: 1,
-    count: steps.length
-  });
+    walletAddr: account.address
+  }).data;
 
-  const txsSummaryByContractAllTime = trpc.txs.getSummaryByContract.useQuery({
-    chainName: currentChain.name,
-    walletAddr: address,
-    timeSpan: 0
-  });
+  const txsSummaryByContract: TxSummaryByContract | undefined =
+    trpc.txs.getSummaryByContract.useQuery({
+      chainName: currentChain.name,
+      walletAddr: account.address
+    }).data;
 
-  const txsSummaryByContractLastWeek = trpc.txs.getSummaryByContract.useQuery({
-    chainName: currentChain.name,
-    walletAddr: address,
-    timeSpan: 7
-  });
+  const average = {
+    bridged: 200,
+    protocols: 250,
+    interactions: 1800,
+    fees: 60000,
+    txs: 2500
+  };
 
-  const topContract =
-    txsSummaryByContractAllTime.data?.txsByContract &&
-    txsSummaryByContractAllTime.data?.txsByContract.length > 0
-      ? txsSummaryByContractAllTime.data?.txsByContract[0].contract ?? ''
-      : '';
+  const data = [
+    {
+      subject: 'Bridged Value',
+      A: 120 / average.bridged,
+      fullMark: 100
+    },
+    {
+      subject: 'Protocols Used',
+      A: (txsSummaryByContract?.contracts.length ?? 0) / average.protocols,
+      fullMark: 100
+    },
+    {
+      subject: 'Interactions',
+      A: (txSummary?.contractCount.allTime ?? 0) / average.interactions,
+      fullMark: 100
+    },
+    {
+      subject: 'Fees Paid',
+      A: (txSummary?.gasQuoteSum.allTime ?? 0) / average.fees,
+      fullMark: 100
+    },
 
-  // all time stats
-  const totalTxs = txsSummaryQueriesAllTime.data?.txCount ?? 0;
-  const totalFees = txsSummaryQueriesAllTime.data?.feesPaidSum ?? 0;
-  const totalValue = Number(txsSummaryQueriesAllTime.data?.txValueSum) ?? 0;
-  // last week stats
-  const totalTxsLastWeek = txsSummaryQueriesLastWeek.data?.txCount ?? 0;
-  const totalFeesLastWeek = txsSummaryQueriesLastWeek.data?.feesPaidSum ?? 0;
-  const totalValueLastWeek = txsSummaryQueriesLastWeek.data?.txValueSum ?? 0;
-  // percentage change in txs
-  const txsChange =
-    totalTxsLastWeek > 0 && totalTxs > 0
-      ? ((totalTxs - totalTxsLastWeek) / totalTxsLastWeek) * 100
-      : 0;
-  // percentage change in fees
-  const feesChange =
-    totalFeesLastWeek > 0 && totalFees > 0
-      ? ((totalFees - totalFeesLastWeek) / totalFeesLastWeek) * 100
-      : 0;
-
-  // percentage change in value
-  const valueChange =
-    totalValueLastWeek > 0 && totalValue > 0
-      ? ((totalValue - totalValueLastWeek) / totalValueLastWeek) * 100
-      : 0;
-
-  // stepper
-  const stepperOrientation: 'horizontal' | 'vertical' | undefined =
-    useBreakpointValue(
-      {
-        base: 'vertical',
-        md: 'horizontal',
-        lg: 'vertical',
-        xl: 'horizontal'
-      },
-      {
-        fallback: 'md'
-      }
-    );
+    {
+      subject: 'Txs',
+      A: (txSummary?.txCount.allTime ?? 0) / average.txs,
+      fullMark: 100
+    }
+  ];
 
   useEffect(() => {
     if (chain) {
@@ -236,115 +185,35 @@ export default function Account({
 
   return (
     <Flex direction="column">
+      <Head>
+        <title>
+          {account.ensName == 'Unidentified'
+            ? account.address
+            : account.ensName}
+        </title>
+      </Head>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
           <Flex direction="column" gap={4}>
             <ProfileCard
-              account={{
-                address: address,
-                ensName: ensName,
-                avatarUrl: avatarUrl
-              }}
+              account={account}
               chainConfigs={chainConfigs}
-              totalTxs={totalTxs}
-              txsChange={txsChange}
-              totalValue={totalValue}
-              valueChange={valueChange}
-              totalFees={totalFees}
-              feesChange={feesChange}
+              txSummary={txSummary}
               handleSubmit={handleSubmit}
             />
-            <Button
-              variant="solid"
-              colorScheme="primary"
-              leftIcon={<FiPlusCircle />}
-              rounded="3xl"
-            >
-              Add to Bundle
-            </Button>
-            <Card size="lg">
-              <CardHeader>
-                <Flex direction="row" justifyContent="space-between">
-                  <Heading size="md">Achievements</Heading>
-                  <Tooltip label="More Info" hasArrow>
-                    <IconButton
-                      aria-label="Previous"
-                      icon={<FiInfo />}
-                      variant="link"
-                    />
-                  </Tooltip>
-                </Flex>
-              </CardHeader>
-              <CardBody>
-                <Flex direction="row">
-                  <Box
-                    bgColor="primary.500"
-                    rounded="full"
-                    width={12}
-                    height={12}
-                  />
-                  <Box
-                    bgColor="primary.400"
-                    rounded="full"
-                    width={12}
-                    height={12}
-                    ml={-2}
-                  />
-                  <Box
-                    bgColor="primary.300"
-                    rounded="full"
-                    width={12}
-                    height={12}
-                    ml={-2}
-                  />
-                </Flex>
-              </CardBody>
-            </Card>
+            <AddToBundleBtn
+              account={account}
+              currentProfile={currentProfile}
+              profilesData={profilesData}
+              setProfilesData={setProfilesData}
+            />
+            <AchievementsCard />
           </Flex>
         </GridItem>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 8 }}>
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             <GridItem colSpan={{ base: 12 }}>
-              <Card size="lg">
-                <CardBody>
-                  <Flex direction="row" gap={4} alignItems="center">
-                    <Stepper
-                      index={activeStep}
-                      colorScheme="primary"
-                      orientation={stepperOrientation}
-                      width="100%"
-                    >
-                      {steps.map((step, index) => (
-                        <Step key={index}>
-                          <StepIndicator>
-                            <StepStatus
-                              complete={<StepIcon />}
-                              incomplete={<StepNumber />}
-                              active={<StepNumber />}
-                            />
-                          </StepIndicator>
-
-                          <Box flexShrink="0">
-                            <StepTitle>{step.title}</StepTitle>
-                            <StepDescription>
-                              {step.description}
-                            </StepDescription>
-                          </Box>
-
-                          <StepSeparator />
-                        </Step>
-                      ))}
-                    </Stepper>
-                    <Tooltip label="More Info" hasArrow>
-                      <IconButton
-                        aria-label="Previous"
-                        icon={<FiInfo />}
-                        variant="link"
-                      />
-                    </Tooltip>
-                  </Flex>
-                </CardBody>
-              </Card>
+              <ProgressTrackerCard />
             </GridItem>
 
             <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
@@ -363,12 +232,8 @@ export default function Account({
                       <Stat>
                         <StatLabel>Total Tx Value</StatLabel>
                         <StatNumber>
-                          <Text
-                            as="a"
-                            href={`https://etherscan.io/address/${topContract}`}
-                            target="_blank"
-                          >
-                            ${formatDecimals(totalValue)}
+                          <Text>
+                            ${formatDecimals(txSummary?.valueQuoteSum.allTime)}
                           </Text>
                         </StatNumber>
                       </Stat>
@@ -396,13 +261,7 @@ export default function Account({
                       <Stat>
                         <StatLabel>Bridged Value</StatLabel>
                         <StatNumber>
-                          <Text
-                            as="a"
-                            href={`https://etherscan.io/address/${topContract}`}
-                            target="_blank"
-                          >
-                            123456
-                          </Text>
+                          <Text>123456</Text>
                         </StatNumber>
                         <StatHelpText>Top 10%</StatHelpText>
                       </Stat>
@@ -452,13 +311,14 @@ export default function Account({
                           fillOpacity={0.1}
                         />
                         <Radar
-                          name={getFormattedAddress(address)}
+                          name={getFormattedAddress(account.address)}
                           dataKey="A"
                           stroke="#E53E3E"
                           fill="#E53E3E"
                           fillOpacity={0.25}
                         />
                         <Legend />
+                        <TooltipRecharts />
                       </RadarChart>
                     </ResponsiveContainer>
                   </Flex>
@@ -466,99 +326,11 @@ export default function Account({
               </Card>
             </GridItem>
             <GridItem colSpan={{ base: 12 }}>
-              <Card size="lg">
-                <CardHeader>
-                  <Flex direction="row" justifyContent="space-between">
-                    <Heading size="md">Top Protocols Usage</Heading>
-                    <Tooltip
-                      label="The % change is the increase in usage since last week"
-                      hasArrow
-                    >
-                      <IconButton
-                        aria-label="Previous"
-                        icon={<FiInfo />}
-                        variant="link"
-                      />
-                    </Tooltip>
-                  </Flex>
-                </CardHeader>
-                <CardBody>
-                  <Flex direction="row" gap={4} overflow="scroll">
-                    {currentChain.protocols &&
-                      currentChain.protocols.map((protocol, index) => {
-                        const protocolUsageAllTime =
-                          txsSummaryByContractAllTime.data?.txsByContract.find(
-                            tx => tx.contract === protocol.contract
-                          );
-                        const protocolUsageLastWeek =
-                          txsSummaryByContractLastWeek.data?.txsByContract.find(
-                            tx => tx.contract === protocol.contract
-                          );
-                        return (
-                          <Card key={index} size="md" minWidth="240px">
-                            <CardBody>
-                              <Flex direction="column">
-                                <Flex direction="row" alignItems="center">
-                                  {protocol.logo_url && (
-                                    <Image
-                                      src={protocol.logo_url}
-                                      boxSize="24px"
-                                      mr={1}
-                                      alt={protocol.label}
-                                    />
-                                  )}
-                                  <Text
-                                    fontSize="xs"
-                                    fontWeight="bold"
-                                    color={subHeadingColor}
-                                  >
-                                    {protocol.label}
-                                  </Text>
-                                </Flex>
-                                <Flex direction="row" alignItems="center">
-                                  <Heading fontSize="xl" fontWeight="bold">
-                                    {protocolUsageAllTime?.txCount ?? 0} txs
-                                  </Heading>
-                                  <Badge
-                                    ml={2}
-                                    colorScheme={
-                                      getPercentageChangeSinceLastWeek(
-                                        protocolUsageAllTime?.txCount,
-                                        protocolUsageLastWeek?.txCount
-                                      ) > 0
-                                        ? 'green'
-                                        : 'gray'
-                                    }
-                                    rounded="md"
-                                  >
-                                    {getPercentageChangeSinceLastWeek(
-                                      protocolUsageAllTime?.txCount,
-                                      protocolUsageLastWeek?.txCount
-                                    )}
-                                    %
-                                  </Badge>
-                                </Flex>
-                                <Flex direction="row" alignItems="center">
-                                  <Text
-                                    fontSize="xs"
-                                    fontWeight="bold"
-                                    color={subHeadingColor}
-                                  >
-                                    $
-                                    {formatDecimals(
-                                      protocolUsageAllTime?.txValueSum
-                                    )}{' '}
-                                    (value)
-                                  </Text>
-                                </Flex>
-                              </Flex>
-                            </CardBody>
-                          </Card>
-                        );
-                      })}
-                  </Flex>
-                </CardBody>
-              </Card>
+              <TopProtocolsUsageCard
+                txsSummaryByContract={txsSummaryByContract}
+                currentChain={currentChain}
+                account={account}
+              />
             </GridItem>
           </Grid>
         </GridItem>
@@ -566,17 +338,6 @@ export default function Account({
     </Flex>
   );
 }
-
-const getPercentageChangeSinceLastWeek = (
-  allTime?: number,
-  lastWeek?: number
-) => {
-  if (allTime === undefined || lastWeek === undefined) {
-    return 0;
-  }
-  const percentageChange = ((allTime - lastWeek) / lastWeek) * 100;
-  return Number(percentageChange.toFixed(2));
-};
 
 const getAddressType = (address: string): string | null => {
   if (isAddress(address)) {
@@ -648,8 +409,8 @@ export const getServerSideProps = async (context: {
   );
   const p = context.params;
   const addressType = getAddressType(p.address);
-  const chainConfigs = await get('chains');
-  // const chainConfigs = testChainConfigs;
+  // const chainConfigs = await get('chains');
+  const chainConfigs = testChainConfigs;
 
   if (!addressType) {
     return {
@@ -659,11 +420,11 @@ export const getServerSideProps = async (context: {
 
   try {
     if (addressType === 'address') {
-      const props = await fetchAddressProps(p.address);
-      return { props: { chainConfigs, ...props } };
+      const account = await fetchAddressProps(p.address);
+      return { props: { chainConfigs, account } };
     } else if (addressType === 'ens') {
-      const props = await fetchEnsProps(p.address);
-      return { props: { chainConfigs, ...props } };
+      const account = await fetchEnsProps(p.address);
+      return { props: { chainConfigs, account } };
     }
   } catch (error) {
     console.error(error);
@@ -687,13 +448,18 @@ const testChainConfigs = [
     appchain_of: null,
     protocols: [
       {
-        contract: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+        address: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
         label: 'Uniswap',
         logo_url: '/protocols/uniswap.png'
       },
       {
-        contract: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
+        address: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
         label: 'Pepe',
+        logo_url: '/protocols/uniswap.png'
+      },
+      {
+        address: '0x000000000000Ad05Ccc4F10045630fb830B95127',
+        label: 'Blur',
         logo_url: '/protocols/uniswap.png'
       }
     ]
@@ -708,6 +474,7 @@ const testChainConfigs = [
     black_logo_url: '/eth.png',
     white_logo_url: '/eth.png',
     is_appchain: false,
-    appchain_of: null
+    appchain_of: null,
+    protocols: []
   }
 ];

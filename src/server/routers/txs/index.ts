@@ -1,14 +1,14 @@
 import { createTRPCRouter } from '@/server/trpc';
 import {
   getSummary,
-  getSummaryByDay,
-  getSummaryByContract
+  getSummaryByContract,
+  getSummaryByMonth
 } from './getSummary';
 import { syncWalletTxs } from './syncWalletTxs';
 
 export const txsRouter = createTRPCRouter({
   getSummary,
-  getSummaryByDay,
+  getSummaryByMonth,
   syncWalletTxs,
   getSummaryByContract
 });

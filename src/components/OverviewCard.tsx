@@ -41,20 +41,11 @@ import { getEthFromWei } from '@/utils/format';
 import { useRouter } from 'next/router';
 import { Avatar } from './Avatar';
 
-type OverviewData = {
-  message: string;
-  txCount?: string | undefined;
-  txValueSum?: string | undefined;
-  contractCount?: string | undefined;
-  feesPaidSum?: string | undefined;
-  address: string;
-};
-
 const OverviewCard = ({
-  txData,
+  txSummaries,
   isLoading
 }: {
-  txData: OverviewData[];
+  txSummaries: any;
   isLoading: boolean;
 }) => {
   const goalColor = useColorModeValue('gray.500', 'gray.400');
@@ -88,7 +79,7 @@ const OverviewCard = ({
                   </Td>
                 </Tr>
               ) : (
-                txData.map((data, i) => (
+                txSummaries.map((data: any, i: number) => (
                   <Tr key={i}>
                     <Td>
                       <Flex direction="row" alignItems="center" gap={2}>
@@ -106,29 +97,38 @@ const OverviewCard = ({
                       </Flex>
                     </Td>
                     <Td>
-                      <Tooltip label={getPercentile(Number(data.txCount))}>
-                        <Progress
-                          hasStripe
-                          size="sm"
-                          rounded="full"
-                          value={(Number(data.txCount) / percentile[50]) * 100}
-                          colorScheme={getProgressBarColor(
-                            Number(data.txCount)
-                          )}
-                        />
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <Tooltip label={getPercentile(Number(data.txValueSum))}>
+                      <Tooltip
+                        label={getPercentile(Number(data?.txCount?.value))}
+                      >
                         <Progress
                           hasStripe
                           size="sm"
                           rounded="full"
                           value={
-                            (Number(data.txValueSum) / percentile[50]) * 100
+                            (Number(data?.txCount?.value) / percentile[50]) *
+                            100
                           }
                           colorScheme={getProgressBarColor(
-                            Number(data.txValueSum)
+                            Number(data?.txCount?.value)
+                          )}
+                        />
+                      </Tooltip>
+                    </Td>
+                    <Td>
+                      <Tooltip
+                        label={getPercentile(Number(data.valueQuoteSum))}
+                      >
+                        <Progress
+                          hasStripe
+                          size="sm"
+                          rounded="full"
+                          value={
+                            (Number(data.valueQuoteSum?.value) /
+                              percentile[50]) *
+                            100
+                          }
+                          colorScheme={getProgressBarColor(
+                            Number(data.valueQuoteSum?.value)
                           )}
                         />
                       </Tooltip>

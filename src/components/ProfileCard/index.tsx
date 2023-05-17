@@ -26,34 +26,27 @@ import {
   getEthFromWei,
   getFormattedAddress
 } from '@/utils/format';
-import { Account } from '@/types/Account';
+import { IAccount } from '@/types/Account';
 import { Chain } from '@/types/Chains';
+import { TxSummary } from '@/types/TxSummary';
 
 type ProfileCardProps = {
-  account: Account;
+  account: IAccount;
   chainConfigs: Chain[];
-  totalTxs: number;
-  txsChange: number;
-  totalValue: number;
-  valueChange: number;
-  totalFees: number;
-  feesChange: number;
+  txSummary?: TxSummary;
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
 };
 
 export default function ProfileCard({
   account,
   chainConfigs,
-  totalTxs,
-  txsChange,
-  totalValue,
-  valueChange,
-  totalFees,
-  feesChange,
+  txSummary,
   handleSubmit
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
+  const toolTipLabel = 'Weekly change';
+  console.log('txSummary: ', txSummary);
   return (
     <Card size="lg">
       <CardHeader>
@@ -114,36 +107,81 @@ export default function ProfileCard({
           </Flex>
           <Flex direction="row" width="100%" justifyContent="space-between">
             <Stat textAlign="center">
-              <StatNumber>{formatPrettyNumber(totalTxs)}</StatNumber>
+              <StatNumber>
+                {formatPrettyNumber(txSummary?.txCount.allTime ?? 0, 0)}
+              </StatNumber>
               <StatLabel color={subHeadingColor}>Transactions</StatLabel>
-              <Tooltip label="Percent change from 7 days ago" hasArrow>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  {txsChange.toFixed(2)}%
-                </StatHelpText>
-              </Tooltip>
+              {txSummary && txSummary.txCount.percentChange && (
+                <Tooltip label={toolTipLabel} hasArrow>
+                  <StatHelpText>
+                    <StatArrow
+                      type={
+                        txSummary.txCount.percentChange > 0
+                          ? 'increase'
+                          : 'decrease'
+                      }
+                    />
+                    {`${formatDecimals(
+                      txSummary?.txCount.percentChange ?? 0
+                    )}% (${formatPrettyNumber(
+                      txSummary?.txCount.lastWeek,
+                      0
+                    )})`}
+                  </StatHelpText>
+                </Tooltip>
+              )}
             </Stat>
             <Stat textAlign="center">
               <StatNumber>
-                <Text>${formatDecimals(totalValue)}</Text>
+                <Text>
+                  ${formatPrettyNumber(txSummary?.valueQuoteSum.allTime ?? 0)}
+                </Text>
               </StatNumber>
-              <StatLabel>Total Tx Value</StatLabel>
-              <Tooltip label="Percent change from 7 days ago" hasArrow>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  {valueChange.toFixed(2)}%
-                </StatHelpText>
-              </Tooltip>
+              <StatLabel color={subHeadingColor}>Total Tx Value</StatLabel>
+              {txSummary && txSummary.valueQuoteSum.percentChange && (
+                <Tooltip label={toolTipLabel} hasArrow>
+                  <StatHelpText>
+                    <StatArrow
+                      type={
+                        txSummary.valueQuoteSum.percentChange > 0
+                          ? 'increase'
+                          : 'decrease'
+                      }
+                    />
+                    {`${formatDecimals(
+                      txSummary?.valueQuoteSum.percentChange ?? 0
+                    )}% ($${formatPrettyNumber(
+                      txSummary?.valueQuoteSum.lastWeek,
+                      0
+                    )})`}
+                  </StatHelpText>
+                </Tooltip>
+              )}
             </Stat>
             <Stat textAlign="center">
-              <StatNumber>{getEthFromWei(totalFees)}</StatNumber>
+              <StatNumber>
+                ${formatPrettyNumber(txSummary?.gasQuoteSum.allTime ?? 0)}
+              </StatNumber>
               <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
-              <Tooltip label="Percent change from 7 days ago" hasArrow>
-                <StatHelpText>
-                  <StatArrow type="increase" />
-                  {feesChange.toFixed(2)}%
-                </StatHelpText>
-              </Tooltip>
+              {txSummary && txSummary.gasQuoteSum.percentChange && (
+                <Tooltip label={toolTipLabel} hasArrow>
+                  <StatHelpText>
+                    <StatArrow
+                      type={
+                        txSummary.gasQuoteSum.percentChange > 0
+                          ? 'increase'
+                          : 'decrease'
+                      }
+                    />
+                    {`${formatDecimals(
+                      txSummary?.gasQuoteSum.percentChange ?? 0
+                    )}% ($${formatPrettyNumber(
+                      txSummary?.gasQuoteSum.lastWeek,
+                      0
+                    )})`}
+                  </StatHelpText>
+                </Tooltip>
+              )}
             </Stat>
           </Flex>
         </Flex>

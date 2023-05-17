@@ -71,7 +71,7 @@ const App = ({
   useEffect(() => {
     const localStorage = window.localStorage;
     // Get item from local storage
-    const profiles = localStorage.getItem('profiles');
+    const profiles = localStorage.getItem('biway.profiles');
     if (profiles) setProfilesData(JSON.parse(profiles));
     const currentProfileId = localStorage.getItem('profileId');
     if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));

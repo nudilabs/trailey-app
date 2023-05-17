@@ -3,114 +3,145 @@ import { and, eq, sql } from 'drizzle-orm';
 import { publicProcedure } from '@/server/trpc';
 import { db } from '@/db/drizzle-db';
 import { supportChains, transactions } from '@/db/schema';
-import { getEthFromWei } from '@/utils/format';
 
 export const getSummary = publicProcedure
   .input(
     z.object({
       chainName: z.string(),
-      walletAddr: z.string(),
-      timeSpan: z.number()
+      walletAddr: z.string()
     })
   )
   .query(async opts => {
-    const { chainName, walletAddr, timeSpan } = opts.input;
+    const { chainName, walletAddr } = opts.input;
     const supportedChain = await db
       .select()
       .from(supportChains)
       .where(eq(supportChains.name, chainName));
     if (supportedChain.length === 0)
       return {
-        txCount: '0',
-        contractCount: '0',
-        txValueSum: '0',
-        feesPaidSum: '0',
-        message: `Chain ${chainName} is not supported`
+        txCount: {
+          allTime: 0,
+          lastWeek: 0,
+          percentChange: 0
+        },
+        contractCount: {
+          allTime: 0,
+          lastWeek: 0,
+          percentChange: 0
+        },
+        valueQuoteSum: {
+          allTime: 0,
+          lastWeek: 0,
+          percentChange: 0
+        },
+        gasQuoteSum: {
+          allTime: 0,
+          lastWeek: 0,
+          percentChange: 0
+        }
       };
-
     const chainId = supportedChain[0].id;
-    const data = await db
+
+    interface QueryResult {
+      txCount: number;
+      contractCount: number;
+      valueQuoteSum: number;
+      gasQuoteSum: number;
+    }
+    const dataAllTime = (await db
       .select({
         txCount: sql`count(tx_hash)`,
         contractCount: sql`count(case when is_interact then 1 else null end)`,
-        valueSum: sql`sum(value_quote)`,
-        feesPaidSum: sql`sum(fees_paid)` // CHECK THIS, does it include failed TXs?
+        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.chainId, chainId),
+          eq(transactions.fromAddress, walletAddr)
+        )
+      )
+      .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
+    const dataLastWeek = (await db
+      .select({
+        txCount: sql`count(tx_hash)`,
+        contractCount: sql`count(case when is_interact then 1 else null end)`,
+        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
       })
       .from(transactions)
       .where(
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          timeSpan === 0
-            ? sql`1`
-            : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`
+          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`
         )
       )
-      .orderBy(sql`DATE(block_signed_at) DESC`);
-    return {
-      txCount: data[0].txCount,
-      contractCount: data[0].contractCount,
-      txValueSum: data[0].valueSum,
-      feesPaidSum: data[0].feesPaidSum,
-      message: `Found ${data[0].txCount} transactions and ${data[0].contractCount} contract interactions for chain ${supportedChain[0].name} in the last ${timeSpan} days.`
-    };
-  });
+      .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
 
-export const getSummaryByDay = publicProcedure
-  .input(
-    z.object({
-      chainName: z.string(),
-      walletAddr: z.string(),
-      timeSpan: z.number()
-    })
-  )
-  .query(async opts => {
-    const { chainName, walletAddr, timeSpan } = opts.input;
-    const supportedChain = await db
-      .select()
-      .from(supportChains)
-      .where(eq(supportChains.name, chainName));
-    if (supportedChain.length === 0)
-      return {
-        txsByDay: [],
-        message: `Chain ${chainName} is not supported`
-      };
-
-    const chainId = supportedChain[0].id;
-    const txsByDay = await db
+    const dataLastTwoWeeks = (await db
       .select({
-        date: sql`DATE(block_signed_at)`,
         txCount: sql`count(tx_hash)`,
         contractCount: sql`count(case when is_interact then 1 else null end)`,
-        valueSum: sql`sum(value_quote)`,
-        feesPaidSum: sql`sum(fees_paid)` // CHECK THIS, does it include failed TXs?
+        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`
       })
       .from(transactions)
       .where(
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          eq(transactions.success, true),
-          timeSpan === 0
-            ? sql`1`
-            : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`
+          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)`
         )
       )
-      .groupBy(sql`DATE(block_signed_at)`)
-      .orderBy(sql`DATE(block_signed_at) DESC`);
+      .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
 
-    const txsByDayFormatted = txsByDay.map(tx => {
-      return {
-        date: tx.date,
-        txCount: tx.txCount,
-        contractCount: tx.contractCount,
-        txValueSum: tx.valueSum,
-        feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
-      };
-    });
+    console.log('dataLastWeek: ', dataLastWeek);
+    console.log('dataLastTwoWeeks: ', dataLastTwoWeeks);
+
+    // Difference in change from 2 weeks ago to last week
+
+    const txCountPercentChange =
+      ((dataLastWeek[0].txCount - dataLastTwoWeeks[0].txCount) /
+        dataLastTwoWeeks[0].txCount) *
+      100;
+
+    const contractCountPercentChange =
+      ((dataLastWeek[0].contractCount - dataLastTwoWeeks[0].contractCount) /
+        dataLastTwoWeeks[0].contractCount) *
+      100;
+
+    const valueQuoteSumPercentChange =
+      ((dataLastWeek[0].valueQuoteSum - dataLastTwoWeeks[0].valueQuoteSum) /
+        dataLastTwoWeeks[0].valueQuoteSum) *
+      100;
+
+    const gasQuoteSumPercentChange =
+      ((dataLastWeek[0].gasQuoteSum - dataLastTwoWeeks[0].gasQuoteSum) /
+        dataLastTwoWeeks[0].gasQuoteSum) *
+      100;
     return {
-      txsByDay: txsByDayFormatted,
-      message: `Found transaction data for chain ${supportedChain[0].name} in the last ${timeSpan} days.`
+      txCount: {
+        allTime: dataAllTime[0].txCount,
+        lastWeek: dataLastWeek[0].txCount,
+        percentChange: txCountPercentChange
+      },
+      contractCount: {
+        allTime: dataAllTime[0].contractCount,
+        lastWeek: dataLastWeek[0].contractCount,
+        percentChange: contractCountPercentChange
+      },
+      valueQuoteSum: {
+        allTime: dataAllTime[0].valueQuoteSum,
+        lastWeek: dataLastWeek[0].valueQuoteSum,
+        percentChange: valueQuoteSumPercentChange
+      },
+      gasQuoteSum: {
+        allTime: dataAllTime[0].gasQuoteSum,
+        lastWeek: dataLastWeek[0].gasQuoteSum,
+        percentChange: gasQuoteSumPercentChange
+      }
     };
   });
 
@@ -118,55 +149,181 @@ export const getSummaryByContract = publicProcedure
   .input(
     z.object({
       chainName: z.string(),
-      walletAddr: z.string(),
-      timeSpan: z.number()
+      walletAddr: z.string()
     })
   )
   .query(async opts => {
-    const { chainName, walletAddr, timeSpan } = opts.input;
+    const { chainName, walletAddr } = opts.input;
     const supportedChain = await db
       .select()
       .from(supportChains)
       .where(eq(supportChains.name, chainName));
-    if (supportedChain.length === 0)
-      return {
-        txsByContract: [],
-        message: `Chain ${chainName} is not supported`
-      };
-
+    if (supportedChain.length === 0) return { contracts: [] };
+    interface QueryResult {
+      address: string;
+      txCount: number;
+      valueQuoteSum: number;
+      gasQuoteSum: number;
+    }
     const chainId = supportedChain[0].id;
-    const txsByContract = await db
+    const txsByContractAllTime = (await db
       .select({
-        contract: sql`to_address`,
+        address: sql`to_address`,
         txCount: sql`count(tx_hash)`,
-        valueSum: sql`sum(value_quote)`,
-        feesPaidSum: sql`sum(fees_paid)` // CHECK THIS, does it include failed TXs?
+        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
       })
       .from(transactions)
       .where(
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          eq(transactions.success, true),
-          timeSpan === 0
-            ? sql`1`
-            : sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${timeSpan} DAY)`,
           eq(transactions.isInteract, true)
         )
       )
       .groupBy(sql`to_address`)
-      .orderBy(sql`count(tx_hash) DESC`);
+      .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
 
-    const txsByContractFormatted = txsByContract.map(tx => {
+    const txsByContractLastWeek = (await db
+      .select({
+        address: sql`to_address`,
+        txCount: sql`count(tx_hash)`,
+        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.chainId, chainId),
+          eq(transactions.fromAddress, walletAddr),
+          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`,
+          eq(transactions.isInteract, true)
+        )
+      )
+      .groupBy(sql`to_address`)
+      .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
+
+    const txsByContractLastTwoWeeks = (await db
+      .select({
+        address: sql`to_address`,
+        txCount: sql`count(tx_hash)`,
+        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.chainId, chainId),
+          eq(transactions.fromAddress, walletAddr),
+          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)`,
+          eq(transactions.isInteract, true)
+        )
+      )
+      .groupBy(sql`to_address`)
+      .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
+
+    const txsByContractFormatted = txsByContractAllTime.map(tx => {
+      const lastWeek = txsByContractLastWeek.find(
+        txLastWeek => txLastWeek.address === tx.address
+      );
+      const lastTwoWeeks = txsByContractLastTwoWeeks.find(
+        txLastTwoWeeks => txLastTwoWeeks.address === tx.address
+      );
+
+      // Difference in change from 2 weeks ago to last week
+
+      const txCountPercentChange =
+        lastWeek && lastTwoWeeks
+          ? ((lastWeek.txCount - lastTwoWeeks.txCount) / lastTwoWeeks.txCount) *
+            100
+          : 0;
+
+      const valueQuoteSumPercentChange =
+        lastWeek && lastTwoWeeks
+          ? ((lastWeek.valueQuoteSum - lastTwoWeeks.valueQuoteSum) /
+              lastTwoWeeks.valueQuoteSum) *
+            100
+          : 0;
+
+      const gasQuoteSumPercentChange =
+        lastWeek && lastTwoWeeks
+          ? ((lastWeek.gasQuoteSum - lastTwoWeeks.gasQuoteSum) /
+              lastTwoWeeks.gasQuoteSum) *
+            100
+          : 0;
+
       return {
-        contract: tx.contract as string,
-        txCount: Number(tx.txCount),
-        txValueSum: tx.valueSum as number,
-        feesPaidSum: getEthFromWei(tx.feesPaidSum as number)
+        address: tx.address,
+        txCount: {
+          allTime: tx.txCount,
+          lastWeek: lastWeek ? lastWeek.txCount : 0,
+          percentChange: txCountPercentChange
+        },
+        valueQuoteSum: {
+          allTime: tx.valueQuoteSum,
+          lastWeek: lastWeek ? lastWeek.valueQuoteSum : 0,
+          percentChange: valueQuoteSumPercentChange
+        },
+        gasQuoteSum: {
+          allTime: tx.gasQuoteSum,
+          lastWeek: lastWeek ? lastWeek.gasQuoteSum : 0,
+          percentChange: gasQuoteSumPercentChange
+        }
+      };
+    });
+    return { contracts: txsByContractFormatted };
+  });
+
+export const getSummaryByMonth = publicProcedure
+  .input(
+    z.object({
+      chainName: z.string(),
+      walletAddr: z.string()
+    })
+  )
+  .query(async opts => {
+    const { chainName, walletAddr } = opts.input;
+    const supportedChain = await db
+      .select()
+      .from(supportChains)
+      .where(eq(supportChains.name, chainName));
+    if (supportedChain.length === 0)
+      return {
+        txsByMonth: []
+      };
+
+    const chainId = supportedChain[0].id;
+    const txsByMonth = await db
+      .select({
+        year: sql`YEAR(block_signed_at)`,
+        month: sql`MONTH(block_signed_at)`,
+        txCount: sql`COUNT(tx_hash)`,
+        contractCount: sql`COUNT(CASE WHEN is_interact THEN 1 ELSE NULL END)`,
+        valueQuoteSum: sql`SUM(value_quote)`,
+        gasQuoteSum: sql`SUM(gas_quote)`
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.chainId, chainId),
+          eq(transactions.fromAddress, walletAddr),
+          eq(transactions.success, true)
+        )
+      )
+      .groupBy(sql`YEAR(block_signed_at)`, sql`MONTH(block_signed_at)`)
+      .orderBy(sql`YEAR(block_signed_at) ASC`, sql`MONTH(block_signed_at) ASC`);
+
+    const txsByMonthFormatted = txsByMonth.map(tx => {
+      return {
+        // combine month and year as date
+        date: tx.month + '/' + tx.year,
+        txCount: tx.txCount,
+        contractCount: tx.contractCount,
+        txValueSum: tx.valueQuoteSum,
+        feesPaidSum: tx.gasQuoteSum
       };
     });
     return {
-      txsByContract: txsByContractFormatted,
-      message: `Found transaction data for chain ${supportedChain[0].name} in the last ${timeSpan} days.`
+      txsByMonth: txsByMonthFormatted
     };
   });

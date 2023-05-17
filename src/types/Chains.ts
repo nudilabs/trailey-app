@@ -9,11 +9,11 @@ export type Chain = {
   white_logo_url: string;
   is_appchain: boolean;
   appchain_of: string | null;
-  protocols?: Protocol[];
+  protocols: Protocol[];
 };
 
 type Protocol = {
-  contract: string;
+  address: string;
   label: string;
   logo_url: string;
 };
