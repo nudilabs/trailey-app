@@ -1,19 +1,18 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle-db';
 import { Transaction } from '@/types/DB';
 import { supportChains, transactions } from '@/db/schema';
 import { config as serverConfig } from '@/configs/server';
 import { QStash } from '@/connectors/Qstash';
-import { Covalent } from '@/connectors/Covalent';
+// import { Covalent } from '@/connectors/Covalent';
 import moment from 'moment';
 import * as z from 'zod';
+import axios from 'axios';
 
-export const config = {
-  runtime: 'edge'
-};
-
-// type Transaction = InferModel<typeof transactions, 'insert'>;
+// export const config = {
+//   runtime: 'edge'
+// };
 
 const schema = z.object({
   chainName: z.string(),
@@ -31,10 +30,7 @@ const getTxs = async (
   chainId: number,
   totalPage: number
 ) => {
-  const txs = [];
-
   const batch = serverConfig.batchSize;
-  // if(startPage+serverConfig)
 
   let totalGetPage;
   if (startPage + serverConfig.pagePerBatch > totalPage) {
@@ -47,8 +43,26 @@ const getTxs = async (
   console.log('totalPage', totalGetPage);
   console.log('batchCount', batchCount);
 
-  const covalent = new Covalent(serverConfig.covalent.key);
+  const fetchTxs = async (
+    page: number
+  ): Promise<{ items: any; page: number }> => {
+    //   const url = `${serverConfig.covalent.url}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
+    return new Promise((resolve, reject) => {
+      const url = `${serverConfig.covalent.url}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
+      axios
+        .get(url, {
+          headers: { Authorization: 'Basic ' + btoa(serverConfig.covalent.key) }
+        })
+        .then(res => {
+          resolve({ items: res.data.data.items, page });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  };
 
+  const txs = [];
   for (let i = 0; i < batchCount; i++) {
     const promises = [];
 
@@ -56,18 +70,29 @@ const getTxs = async (
       const page = startPage + i * batch + j;
       if (!(page < totalPage) || i * batch + j >= totalGetPage) break;
       // console.log('round', i * batch + j);
-      promises.push(covalent.getWalletTxsByPage(chainName, walletAddr, page));
+      // const url = `${serverConfig.covalent.url}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
+      promises.push(fetchTxs(page));
     }
 
+    // const res = await axios.all(promises);
     const res = await Promise.all(promises);
-    for (let j = 0; j < res.length; j++) {
-      let tmpData = [];
-      for (const item of res[j]?.data?.data.items) {
-        if (item.from_address !== walletAddr.toLowerCase()) continue;
+    // const data = res.map((r): any => r.data.data.items);
+    // const data = res.map((r): any => r.items);
 
+    // console.log('resolve data', res.length);
+    txs.push(...res);
+  }
+  const result = [];
+
+  for (let tx of txs) {
+    const { items, page } = tx;
+    // console.log('items', items);
+    for (let item of items) {
+      if (item.from_address.toLowerCase() !== walletAddr.toLowerCase()) {
+        continue;
+      } else {
         const signDate = moment.utc(item.block_signed_at).toDate();
-
-        let tmp: Transaction = {
+        let tmpTx: Transaction = {
           signedAt: signDate,
           blockHeight: item.block_height,
           txHash: item.tx_hash,
@@ -81,35 +106,29 @@ const getTxs = async (
           valueQuote: item.value_quote,
           feesPaid: item.fees_paid,
           gasQuote: item.gas_quote,
-          page: res[j]?.page,
+          page,
+          isInteract:
+            item.log_events && item.log_events.length > 0 ? true : false,
           chainId
         };
-
-        if (item.log_events) {
-          if (item.log_events.length > 0) {
-            delete item.log_events;
-            tmpData.push({
-              ...tmp,
-              isInteract: true
-            });
-          }
-        } else {
-          delete item.log_events;
-          tmpData.push({ ...tmp, isInteract: false, chainId });
-        }
+        result.push(tmpTx);
       }
-
-      txs.push(...tmpData);
     }
   }
 
-  return txs;
+  // console.log('txs len', result.length);
+  // console.log('txs[0]', result[0]);
+  return result;
 };
 
-export default async function handler(req: NextRequest) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   console.log('store-txs trigger');
   if (req.method !== 'POST')
-    return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
+    // return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
+    return res.status(404).json({ status: 404, statusText: 'Not Found' });
 
   const qstash = new QStash(
     serverConfig.qstash.currSigKey,
@@ -119,13 +138,10 @@ export default async function handler(req: NextRequest) {
 
   const valid = await qstash.auth(req);
   if (!valid)
-    return NextResponse.json(null, {
-      status: 401,
-      statusText: 'Unauthorized'
-    });
+    return res.status(401).json({ status: 401, statusText: 'Auth Err' });
 
   try {
-    const json = await req.json();
+    const json = req.body;
     const { chainName, walletAddr, totalPage, startPage } = schema.parse(json);
 
     const supportedChain = await db
@@ -134,18 +150,14 @@ export default async function handler(req: NextRequest) {
       .where(eq(supportChains.name, chainName));
 
     if (supportedChain.length === 0)
-      return NextResponse.json(null, {
-        status: 400,
-        statusText: 'unsupported chain'
-      });
+      return res.status(404).json({ status: 404, statusText: 'Not Found' });
 
     const chainId = supportedChain[0].id;
 
-    const txs: Transaction[] = await getTxs(
+    const txs = await getTxs(
       chainName,
       walletAddr,
       startPage,
-      // endPage,
       chainId,
       totalPage
     );
@@ -174,21 +186,13 @@ export default async function handler(req: NextRequest) {
       //create hash for deduplication id from nextStore
       await qstash.publishMsg('store-txs', nextStore);
 
-      return NextResponse.json(
-        {
-          status: 'continue store',
-          nextStore
-        },
-        {
-          status: 200
-        }
-      );
+      return res.status(200).json(nextStore);
     } else {
-      return NextResponse.json(null, { status: 200 });
+      return res.status(200).json({ status: 200, statusText: 'OK' });
     }
   } catch (e) {
     console.log('error from api');
     console.log(e);
-    return NextResponse.json(null, { status: 400, statusText: 'Bad Request' });
+    return res.status(500).json({ status: 500, statusText: 'Internal Error' });
   }
 }

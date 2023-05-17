@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextApiRequest } from 'next';
 import { jwtVerify } from 'jose';
 import { Client } from '@upstash/qstash';
 import { config as serverConfig } from '@/configs/server';
@@ -24,13 +24,15 @@ export class QStash {
     this.apiToken = apiToken;
   }
 
-  private async authWithKey(key: string, req: NextRequest): Promise<boolean> {
-    const signature = req.headers.get('upstash-signature') as
-      | string
-      | undefined;
+  private async authWithKey(
+    key: string,
+    req: NextApiRequest
+  ): Promise<boolean> {
+    const signature = req.headers['upstash-signature'] as string | undefined;
     if (!signature) {
       throw new SignatureError('signature is missing');
     }
+    // const parts = signature.split('.');
     const parts = signature.split('.');
 
     if (parts.length !== 3) {
@@ -74,7 +76,7 @@ export class QStash {
     }
   }
 
-  public async auth(req: NextRequest): Promise<boolean> {
+  public async auth(req: NextApiRequest): Promise<boolean> {
     const valid = await this.authWithKey(this.currentSigningKey, req);
     if (valid) {
       return true;
