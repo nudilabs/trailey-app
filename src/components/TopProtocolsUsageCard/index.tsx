@@ -1,5 +1,11 @@
+import { IAccount } from '@/types/Account';
 import { Chain } from '@/types/Chains';
-import { formatDecimals, formatPrettyNumber } from '@/utils/format';
+import { TxSummaryByContract } from '@/types/TxSummary';
+import {
+  formatDecimals,
+  formatPrettyNumber,
+  getColorScheme
+} from '@/utils/format';
 import {
   Card,
   CardBody,
@@ -11,18 +17,21 @@ import {
   Image,
   Text,
   Badge,
-  useColorModeValue
+  useColorModeValue,
+  Box
 } from '@chakra-ui/react';
-import { FiInfo } from 'react-icons/fi';
+import { FiExternalLink, FiInfo } from 'react-icons/fi';
 
 type TopProtocolsUsageCardProps = {
-  txsSummaryByContract: any;
+  txsSummaryByContract: TxSummaryByContract | undefined;
   currentChain: Chain;
+  account: IAccount;
 };
 
 export default function TopProtocolsUsageCard({
   txsSummaryByContract,
-  currentChain
+  currentChain,
+  account
 }: TopProtocolsUsageCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   return (
@@ -45,22 +54,23 @@ export default function TopProtocolsUsageCard({
       <CardBody>
         <Flex direction="row" gap={4} overflow="scroll">
           {txsSummaryByContract &&
-            txsSummaryByContract?.contracts.map(
+            txsSummaryByContract.contracts.map(
               (contract: any, index: number) => {
                 const protocol = currentChain.protocols.find(
-                  p => p.address === contract.address
+                  (protocol: any) => contract.address === protocol.address
                 );
+
                 if (!protocol) return null;
+                console.log('protocol: ', protocol);
                 return (
                   <Card key={index} size="md" minWidth="240px">
                     <CardBody>
                       <Flex direction="column">
-                        <Flex direction="row" alignItems="center">
+                        <Flex direction="row" alignItems="center" gap={2}>
                           {protocol?.logo_url && (
                             <Image
                               src={protocol?.logo_url}
                               boxSize="24px"
-                              mr={1}
                               alt={protocol?.label}
                             />
                           )}
@@ -68,21 +78,26 @@ export default function TopProtocolsUsageCard({
                             fontSize="xs"
                             fontWeight="bold"
                             color={subHeadingColor}
+                            as="a"
+                            href={`https://etherscan.io/address/${protocol?.address}?fromaddress=${account.address}`}
+                            target="_blank"
+                            textDecor="underline"
                           >
                             {protocol?.label}
                           </Text>
+                          <Box fontSize="xs" color={subHeadingColor}>
+                            <FiExternalLink />
+                          </Box>
                         </Flex>
                         <Flex direction="row" alignItems="center">
                           <Heading fontSize="xl" fontWeight="bold">
-                            {contract?.txCount.value ?? 0}
+                            {contract?.txCount.allTime ?? 0}
                           </Heading>
                           <Badge
                             ml={2}
-                            colorScheme={
-                              contract?.txCount.percentChange ?? 0 > 0
-                                ? 'green'
-                                : 'gray'
-                            }
+                            colorScheme={getColorScheme(
+                              contract?.txCount.percentChange ?? 0
+                            )}
                             rounded="md"
                           >
                             {contract?.txCount.percentChange.toFixed(2)}%
@@ -96,7 +111,7 @@ export default function TopProtocolsUsageCard({
                           >
                             $
                             {formatPrettyNumber(
-                              contract?.valueQuoteSum.value ?? 0
+                              contract?.valueQuoteSum.allTime ?? 0
                             )}{' '}
                             (value)
                           </Text>

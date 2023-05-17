@@ -21,12 +21,16 @@ export default function Layout({
   children
 }: LayoutProps) {
   const router = useRouter();
-  const { pathname } = router;
+  const [pathname, setPathname] = useState('/');
 
   const pageTitle =
-    pathname === '/'
+    pathname === '/' || pathname === '/account/[address]'
       ? 'Biway'
       : `Biway | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
+
+  useEffect(() => {
+    setPathname(router.pathname);
+  }, [router.pathname]);
 
   const [isLoading, setIsLoading] = useState(false);
 

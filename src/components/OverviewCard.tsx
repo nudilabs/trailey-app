@@ -41,18 +41,11 @@ import { getEthFromWei } from '@/utils/format';
 import { useRouter } from 'next/router';
 import { Avatar } from './Avatar';
 
-type OverviewData = {
-  txCount?: { value: number; percentChange: number };
-  valueQuoteSum?: { value: number; percentChange: number };
-  contractCount?: { value: number; percentChange: number };
-  gasQuoteSum?: { value: number; percentChange: number };
-  address: string;
-};
 const OverviewCard = ({
-  txData,
+  txSummaries,
   isLoading
 }: {
-  txData: OverviewData[];
+  txSummaries: any;
   isLoading: boolean;
 }) => {
   const goalColor = useColorModeValue('gray.500', 'gray.400');
@@ -86,7 +79,7 @@ const OverviewCard = ({
                   </Td>
                 </Tr>
               ) : (
-                txData.map((data, i) => (
+                txSummaries.map((data: any, i: number) => (
                   <Tr key={i}>
                     <Td>
                       <Flex direction="row" alignItems="center" gap={2}>

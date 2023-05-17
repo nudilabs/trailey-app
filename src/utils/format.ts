@@ -175,6 +175,7 @@ export function emojiAvatarForAddress(address: string) {
 export function formatPrettyNumber(num: number | string, decimals = 2) {
   // Convert num to a number if it's a string
   const numValue = typeof num === 'string' ? parseFloat(num) : num;
+  console.log('numValue', numValue);
 
   if (numValue >= 1000000) {
     return (numValue / 1000000).toFixed(decimals) + 'm';
@@ -186,6 +187,7 @@ export function formatPrettyNumber(num: number | string, decimals = 2) {
 }
 
 export function formatDecimals(num: number | undefined | string, decimals = 2) {
+  console.log('num', num);
   if (num === undefined) {
     return 0; // or undefined, or any other value you prefer
   }
@@ -194,4 +196,18 @@ export function formatDecimals(num: number | undefined | string, decimals = 2) {
     return 0; // or undefined, or any other value you prefer
   }
   return numAsNumber.toFixed(decimals);
+}
+
+export function getColorScheme(percentChange?: number | string): string {
+  const numericValue = parseFloat(percentChange as string);
+
+  if (!isNaN(numericValue)) {
+    if (numericValue > 0) {
+      return 'green';
+    } else if (numericValue < 0) {
+      return 'red';
+    }
+  }
+
+  return 'gray';
 }

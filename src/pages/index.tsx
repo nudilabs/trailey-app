@@ -51,14 +51,6 @@ import { Avatar } from '@/components/Avatar';
 import AvatarGroup from '@/components/AvatarGroup';
 import { FiEdit, FiPlusCircle, FiUmbrella } from 'react-icons/fi';
 
-type OverviewData = {
-  txCount?: { value: number; percentChange: number };
-  valueQuoteSum?: { value: number; percentChange: number };
-  contractCount?: { value: number; percentChange: number };
-  gasQuoteSum?: { value: number; percentChange: number };
-  address: string;
-};
-
 const MOCK_OVERVIEW_DATA = [
   {
     address: '0x293j...293k',
@@ -111,7 +103,6 @@ export default function Home({
   profilesData: IProfile[];
 }) {
   const [address, setAddress] = useState<string | null>(null);
-  // const [txData, setTxData] = useState<OverviewData[]>([]);
   const [currentChain, setCurrentChain] = useState<string>('ethereum');
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -134,6 +125,11 @@ export default function Home({
       ) || []
   );
 
+  const txSummariesWithAddress = txSummaries.map((txSummary, index) => ({
+    ...txSummary,
+    address: profilesData[currentProfile]?.wallets[index]?.address
+  }));
+
   useEffect(() => {
     setAddress((session as Session)?.address ?? null);
 
@@ -144,14 +140,6 @@ export default function Home({
       setCurrentTime(time as string);
     }
   }, [sessionStatus, chain, time]);
-
-  const txData: OverviewData[] = txSummaries.map((q, i) => ({
-    txCount: q.data?.txCount,
-    txValueSum: q.data?.valueQuoteSum,
-    contractCount: q.data?.contractCount,
-    feesPaidSum: q.data?.gasQuoteSum,
-    address: profilesData[currentProfile]?.wallets?.[i].address
-  }));
 
   if (!session || !address) {
     return (
@@ -216,112 +204,6 @@ export default function Home({
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-        {/* START TOP STATS */}
-        {/* <GridItem
-          display={{ base: 'none', md: 'block' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Flex direction="row" gap={4} alignItems="center">
-                <IconButton
-                  aria-label="Profile"
-                  icon={<FiUmbrella />}
-                  display={{ base: 'none', md: 'flex' }}
-                />
-                <Stat>
-                  <StatLabel>Wallets</StatLabel>
-                  <StatNumber>
-                    {profilesData[currentProfile].wallets.length}
-                  </StatNumber>
-                  <StatHelpText>
-                    <StatArrow type="increase" />
-                    100
-                  </StatHelpText>
-                </Stat>
-              </Flex>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem
-          display={{ base: 'none', md: 'block' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Flex direction="row" gap={4} alignItems="center">
-                <IconButton
-                  aria-label="Profile"
-                  icon={<FiUmbrella />}
-                  display={{ base: 'none', md: 'flex' }}
-                />
-                <Stat>
-                  <StatLabel>Wallets</StatLabel>
-                  <StatNumber>
-                    {profilesData[currentProfile].wallets.length}
-                  </StatNumber>
-                  <StatHelpText>
-                    <StatArrow type="increase" />
-                    100
-                  </StatHelpText>
-                </Stat>
-              </Flex>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem
-          display={{ base: 'none', md: 'block' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Flex direction="row" gap={4} alignItems="center">
-                <IconButton
-                  aria-label="Profile"
-                  icon={<FiUmbrella />}
-                  display={{ base: 'none', md: 'flex' }}
-                />
-                <Stat>
-                  <StatLabel>Wallets</StatLabel>
-                  <StatNumber>
-                    {profilesData[currentProfile].wallets.length}
-                  </StatNumber>
-                  <StatHelpText>
-                    <StatArrow type="increase" />
-                    100
-                  </StatHelpText>
-                </Stat>
-              </Flex>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem
-          display={{ base: 'none', md: 'block' }}
-          colSpan={{ base: 6, md: 3 }}
-        >
-          <Card size="lg">
-            <CardBody>
-              <Flex direction="row" gap={4} alignItems="center">
-                <IconButton
-                  aria-label="Profile"
-                  icon={<FiUmbrella />}
-                  display={{ base: 'none', md: 'flex' }}
-                />
-                <Stat>
-                  <StatLabel>Wallets</StatLabel>
-                  <StatNumber>
-                    {profilesData[currentProfile].wallets.length}
-                  </StatNumber>
-                  <StatHelpText>
-                    <StatArrow type="increase" />
-                    100
-                  </StatHelpText>
-                </Stat>
-              </Flex>
-            </CardBody>
-          </Card>
-        </GridItem> */}
-        {/* END TOP STATS */}
         <GridItem colSpan={{ base: 12, lg: 4 }}>
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             <GridItem colSpan={{ base: 12, lg: 12 }}>
@@ -420,11 +302,11 @@ export default function Home({
             </GridItem>
           </Grid>
         </GridItem>
-        {/* START BOTTOM STATS */}
-
-        {/* END BOTTOM STATS */}
         <GridItem colSpan={{ base: 12, lg: 8 }}>
-          <OverviewCard isLoading={isLoading} txData={txData} />
+          <OverviewCard
+            isLoading={isLoading}
+            txSummaries={txSummariesWithAddress}
+          />
         </GridItem>
       </Grid>
     </Flex>

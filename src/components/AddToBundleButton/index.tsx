@@ -58,6 +58,7 @@ export default function AddToBundleBtn({
       onClick={handleAddToBundle}
       isLoading={isLoading}
       isDisabled={addressExists} // Disable the button if the address exists
+      display={addressExists ? 'none' : 'block'}
     >
       Add to Bundle
     </Button>

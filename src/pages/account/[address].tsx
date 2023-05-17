@@ -63,7 +63,8 @@ import {
   PolarGrid,
   Radar,
   RadarChart,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Tooltip as TooltipRecharts
 } from 'recharts';
 
 import { get } from '@vercel/edge-config';
@@ -75,6 +76,8 @@ import ProgressTrackerCard from '@/components/ProgressTrackerCard';
 import TopProtocolsUsageCard from '@/components/TopProtocolsUsageCard';
 import AddToBundleBtn from '@/components/AddToBundleButton';
 import { IProfile } from '@/types/IProfile';
+import { TxSummary, TxSummaryByContract } from '@/types/TxSummary';
+import Head from 'next/head';
 
 const times: { [key: string]: number } = {
   '24h': 1,
@@ -82,40 +85,6 @@ const times: { [key: string]: number } = {
   '30d': 30,
   all: 0
 };
-
-const data = [
-  {
-    subject: 'Bridged Value',
-    A: 120,
-    B: 110,
-    fullMark: 150
-  },
-  {
-    subject: 'Protocols Used',
-    A: 85,
-    B: 90,
-    fullMark: 150
-  },
-  {
-    subject: 'Interactions',
-    A: 86,
-    B: 70,
-    fullMark: 150
-  },
-  {
-    subject: 'Fees Paid',
-    A: 99,
-    B: 100,
-    fullMark: 150
-  },
-
-  {
-    subject: 'Txs',
-    A: 98,
-    B: 130,
-    fullMark: 150
-  }
-];
 
 const steps = [
   { title: 'Top 50%', description: `10 txs` },
@@ -141,7 +110,6 @@ export default function Account({
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const router = useRouter();
   const { chain, time } = router.query;
-  const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
 
   // resync wallet
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
@@ -157,15 +125,53 @@ export default function Account({
     // console.log('Input 2:', walletAddr);
   };
 
-  const txSummary = trpc.txs.getSummary.useQuery({
+  const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery({
     chainName: currentChain.name,
     walletAddr: account.address
   }).data;
 
-  const txsSummaryByContract = trpc.txs.getSummaryByContract.useQuery({
-    chainName: currentChain.name,
-    walletAddr: account.address
-  }).data;
+  const txsSummaryByContract: TxSummaryByContract | undefined =
+    trpc.txs.getSummaryByContract.useQuery({
+      chainName: currentChain.name,
+      walletAddr: account.address
+    }).data;
+
+  const average = {
+    bridged: 200,
+    protocols: 250,
+    interactions: 1800,
+    fees: 60000,
+    txs: 2500
+  };
+
+  const data = [
+    {
+      subject: 'Bridged Value',
+      A: 120 / average.bridged,
+      fullMark: 100
+    },
+    {
+      subject: 'Protocols Used',
+      A: (txsSummaryByContract?.contracts.length ?? 0) / average.protocols,
+      fullMark: 100
+    },
+    {
+      subject: 'Interactions',
+      A: (txSummary?.contractCount.allTime ?? 0) / average.interactions,
+      fullMark: 100
+    },
+    {
+      subject: 'Fees Paid',
+      A: (txSummary?.gasQuoteSum.allTime ?? 0) / average.fees,
+      fullMark: 100
+    },
+
+    {
+      subject: 'Txs',
+      A: (txSummary?.txCount.allTime ?? 0) / average.txs,
+      fullMark: 100
+    }
+  ];
 
   useEffect(() => {
     if (chain) {
@@ -179,6 +185,13 @@ export default function Account({
 
   return (
     <Flex direction="column">
+      <Head>
+        <title>
+          {account.ensName == 'Unidentified'
+            ? account.address
+            : account.ensName}
+        </title>
+      </Head>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
           <Flex direction="column" gap={4}>
@@ -220,7 +233,7 @@ export default function Account({
                         <StatLabel>Total Tx Value</StatLabel>
                         <StatNumber>
                           <Text>
-                            ${formatDecimals(txSummary?.valueQuoteSum.value)}
+                            ${formatDecimals(txSummary?.valueQuoteSum.allTime)}
                           </Text>
                         </StatNumber>
                       </Stat>
@@ -305,6 +318,7 @@ export default function Account({
                           fillOpacity={0.25}
                         />
                         <Legend />
+                        <TooltipRecharts />
                       </RadarChart>
                     </ResponsiveContainer>
                   </Flex>
@@ -315,6 +329,7 @@ export default function Account({
               <TopProtocolsUsageCard
                 txsSummaryByContract={txsSummaryByContract}
                 currentChain={currentChain}
+                account={account}
               />
             </GridItem>
           </Grid>
@@ -433,13 +448,18 @@ const testChainConfigs = [
     appchain_of: null,
     protocols: [
       {
-        contract: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+        address: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
         label: 'Uniswap',
         logo_url: '/protocols/uniswap.png'
       },
       {
-        contract: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
+        address: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
         label: 'Pepe',
+        logo_url: '/protocols/uniswap.png'
+      },
+      {
+        address: '0x000000000000Ad05Ccc4F10045630fb830B95127',
+        label: 'Blur',
         logo_url: '/protocols/uniswap.png'
       }
     ]
@@ -454,6 +474,7 @@ const testChainConfigs = [
     black_logo_url: '/eth.png',
     white_logo_url: '/eth.png',
     is_appchain: false,
-    appchain_of: null
+    appchain_of: null,
+    protocols: []
   }
 ];

@@ -28,11 +28,12 @@ import {
 } from '@/utils/format';
 import { IAccount } from '@/types/Account';
 import { Chain } from '@/types/Chains';
+import { TxSummary } from '@/types/TxSummary';
 
 type ProfileCardProps = {
   account: IAccount;
   chainConfigs: Chain[];
-  txSummary: any;
+  txSummary?: TxSummary;
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
 };
 
@@ -44,6 +45,8 @@ export default function ProfileCard({
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
+  const toolTipLabel = 'Weekly change';
+  console.log('txSummary: ', txSummary);
   return (
     <Card size="lg">
       <CardHeader>
@@ -105,14 +108,25 @@ export default function ProfileCard({
           <Flex direction="row" width="100%" justifyContent="space-between">
             <Stat textAlign="center">
               <StatNumber>
-                {formatPrettyNumber(txSummary?.txCount.value ?? 0, 0)}
+                {formatPrettyNumber(txSummary?.txCount.allTime ?? 0, 0)}
               </StatNumber>
               <StatLabel color={subHeadingColor}>Transactions</StatLabel>
-              {txSummary?.valueQuoteSum.percentChange > 0 && (
-                <Tooltip label="Percent change from 7 days ago" hasArrow>
+              {txSummary && txSummary.txCount.percentChange && (
+                <Tooltip label={toolTipLabel} hasArrow>
                   <StatHelpText>
-                    <StatArrow type="increase" />
-                    {formatDecimals(txSummary?.txCount.percentChange ?? 0)}%
+                    <StatArrow
+                      type={
+                        txSummary.txCount.percentChange > 0
+                          ? 'increase'
+                          : 'decrease'
+                      }
+                    />
+                    {`${formatDecimals(
+                      txSummary?.txCount.percentChange ?? 0
+                    )}% (${formatPrettyNumber(
+                      txSummary?.txCount.lastWeek,
+                      0
+                    )})`}
                   </StatHelpText>
                 </Tooltip>
               )}
@@ -120,32 +134,51 @@ export default function ProfileCard({
             <Stat textAlign="center">
               <StatNumber>
                 <Text>
-                  ${formatPrettyNumber(txSummary?.valueQuoteSum.value ?? 0)}
+                  ${formatPrettyNumber(txSummary?.valueQuoteSum.allTime ?? 0)}
                 </Text>
               </StatNumber>
-              <StatLabel>Total Tx Value</StatLabel>
-              {txSummary?.valueQuoteSum.percentChange > 0 && (
-                <Tooltip label="Percent change from 7 days ago" hasArrow>
+              <StatLabel color={subHeadingColor}>Total Tx Value</StatLabel>
+              {txSummary && txSummary.valueQuoteSum.percentChange && (
+                <Tooltip label={toolTipLabel} hasArrow>
                   <StatHelpText>
-                    <StatArrow type="increase" />
-                    {formatDecimals(
+                    <StatArrow
+                      type={
+                        txSummary.valueQuoteSum.percentChange > 0
+                          ? 'increase'
+                          : 'decrease'
+                      }
+                    />
+                    {`${formatDecimals(
                       txSummary?.valueQuoteSum.percentChange ?? 0
-                    )}
-                    %
+                    )}% ($${formatPrettyNumber(
+                      txSummary?.valueQuoteSum.lastWeek,
+                      0
+                    )})`}
                   </StatHelpText>
                 </Tooltip>
               )}
             </Stat>
             <Stat textAlign="center">
               <StatNumber>
-                ${formatPrettyNumber(txSummary?.gasQuoteSum.value ?? 0)}
+                ${formatPrettyNumber(txSummary?.gasQuoteSum.allTime ?? 0)}
               </StatNumber>
               <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
-              {txSummary?.valueQuoteSum.percentChange > 0 && (
-                <Tooltip label="Percent change from 7 days ago" hasArrow>
+              {txSummary && txSummary.gasQuoteSum.percentChange && (
+                <Tooltip label={toolTipLabel} hasArrow>
                   <StatHelpText>
-                    <StatArrow type="increase" />
-                    {formatDecimals(txSummary?.gasQuoteSum.percentChange ?? 0)}%
+                    <StatArrow
+                      type={
+                        txSummary.gasQuoteSum.percentChange > 0
+                          ? 'increase'
+                          : 'decrease'
+                      }
+                    />
+                    {`${formatDecimals(
+                      txSummary?.gasQuoteSum.percentChange ?? 0
+                    )}% ($${formatPrettyNumber(
+                      txSummary?.gasQuoteSum.lastWeek,
+                      0
+                    )})`}
                   </StatHelpText>
                 </Tooltip>
               )}
