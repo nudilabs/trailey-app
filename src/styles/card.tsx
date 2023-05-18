@@ -5,7 +5,24 @@ const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(cardAnatomy.keys);
 
 // define the base component styles
-const baseStyle = definePartsStyle({});
+const baseStyle = definePartsStyle({
+  // define the part you're going to style
+  container: {
+    _dark: {
+      backgroundColor: 'blackAlpha.400'
+    }
+  }
+});
+
+const variants = {
+  protocol: definePartsStyle({
+    container: {
+      _dark: {
+        backgroundColor: 'gray.800'
+      }
+    }
+  })
+};
 
 const sizes = {
   // define custom styles for xl size
@@ -53,5 +70,6 @@ const sizes = {
 // export the component theme
 export const cardTheme = defineMultiStyleConfig({
   baseStyle,
-  sizes
+  sizes,
+  variants
 });

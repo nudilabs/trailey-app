@@ -292,8 +292,17 @@ export const getSummaryByMonth = publicProcedure
         txsByMonth: []
       };
 
+    interface QueryResult {
+      year: number;
+      month: number;
+      txCount: number;
+      contractCount: number;
+      valueQuoteSum: number;
+      gasQuoteSum: number;
+    }
+
     const chainId = supportedChain[0].id;
-    const txsByMonth = await db
+    const txsByMonth = (await db
       .select({
         year: sql`YEAR(block_signed_at)`,
         month: sql`MONTH(block_signed_at)`,
@@ -311,7 +320,10 @@ export const getSummaryByMonth = publicProcedure
         )
       )
       .groupBy(sql`YEAR(block_signed_at)`, sql`MONTH(block_signed_at)`)
-      .orderBy(sql`YEAR(block_signed_at) ASC`, sql`MONTH(block_signed_at) ASC`);
+      .orderBy(
+        sql`YEAR(block_signed_at) ASC`,
+        sql`MONTH(block_signed_at) ASC`
+      )) as unknown as QueryResult[];
 
     const txsByMonthFormatted = txsByMonth.map(tx => {
       return {
@@ -319,8 +331,8 @@ export const getSummaryByMonth = publicProcedure
         date: tx.month + '/' + tx.year,
         txCount: tx.txCount,
         contractCount: tx.contractCount,
-        txValueSum: tx.valueQuoteSum,
-        feesPaidSum: tx.gasQuoteSum
+        valueQuoteSum: tx.valueQuoteSum,
+        gasQuoteSum: tx.gasQuoteSum
       };
     });
     return {

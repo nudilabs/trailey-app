@@ -1,70 +1,32 @@
-import ChainSelector from '@/components/ChainSelector';
 import { isAddress } from 'viem';
 import { normalize } from 'viem/ens';
 import { publicClient } from '@/utils/client';
 
 import {
-  Badge,
   Box,
-  Button,
   Card,
   CardBody,
-  CardFooter,
-  CardHeader,
   Flex,
   Grid,
   GridItem,
-  Heading,
-  IconButton,
-  Image,
-  Stat,
-  StatArrow,
-  StatHelpText,
-  StatLabel,
-  StatNumber,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  Stepper,
-  Text,
-  Tooltip,
-  useBreakpointValue,
   useColorModeValue,
-  useSteps,
   useToast
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import {
-  FiArrowDownCircle,
-  FiBox,
-  FiInfo,
-  FiPlusCircle,
-  FiRefreshCw
-} from 'react-icons/fi';
-import {
-  formatDecimals,
-  formatPrettyNumber,
-  getEthFromWei,
-  getFormattedAddress
-} from '@/utils/format';
 
 import { trpc } from '@/connectors/Trpc';
 import { useEffect, useState } from 'react';
 
-import { Avatar } from '@/components/Avatar';
 import {
+  Bar,
+  BarChart,
+  Cell,
   Legend,
-  PolarAngleAxis,
-  PolarGrid,
-  Radar,
-  RadarChart,
+  Rectangle,
   ResponsiveContainer,
-  Tooltip as TooltipRecharts
+  Tooltip,
+  XAxis,
+  YAxis
 } from 'recharts';
 
 import { get } from '@vercel/edge-config';
@@ -72,12 +34,17 @@ import { Chain } from '@/types/Chains';
 import ProfileCard from '@/components/ProfileCard';
 import { IAccount } from '@/types/Account';
 import AchievementsCard from '@/components/AchievementsCard';
-import ProgressTrackerCard from '@/components/ProgressTrackerCard';
 import TopProtocolsUsageCard from '@/components/TopProtocolsUsageCard';
 import AddToBundleBtn from '@/components/AddToBundleButton';
 import { IProfile } from '@/types/IProfile';
-import { TxSummary, TxSummaryByContract } from '@/types/TxSummary';
+import {
+  TxSummary,
+  TxSummaryByContract,
+  TxSummaryByMonth
+} from '@/types/TxSummary';
 import Head from 'next/head';
+import ActivityIndexCard from '@/components/ActivityIndexCard';
+import { formatPrettyNumber } from '@/utils/format';
 
 const times: { [key: string]: number } = {
   '24h': 1,
@@ -110,6 +77,10 @@ export default function Account({
   const [currentTime, setCurrentTime] = useState<string>('7d');
   const router = useRouter();
   const { chain, time } = router.query;
+  const subHeadingColor = useColorModeValue(
+    'RGBA(0, 0, 0, 0.36)',
+    'RGBA(255, 255, 255, 0.36)'
+  );
 
   // resync wallet
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
@@ -136,42 +107,50 @@ export default function Account({
       walletAddr: account.address
     }).data;
 
-  const average = {
-    bridged: 200,
-    protocols: 250,
-    interactions: 1800,
-    fees: 60000,
-    txs: 2500
+  const txsSummaryByMonth: TxSummaryByMonth | undefined =
+    trpc.txs.getSummaryByMonth.useQuery({
+      chainName: currentChain.name,
+      walletAddr: account.address
+    }).data;
+
+  const getLastThreeMonths = () => {
+    const lastThreeMonths = [];
+    for (let i = 0; i < 3; i++) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+
+      const formattedMonth = month < 10 ? String(month) : month;
+      const formattedDate = `${formattedMonth}/${year}`;
+      lastThreeMonths.push({ date: formattedDate });
+    }
+    return lastThreeMonths;
   };
 
-  const data = [
-    {
-      subject: 'Bridged Value',
-      A: 120 / average.bridged,
-      fullMark: 100
-    },
-    {
-      subject: 'Protocols Used',
-      A: (txsSummaryByContract?.contracts.length ?? 0) / average.protocols,
-      fullMark: 100
-    },
-    {
-      subject: 'Interactions',
-      A: (txSummary?.contractCount.allTime ?? 0) / average.interactions,
-      fullMark: 100
-    },
-    {
-      subject: 'Fees Paid',
-      A: (txSummary?.gasQuoteSum.allTime ?? 0) / average.fees,
-      fullMark: 100
-    },
+  const byMonthData = getLastThreeMonths()
+    .map(month => {
+      const monthData = txsSummaryByMonth?.txsByMonth?.find(
+        m => m.date === month.date
+      );
+      return {
+        date: month.date,
+        txCount: monthData?.txCount ?? 0,
+        contractCount: monthData?.contractCount ?? 0,
+        valueQuoteSum: monthData?.valueQuoteSum ?? 0,
+        gasQuoteSum: monthData?.gasQuoteSum ?? 0
+      };
+    })
+    .reverse();
 
-    {
-      subject: 'Txs',
-      A: (txSummary?.txCount.allTime ?? 0) / average.txs,
-      fullMark: 100
-    }
-  ];
+  const maxTxCount = Math.max(...byMonthData.map(d => d.txCount));
+  const maxvalueQuoteSum = Math.max(...byMonthData.map(d => d.valueQuoteSum));
+
+  const colors = {
+    txCount: ['#D6BCFA', '#B794F4', '#9F7AEA'],
+    valueQuoteSum: ['#FBB6CE', '#F687B3', '#ED64A6']
+  };
 
   useEffect(() => {
     if (chain) {
@@ -194,136 +173,148 @@ export default function Account({
       </Head>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
-          <Flex direction="column" gap={4}>
-            <ProfileCard
-              account={account}
-              chainConfigs={chainConfigs}
-              txSummary={txSummary}
-              handleSubmit={handleSubmit}
-            />
-            <AddToBundleBtn
-              account={account}
-              currentProfile={currentProfile}
-              profilesData={profilesData}
-              setProfilesData={setProfilesData}
-            />
-            <AchievementsCard />
+          <Flex
+            direction="column"
+            gap={4}
+            justifyContent={{ base: 'normal', xl: 'space-between' }}
+            h="100%"
+          >
+            <Box display={{ base: 'block', md: 'none' }}>
+              <ProfileCard
+                account={account}
+                chainConfigs={chainConfigs}
+                txSummary={txSummary}
+                handleSubmit={handleSubmit}
+              />
+            </Box>
+            <Box display={{ base: 'block', md: 'none' }}>
+              <AddToBundleBtn
+                account={account}
+                currentProfile={currentProfile}
+                profilesData={profilesData}
+                setProfilesData={setProfilesData}
+              />
+            </Box>
+            <Box>
+              <AchievementsCard />
+            </Box>
+            <Box display={{ base: 'none', md: 'block' }}>
+              <ActivityIndexCard txSummary={txSummary} />
+            </Box>
           </Flex>
         </GridItem>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 8 }}>
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-            <GridItem colSpan={{ base: 12 }}>
-              <ProgressTrackerCard />
-            </GridItem>
-
             <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Flex direction="column" gap={4}>
-                <Card size="lg">
+              <Flex
+                direction="column"
+                gap={4}
+                display={{ base: 'block', md: 'none' }}
+              >
+                <ActivityIndexCard txSummary={txSummary} />
+              </Flex>
+              <Box display={{ base: 'none', md: 'block' }}>
+                <ProfileCard
+                  account={account}
+                  chainConfigs={chainConfigs}
+                  txSummary={txSummary}
+                  handleSubmit={handleSubmit}
+                />
+              </Box>
+            </GridItem>
+            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
+              <Flex
+                direction="column"
+                justifyContent={'space-between'}
+                h="100%"
+                gap={4}
+              >
+                <Box display={{ base: 'none', md: 'block' }}>
+                  <AddToBundleBtn
+                    account={account}
+                    currentProfile={currentProfile}
+                    profilesData={profilesData}
+                    setProfilesData={setProfilesData}
+                  />
+                </Box>
+                <Card>
                   <CardBody>
-                    <Flex direction="row" alignItems="center" gap={4}>
-                      <Box
-                        color="primary.500"
-                        bg={useColorModeValue('blackAlpha.50', 'whiteAlpha.50')}
-                        p={4}
-                        rounded="full"
-                      >
-                        <FiBox fontSize="18px" />
-                      </Box>
-                      <Stat>
-                        <StatLabel>Total Tx Value</StatLabel>
-                        <StatNumber>
-                          <Text>
-                            ${formatDecimals(txSummary?.valueQuoteSum.allTime)}
-                          </Text>
-                        </StatNumber>
-                      </Stat>
-                      <Tooltip label="More Info" hasArrow>
-                        <IconButton
-                          aria-label="Previous"
-                          icon={<FiInfo />}
-                          variant="link"
+                    <ResponsiveContainer width="100%" height={160}>
+                      <BarChart data={byMonthData}>
+                        {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                        <XAxis dataKey="date" stroke={subHeadingColor} />
+                        <YAxis domain={[0, maxTxCount]} hide />
+                        <Tooltip
+                          formatter={value => {
+                            return [
+                              formatPrettyNumber(value as number, 0),
+                              'Transactions'
+                            ];
+                          }}
                         />
-                      </Tooltip>
-                    </Flex>
+                        <Legend
+                          formatter={() => {
+                            return 'Transactions';
+                          }}
+                          iconType="circle"
+                        />
+                        <Bar
+                          maxBarSize={20}
+                          dataKey="txCount"
+                          fill={colors.txCount[2]}
+                          shape={<Rectangle radius={[10, 10, 0, 0]} />}
+                        >
+                          {byMonthData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={colors.txCount[index]}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </CardBody>
                 </Card>
-                <Card size="lg">
+                <Card>
                   <CardBody>
-                    <Flex direction="row" alignItems="center" gap={4}>
-                      <Box
-                        color="primary.500"
-                        bg={useColorModeValue('blackAlpha.50', 'whiteAlpha.50')}
-                        p={4}
-                        rounded="full"
-                      >
-                        <FiArrowDownCircle fontSize="18px" />
-                      </Box>
-                      <Stat>
-                        <StatLabel>Bridged Value</StatLabel>
-                        <StatNumber>
-                          <Text>123456</Text>
-                        </StatNumber>
-                        <StatHelpText>Top 10%</StatHelpText>
-                      </Stat>
-                      <Tooltip label="More Info" hasArrow>
-                        <IconButton
-                          aria-label="Previous"
-                          icon={<FiInfo />}
-                          variant="link"
+                    <ResponsiveContainer width="100%" height={160}>
+                      <BarChart width={730} height={250} data={byMonthData}>
+                        {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                        <XAxis dataKey="date" stroke={subHeadingColor} />
+                        <YAxis domain={[0, maxvalueQuoteSum]} hide />
+                        <Tooltip
+                          formatter={value => {
+                            return [
+                              formatPrettyNumber(value as number, 0),
+                              'Tx Value'
+                            ];
+                          }}
                         />
-                      </Tooltip>
-                    </Flex>
+
+                        <Legend
+                          formatter={() => {
+                            return 'Transactions Value';
+                          }}
+                          iconType="circle"
+                        />
+                        <Bar
+                          maxBarSize={20}
+                          dataKey="valueQuoteSum"
+                          fill={colors.valueQuoteSum[2]}
+                          shape={<Rectangle radius={[10, 10, 0, 0]} />}
+                        >
+                          {byMonthData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={colors.valueQuoteSum[index]}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </CardBody>
                 </Card>
               </Flex>
-            </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Card size="lg">
-                <CardHeader>
-                  <Flex direction="row" justifyContent="space-between">
-                    <Heading size="md">Stats</Heading>
-                    <Tooltip label="More Info" hasArrow>
-                      <IconButton
-                        aria-label="Previous"
-                        icon={<FiInfo />}
-                        variant="link"
-                      />
-                    </Tooltip>
-                  </Flex>
-                </CardHeader>
-                <CardBody>
-                  <Flex
-                    direction="row"
-                    alignItems="center"
-                    gap={4}
-                    height="160px"
-                  >
-                    <ResponsiveContainer>
-                      <RadarChart data={data}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" />
-                        {/* <PolarRadiusAxis angle={30} domain={[0, 150]} /> */}
-                        <Radar
-                          name="Average"
-                          dataKey="B"
-                          stroke="#38A169"
-                          fill="#38A169"
-                          fillOpacity={0.1}
-                        />
-                        <Radar
-                          name={getFormattedAddress(account.address)}
-                          dataKey="A"
-                          stroke="#E53E3E"
-                          fill="#E53E3E"
-                          fillOpacity={0.25}
-                        />
-                        <Legend />
-                        <TooltipRecharts />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </Flex>
-                </CardBody>
-              </Card>
             </GridItem>
             <GridItem colSpan={{ base: 12 }}>
               <TopProtocolsUsageCard
@@ -409,8 +400,8 @@ export const getServerSideProps = async (context: {
   );
   const p = context.params;
   const addressType = getAddressType(p.address);
-  // const chainConfigs = await get('chains');
-  const chainConfigs = testChainConfigs;
+  const chainConfigs = await get('chains');
+  // const chainConfigs = testChainConfigs;
 
   if (!addressType) {
     return {

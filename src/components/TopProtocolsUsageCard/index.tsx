@@ -1,11 +1,7 @@
 import { IAccount } from '@/types/Account';
 import { Chain } from '@/types/Chains';
 import { TxSummaryByContract } from '@/types/TxSummary';
-import {
-  formatDecimals,
-  formatPrettyNumber,
-  getColorScheme
-} from '@/utils/format';
+import { formatPrettyNumber, getColorScheme } from '@/utils/format';
 import {
   Card,
   CardBody,
@@ -34,6 +30,7 @@ export default function TopProtocolsUsageCard({
   account
 }: TopProtocolsUsageCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
+  const subCardColor = useColorModeValue('white', 'red');
   return (
     <Card size="lg">
       <CardHeader>
@@ -59,11 +56,14 @@ export default function TopProtocolsUsageCard({
                 const protocol = currentChain.protocols.find(
                   (protocol: any) => contract.address === protocol.address
                 );
-
                 if (!protocol) return null;
-                console.log('protocol: ', protocol);
                 return (
-                  <Card key={index} size="md" minWidth="240px">
+                  <Card
+                    key={index}
+                    size="md"
+                    minWidth="240px"
+                    variant={'protocol'}
+                  >
                     <CardBody>
                       <Flex direction="column">
                         <Flex direction="row" alignItems="center" gap={2}>

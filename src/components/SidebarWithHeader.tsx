@@ -4,7 +4,6 @@ import {
   Box,
   CloseButton,
   Flex,
-  HStack,
   Icon,
   useColorModeValue,
   Drawer,
@@ -13,31 +12,20 @@ import {
   BoxProps,
   FlexProps,
   Image,
-  Input,
-  InputGroup,
-  InputLeftElement,
   useColorMode,
   Spacer,
   Button,
-  Select,
   Divider,
   Stack,
-  Text,
-  Tooltip,
-  Container
+  Tooltip
 } from '@chakra-ui/react';
 import {
   FiHome,
   FiTrendingUp,
-  FiCompass,
   FiSettings,
   FiMenu,
-  FiBell,
-  FiSearch,
   FiSun,
   FiMoon,
-  FiUser,
-  FiChevronDown,
   FiTwitter
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
@@ -76,7 +64,7 @@ export default function SidebarWithHeader({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.800')}>
+    <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: 'none', md: 'block' }}

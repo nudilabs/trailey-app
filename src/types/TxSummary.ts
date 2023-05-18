@@ -19,3 +19,13 @@ export type TxSummaryByContract = {
     gasQuoteSum: TxSum;
   }[];
 };
+
+export type TxSummaryByMonth = {
+  txsByMonth: {
+    date: string;
+    txCount: number;
+    contractCount: number;
+    valueQuoteSum: number;
+    gasQuoteSum: number;
+  }[];
+};

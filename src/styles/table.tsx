@@ -9,7 +9,25 @@ const { definePartsStyle, defineMultiStyleConfig } =
 
 // define the base component styles
 const baseStyle = definePartsStyle({
+  thead: {
+    th: {
+      _dark: {
+        borderBottom: '1px solid',
+        borderColor: 'whiteAlpha.300'
+      }
+    }
+  },
   tbody: {
+    td: {
+      borderTop: '1px solid',
+      borderBottom: 'none',
+      borderColor: 'blackAlpha.100',
+      _dark: {
+        borderTop: '1px solid',
+        borderBottom: 'none',
+        borderColor: 'whiteAlpha.300'
+      }
+    },
     tr: {
       _hover: {
         bg: 'blackAlpha.50'
