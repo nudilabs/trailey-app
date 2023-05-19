@@ -32,7 +32,7 @@ export default function TopProtocolsUsageCard({
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const subCardColor = useColorModeValue('white', 'red');
   return (
-    <Card size="lg">
+    <Card size="lg" h="100%">
       <CardHeader>
         <Flex direction="row" justifyContent="space-between">
           <Heading size="md">Top Protocols Usage</Heading>
@@ -49,7 +49,7 @@ export default function TopProtocolsUsageCard({
         </Flex>
       </CardHeader>
       <CardBody>
-        <Flex direction="row" gap={4} overflow="scroll">
+        <Flex direction="column" gap={4} overflow="scroll">
           {txsSummaryByContract &&
             txsSummaryByContract.contracts.map(
               (contract: any, index: number) => {

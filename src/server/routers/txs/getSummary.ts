@@ -97,9 +97,6 @@ export const getSummary = publicProcedure
       )
       .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
 
-    console.log('dataLastWeek: ', dataLastWeek);
-    console.log('dataLastTwoWeeks: ', dataLastTwoWeeks);
-
     // Difference in change from 2 weeks ago to last week
 
     const txCountPercentChange =

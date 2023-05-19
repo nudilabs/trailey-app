@@ -175,7 +175,6 @@ export function emojiAvatarForAddress(address: string) {
 export function formatPrettyNumber(num: number | string, decimals = 2) {
   // Convert num to a number if it's a string
   const numValue = typeof num === 'string' ? parseFloat(num) : num;
-  console.log('numValue', numValue);
 
   if (numValue >= 1000000) {
     return (numValue / 1000000).toFixed(decimals) + 'm';
@@ -187,7 +186,6 @@ export function formatPrettyNumber(num: number | string, decimals = 2) {
 }
 
 export function formatDecimals(num: number | undefined | string, decimals = 2) {
-  console.log('num', num);
   if (num === undefined) {
     return 0; // or undefined, or any other value you prefer
   }

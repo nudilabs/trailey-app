@@ -8,7 +8,14 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const baseStyle = definePartsStyle({
   // define the part you're going to style
   container: {
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'gray.200',
+    shadow: 'none',
     _dark: {
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: 'gray.700',
       backgroundColor: 'blackAlpha.400'
     }
   }
@@ -18,7 +25,7 @@ const variants = {
   protocol: definePartsStyle({
     container: {
       _dark: {
-        backgroundColor: 'gray.800'
+        backgroundColor: 'gray.900'
       }
     }
   })
@@ -28,13 +35,7 @@ const sizes = {
   // define custom styles for xl size
   lg: definePartsStyle({
     container: {
-      rounded: '3xl',
-      shadow: 'none',
-      borderWidth: 1,
-      borderColor: {
-        light: 'blackAlpha.200',
-        dark: 'whiteAlpha.800'
-      }
+      rounded: '3xl'
     },
     header: {
       paddingBottom: 1
@@ -42,13 +43,7 @@ const sizes = {
   }),
   md: definePartsStyle({
     container: {
-      rounded: '2xl',
-      shadow: 'none',
-      borderWidth: 1,
-      borderColor: {
-        light: 'blackAlpha.200',
-        dark: 'whiteAlpha.800'
-      }
+      rounded: '3xl'
     },
     header: {
       paddingBottom: 1
@@ -56,13 +51,7 @@ const sizes = {
   }),
   sm: definePartsStyle({
     container: {
-      rounded: '3xl',
-      shadow: 'none',
-      borderWidth: 1,
-      borderColor: {
-        light: 'blackAlpha.200',
-        dark: 'whiteAlpha.800'
-      }
+      rounded: '3xl'
     }
   })
 };

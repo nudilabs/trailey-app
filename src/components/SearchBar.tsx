@@ -96,19 +96,20 @@ export default function SearchBar({
   return (
     <Box position="relative" w="100%">
       <InputGroup>
-        <InputLeftElement color={useColorModeValue('gray.300', 'gray.600')}>
+        <InputLeftElement>
           <FiSearch onClick={handleSearch} />
         </InputLeftElement>
         <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
           <Kbd>⌘K</Kbd>
         </InputRightElement>
         <Input
-          placeholder="Search address or ens..."
+          placeholder="Search address or ENS"
           value={searchTerm}
           onChange={handleChange}
           ref={inputRef}
           onKeyDown={handleKeyDown}
           onFocus={() => setShowRecentSearches(true)}
+          variant="search"
         />
       </InputGroup>
       {recentSearches.length > 0 && (

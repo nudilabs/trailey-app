@@ -16,9 +16,13 @@ import {
   Th,
   Td,
   TableContainer,
-  Circle
+  Circle,
+  Tooltip,
+  CardHeader
 } from '@chakra-ui/react';
 import { TxSummary } from '@/types/TxSummary';
+import { FiInfo } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
 
 type ActivityIndexCardProps = {
   txSummary: TxSummary | undefined;
@@ -67,23 +71,32 @@ const calculateNormalizedValue = (
   }
 };
 
-const getScoreColor = (score: number): string => {
-  if (score <= 45) {
-    return 'red.500';
-  } else if (score <= 50) {
-    return 'yellow.500';
-  } else {
-    return 'green.500';
-  }
-};
-
 export default function ActivityIndexCard({
   txSummary
 }: ActivityIndexCardProps) {
+  const [score, setScore] = useState<number>(0);
   let normalizedTxCount = 0;
   let normalizedContractCount = 0;
   let normalizedValueQuoteSum = 0;
   let normalizedGasQuoteSum = 0;
+
+  //colors
+  const red = useColorModeValue('red.500', 'red.300');
+  const yellow = useColorModeValue('yellow.500', 'yellow.300');
+  const average = useColorModeValue('gray.700', 'gray.300');
+  const green = useColorModeValue('green.500', 'green.300');
+
+  const getScoreColor = (score: number): string => {
+    if (score <= 45) {
+      return red;
+    } else if (score <= 49) {
+      return yellow;
+    } else if (score == 50) {
+      return average;
+    } else {
+      return green;
+    }
+  };
 
   // Calculate normalized value for the minimum to average range
   if (txSummary) {
@@ -126,26 +139,45 @@ export default function ActivityIndexCard({
     weightedScores.valueQuoteSum +
     weightedScores.gasQuoteSum;
 
+  useEffect(() => {
+    setScore(overallScore);
+  }, [overallScore]);
+
   return (
     <Card size="lg">
+      <CardHeader>
+        <Flex justifyContent="space-between">
+          <Heading size="md">Performance</Heading>
+          <Tooltip
+            label="The Activity Index is a score between 0 and 100 that measures the overall activity of a blockchain address. It is calculated by combining the normalized values of the number of transactions, number of contract interactions, total value transferred, and total gas used."
+            placement="top"
+            hasArrow
+          >
+            <Box>
+              <FiInfo />
+            </Box>
+          </Tooltip>
+        </Flex>
+      </CardHeader>
       <CardBody>
         <Flex direction="column" gap={4}>
           <Flex justifyContent="center">
             <CircularProgress
-              value={overallScore}
-              color={getScoreColor(overallScore)}
+              value={score}
+              color={getScoreColor(score)}
               size={32}
               thickness={12}
               capIsRound
+              trackColor={useColorModeValue('gray.100', 'gray.700')}
             >
               <CircularProgressLabel fontSize={24} fontWeight="bold">
-                {formatDecimals(overallScore, 1)}
+                {formatDecimals(score, 1)}
               </CircularProgressLabel>
             </CircularProgress>
           </Flex>
-          <Flex justifyContent="center">
+          {/* <Flex justifyContent="center">
             <Heading size="md">Performance</Heading>
-          </Flex>
+          </Flex> */}
           <TableContainer>
             <Table variant="simple">
               <Thead>
@@ -155,7 +187,10 @@ export default function ActivityIndexCard({
               </Thead>
               {txSummary && (
                 <Tbody>
-                  <Tr>
+                  <Tr
+                    onMouseEnter={() => setScore(normalizedTxCount)}
+                    onMouseLeave={() => setScore(overallScore)}
+                  >
                     <Td>
                       <Flex
                         alignItems="center"
@@ -175,7 +210,10 @@ export default function ActivityIndexCard({
                       </Flex>
                     </Td>
                   </Tr>
-                  <Tr>
+                  <Tr
+                    onMouseEnter={() => setScore(normalizedContractCount)}
+                    onMouseLeave={() => setScore(overallScore)}
+                  >
                     <Td>
                       <Flex
                         alignItems="center"
@@ -195,7 +233,10 @@ export default function ActivityIndexCard({
                       </Flex>
                     </Td>
                   </Tr>
-                  <Tr>
+                  <Tr
+                    onMouseEnter={() => setScore(normalizedValueQuoteSum)}
+                    onMouseLeave={() => setScore(overallScore)}
+                  >
                     <Td>
                       <Flex
                         alignItems="center"
@@ -215,7 +256,10 @@ export default function ActivityIndexCard({
                       </Flex>
                     </Td>
                   </Tr>
-                  <Tr>
+                  <Tr
+                    onMouseEnter={() => setScore(normalizedGasQuoteSum)}
+                    onMouseLeave={() => setScore(overallScore)}
+                  >
                     <Td>
                       <Flex
                         alignItems="center"
@@ -239,27 +283,54 @@ export default function ActivityIndexCard({
               )}
             </Table>
           </TableContainer>
+
           <Flex
-            border={'1px solid'}
-            borderColor={useColorModeValue('gray.200', 'gray.600')}
+            direction="row"
+            w="100%"
             rounded="full"
-            py={1}
-            px={8}
-            justifyContent={'space-between'}
-            alignItems={'center'}
+            overflow="hidden"
             mt={4}
           >
-            <Flex alignItems="center" gap={2}>
-              <Box h="6px" w="32px" bgColor="red.500" rounded={'lg'} />
-              <Text fontSize={14}>{'> 0'}</Text>
+            <Flex
+              px={2}
+              bgColor={red}
+              direction="row"
+              w="30%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text fontSize="xs" color={useColorModeValue('white', 'black')}>
+                1%+
+              </Text>
             </Flex>
-            <Flex alignItems="center" gap={2}>
-              <Box h="6px" w="32px" bgColor="yellow.500" rounded={'lg'} />
-              <Text fontSize={14}>{`> 45`}</Text>
+
+            <Flex
+              bgColor={yellow}
+              direction="row"
+              w="19%"
+              alignItems="center"
+              px={2}
+              justifyContent="center"
+            >
+              <Text fontSize="xs" color={useColorModeValue('white', 'black')}>
+                30%+
+              </Text>
             </Flex>
-            <Flex alignItems="center" gap={2}>
-              <Box h="6px" w="32px" bgColor="green.500" rounded={'lg'} />
-              <Text fontSize={14}>{'> 50'}</Text>
+            <Tooltip label="Average" placement="top" hasArrow defaultIsOpen>
+              <Flex bgColor={average} direction="row" w="1%" />
+            </Tooltip>
+
+            <Flex
+              px={2}
+              bgColor={green}
+              direction="row"
+              w="50%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text fontSize="xs" color={useColorModeValue('white', 'black')}>
+                50%+
+              </Text>
             </Flex>
           </Flex>
         </Flex>

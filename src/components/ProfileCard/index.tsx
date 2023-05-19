@@ -45,7 +45,6 @@ export default function ProfileCard({
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
-  console.log('txSummary: ', txSummary);
   return (
     <Card size="lg">
       <CardHeader>

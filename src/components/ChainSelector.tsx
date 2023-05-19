@@ -25,6 +25,7 @@ const ChainSelector = ({ chainConfigs }: { chainConfigs: Chain[] }) => {
 
   const handleSelectChain = (chain: string) => {
     setSelectedChain(chain);
+    localStorage.setItem('biway.chain', chain);
     const query = { ...router.query, chain };
     router.push({ query });
   };

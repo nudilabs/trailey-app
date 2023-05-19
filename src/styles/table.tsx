@@ -13,7 +13,7 @@ const baseStyle = definePartsStyle({
     th: {
       _dark: {
         borderBottom: '1px solid',
-        borderColor: 'whiteAlpha.300'
+        borderColor: 'gray.700'
       }
     }
   },
@@ -25,7 +25,7 @@ const baseStyle = definePartsStyle({
       _dark: {
         borderTop: '1px solid',
         borderBottom: 'none',
-        borderColor: 'whiteAlpha.300'
+        borderColor: 'gray.700'
       }
     },
     tr: {

@@ -6,9 +6,12 @@ import {
   Box,
   Card,
   CardBody,
+  CardHeader,
   Flex,
   Grid,
   GridItem,
+  Heading,
+  Text,
   useColorModeValue,
   useToast
 } from '@chakra-ui/react';
@@ -18,6 +21,8 @@ import { trpc } from '@/connectors/Trpc';
 import { useEffect, useState } from 'react';
 
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   Cell,
@@ -45,19 +50,6 @@ import {
 import Head from 'next/head';
 import ActivityIndexCard from '@/components/ActivityIndexCard';
 import { formatPrettyNumber } from '@/utils/format';
-
-const times: { [key: string]: number } = {
-  '24h': 1,
-  '7d': 7,
-  '30d': 30,
-  all: 0
-};
-
-const steps = [
-  { title: 'Top 50%', description: `10 txs` },
-  { title: 'Top 25%', description: '50 txs' },
-  { title: 'Top 10%', description: '100 txs' }
-];
 
 export default function Account({
   account,
@@ -90,10 +82,6 @@ export default function Account({
       chainName: currentChain.name,
       walletAddr: account.address
     });
-    // Handle form submission logic here
-    // console.log('Input 1:', chainName);
-    console.log('data', data);
-    // console.log('Input 2:', walletAddr);
   };
 
   const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery({
@@ -115,7 +103,7 @@ export default function Account({
 
   const getLastThreeMonths = () => {
     const lastThreeMonths = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
 
@@ -148,8 +136,13 @@ export default function Account({
   const maxvalueQuoteSum = Math.max(...byMonthData.map(d => d.valueQuoteSum));
 
   const colors = {
-    txCount: ['#D6BCFA', '#B794F4', '#9F7AEA'],
-    valueQuoteSum: ['#FBB6CE', '#F687B3', '#ED64A6']
+    green: ['#9AE6B4', '#68D391', '#48BB78'],
+    red: ['#FEB2B2', '#FC8181', '#F56565']
+  };
+
+  const getGraphColor = (start: number, end: number, index: number) => {
+    const color = start < end ? colors.green : colors.red;
+    return color[index];
   };
 
   useEffect(() => {
@@ -176,72 +169,60 @@ export default function Account({
           <Flex
             direction="column"
             gap={4}
-            justifyContent={{ base: 'normal', xl: 'space-between' }}
-            h="100%"
+            // justifyContent={{ base: 'normal', xl: 'space-between' }}
+            // h="100%"
           >
-            <Box display={{ base: 'block', md: 'none' }}>
-              <ProfileCard
-                account={account}
-                chainConfigs={chainConfigs}
-                txSummary={txSummary}
-                handleSubmit={handleSubmit}
-              />
-            </Box>
-            <Box display={{ base: 'block', md: 'none' }}>
-              <AddToBundleBtn
-                account={account}
-                currentProfile={currentProfile}
-                profilesData={profilesData}
-                setProfilesData={setProfilesData}
-              />
-            </Box>
+            <ProfileCard
+              account={account}
+              chainConfigs={chainConfigs}
+              txSummary={txSummary}
+              handleSubmit={handleSubmit}
+            />
+            <AddToBundleBtn
+              account={account}
+              currentProfile={currentProfile}
+              profilesData={profilesData}
+              setProfilesData={setProfilesData}
+            />
             <Box>
               <AchievementsCard />
-            </Box>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <ActivityIndexCard txSummary={txSummary} />
             </Box>
           </Flex>
         </GridItem>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 8 }}>
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Flex
-                direction="column"
-                gap={4}
-                display={{ base: 'block', md: 'none' }}
-              >
+              <Flex direction="column" gap={4}>
                 <ActivityIndexCard txSummary={txSummary} />
               </Flex>
-              <Box display={{ base: 'none', md: 'block' }}>
-                <ProfileCard
-                  account={account}
-                  chainConfigs={chainConfigs}
-                  txSummary={txSummary}
-                  handleSubmit={handleSubmit}
-                />
-              </Box>
             </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Flex
-                direction="column"
-                justifyContent={'space-between'}
-                h="100%"
-                gap={4}
-              >
-                <Box display={{ base: 'none', md: 'block' }}>
-                  <AddToBundleBtn
-                    account={account}
-                    currentProfile={currentProfile}
-                    profilesData={profilesData}
-                    setProfilesData={setProfilesData}
-                  />
-                </Box>
+            <GridItem colSpan={{ base: 12, lg: 6 }}>
+              <TopProtocolsUsageCard
+                txsSummaryByContract={txsSummaryByContract}
+                currentChain={currentChain}
+                account={account}
+              />
+            </GridItem>
+            <GridItem colSpan={{ base: 12 }}>
+              <Flex direction="column" gap={4}>
                 <Card>
+                  <CardHeader>
+                    <Flex
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Heading size="md">Transactions</Heading>
+                      <Flex direction="row" alignItems="center" gap={2}>
+                        <Text fontSize="sm" color={subHeadingColor}>
+                          Last 6 months
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  </CardHeader>
                   <CardBody>
-                    <ResponsiveContainer width="100%" height={160}>
+                    {/* <ResponsiveContainer width="100%" height={160}>
                       <BarChart data={byMonthData}>
-                        {/* <CartesianGrid strokeDasharray="3 3" /> */}
                         <XAxis dataKey="date" stroke={subHeadingColor} />
                         <YAxis domain={[0, maxTxCount]} hide />
                         <Tooltip
@@ -267,19 +248,91 @@ export default function Account({
                           {byMonthData.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}
-                              fill={colors.txCount[index]}
+                              fill={colors.txCount[index % 3]}
                             />
                           ))}
                         </Bar>
                       </BarChart>
+                    </ResponsiveContainer> */}
+                    <ResponsiveContainer width="100%" height={160}>
+                      <AreaChart data={byMonthData}>
+                        <defs>
+                          <linearGradient
+                            id="colorUv"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor={getGraphColor(
+                                byMonthData[0].txCount,
+                                byMonthData[5].txCount,
+                                0
+                              )}
+                              stopOpacity={0.8}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor={getGraphColor(
+                                byMonthData[0].txCount,
+                                byMonthData[5].txCount,
+                                1
+                              )}
+                              stopOpacity={0}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" hide />
+                        <YAxis
+                          domain={[0, maxTxCount]}
+                          tickFormatter={value => {
+                            return formatPrettyNumber(value as number, 0);
+                          }}
+                        />
+
+                        <Tooltip
+                          formatter={value => {
+                            return [
+                              formatPrettyNumber(value as number, 0),
+                              'Transactions'
+                            ];
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="txCount"
+                          stroke={getGraphColor(
+                            byMonthData[0].txCount,
+                            byMonthData[5].txCount,
+                            2
+                          )}
+                          fillOpacity={1}
+                          fill="url(#colorUv)"
+                        />
+                      </AreaChart>
                     </ResponsiveContainer>
                   </CardBody>
                 </Card>
                 <Card>
+                  <CardHeader>
+                    <Flex
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Heading size="md">Transaction Value</Heading>
+                      <Flex direction="row" alignItems="center" gap={2}>
+                        <Text fontSize="sm" color={subHeadingColor}>
+                          Last 6 months
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  </CardHeader>
                   <CardBody>
-                    <ResponsiveContainer width="100%" height={160}>
+                    {/* <ResponsiveContainer width="100%" height={160}>
                       <BarChart width={730} height={250} data={byMonthData}>
-                        {/* <CartesianGrid strokeDasharray="3 3" /> */}
                         <XAxis dataKey="date" stroke={subHeadingColor} />
                         <YAxis domain={[0, maxvalueQuoteSum]} hide />
                         <Tooltip
@@ -300,28 +353,88 @@ export default function Account({
                         <Bar
                           maxBarSize={20}
                           dataKey="valueQuoteSum"
-                          fill={colors.valueQuoteSum[2]}
+                          fill={getGraphColor(
+                            byMonthData[0].valueQuoteSum,
+                            byMonthData[5].valueQuoteSum,
+                            2
+                          )}
                           shape={<Rectangle radius={[10, 10, 0, 0]} />}
                         >
                           {byMonthData.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}
-                              fill={colors.valueQuoteSum[index]}
+                              fill={getGraphColor(
+                                byMonthData[0].valueQuoteSum,
+                                byMonthData[5].valueQuoteSum,
+                                2
+                              )}
                             />
                           ))}
                         </Bar>
                       </BarChart>
+                    </ResponsiveContainer> */}
+                    <ResponsiveContainer width="100%" height={160}>
+                      <AreaChart data={byMonthData}>
+                        <defs>
+                          <linearGradient
+                            id="colorUv"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor={getGraphColor(
+                                byMonthData[0].valueQuoteSum,
+                                byMonthData[5].valueQuoteSum,
+                                0
+                              )}
+                              stopOpacity={0.8}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor={getGraphColor(
+                                byMonthData[0].valueQuoteSum,
+                                byMonthData[5].valueQuoteSum,
+                                1
+                              )}
+                              stopOpacity={0}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" hide />
+                        <YAxis
+                          domain={[0, maxvalueQuoteSum]}
+                          tickFormatter={value => {
+                            return formatPrettyNumber(value as number, 0);
+                          }}
+                        />
+
+                        <Tooltip
+                          formatter={value => {
+                            return [
+                              formatPrettyNumber(value as number, 0),
+                              'Transaction Value'
+                            ];
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="valueQuoteSum"
+                          stroke={getGraphColor(
+                            byMonthData[0].valueQuoteSum,
+                            byMonthData[5].valueQuoteSum,
+                            2
+                          )}
+                          fillOpacity={1}
+                          fill="url(#colorUv)"
+                        />
+                      </AreaChart>
                     </ResponsiveContainer>
                   </CardBody>
                 </Card>
               </Flex>
-            </GridItem>
-            <GridItem colSpan={{ base: 12 }}>
-              <TopProtocolsUsageCard
-                txsSummaryByContract={txsSummaryByContract}
-                currentChain={currentChain}
-                account={account}
-              />
             </GridItem>
           </Grid>
         </GridItem>
