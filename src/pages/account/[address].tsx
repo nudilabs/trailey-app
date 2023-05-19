@@ -56,19 +56,23 @@ export default function Account({
   chainConfigs,
   setProfilesData,
   profilesData,
-  currentProfile
+  currentProfile,
+  localChain,
+  setLocalChain
 }: {
   account: IAccount;
   chainConfigs: Chain[];
   setProfilesData: (newProfilesData: IProfile[]) => void;
   profilesData: IProfile[];
   currentProfile: number;
+  localChain: string;
+  setLocalChain: (chain: string) => void;
 }) {
   const toast = useToast();
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
-  const [currentTime, setCurrentTime] = useState<string>('7d');
+
   const router = useRouter();
-  const { chain, time } = router.query;
+  const { chain } = router.query;
   const subHeadingColor = useColorModeValue(
     'RGBA(0, 0, 0, 0.36)',
     'RGBA(255, 255, 255, 0.36)'
@@ -149,11 +153,12 @@ export default function Account({
     if (chain) {
       const currentChain = chainConfigs.find(c => c.name === chain);
       setCurrentChain(currentChain ?? chainConfigs[0]);
+      setLocalChain(chain as string);
+    } else if (localChain) {
+      const currentChain = chainConfigs.find(c => c.name === localChain);
+      setCurrentChain(currentChain ?? chainConfigs[0]);
     }
-    if (time) {
-      setCurrentTime(time as string);
-    }
-  }, [chain, time]);
+  }, [chain, localChain]);
 
   return (
     <Flex direction="column">
@@ -177,6 +182,8 @@ export default function Account({
               chainConfigs={chainConfigs}
               txSummary={txSummary}
               handleSubmit={handleSubmit}
+              localChain={localChain}
+              setLocalChain={setLocalChain}
             />
             <AddToBundleBtn
               account={account}
@@ -513,8 +520,8 @@ export const getServerSideProps = async (context: {
   );
   const p = context.params;
   const addressType = getAddressType(p.address);
-  const chainConfigs = await get('chains');
-  // const chainConfigs = testChainConfigs;
+  // const chainConfigs = await get('chains');
+  const chainConfigs = testChainConfigs;
 
   if (!addressType) {
     return {

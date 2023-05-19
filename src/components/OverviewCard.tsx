@@ -40,13 +40,21 @@ import { getFormattedAddress } from '@/utils/format';
 import { getEthFromWei } from '@/utils/format';
 import { useRouter } from 'next/router';
 import { Avatar } from './Avatar';
+import ChainSelector from './ChainSelector';
+import { Chain } from '@/types/Chains';
 
 const OverviewCard = ({
   txSummaries,
-  isLoading
+  isLoading,
+  localChain,
+  setLocalChain,
+  chainConfigs
 }: {
   txSummaries: any;
   isLoading: boolean;
+  localChain: string;
+  setLocalChain: (chain: string) => void;
+  chainConfigs: Chain[];
 }) => {
   const goalColor = useColorModeValue('gray.500', 'gray.400');
   const router = useRouter();
@@ -57,7 +65,11 @@ const OverviewCard = ({
         <Flex direction="row" alignItems="center" gap={4}>
           <Heading fontSize={{ base: 'md', lg: 'xl' }}>Overview</Heading>
           <Spacer />
-          <TimeFilter />
+          <ChainSelector
+            chainConfigs={chainConfigs}
+            localChain={localChain}
+            setLocalChain={setLocalChain}
+          />
           <IconButton aria-label="Add Wallet" icon={<FiPlus />} />
         </Flex>
       </CardHeader>

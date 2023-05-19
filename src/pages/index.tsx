@@ -50,6 +50,8 @@ import { trpc } from '@/connectors/Trpc';
 import { Avatar } from '@/components/Avatar';
 import AvatarGroup from '@/components/AvatarGroup';
 import { FiEdit, FiPlusCircle, FiUmbrella } from 'react-icons/fi';
+import { get } from '@vercel/edge-config';
+import { Chain } from '@/types/Chains';
 
 const MOCK_OVERVIEW_DATA = [
   {
@@ -97,10 +99,16 @@ const times: { [key: string]: number } = {
 
 export default function Home({
   currentProfile,
-  profilesData
+  profilesData,
+  chainConfigs,
+  localChain,
+  setLocalChain
 }: {
   currentProfile: number;
   profilesData: IProfile[];
+  chainConfigs: Chain[];
+  localChain: string;
+  setLocalChain: (chain: string) => void;
 }) {
   const [address, setAddress] = useState<string | null>(null);
   const [currentChain, setCurrentChain] = useState<string>('ethereum');
@@ -306,6 +314,9 @@ export default function Home({
           <OverviewCard
             isLoading={isLoading}
             txSummaries={txSummariesWithAddress}
+            chainConfigs={chainConfigs}
+            localChain={localChain}
+            setLocalChain={setLocalChain}
           />
         </GridItem>
       </Grid>
@@ -314,7 +325,54 @@ export default function Home({
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
+  // const chainConfigs = await get('chains');
+  const chainConfigs = testChainConfigs;
   return {
-    props: {}
+    props: { chainConfigs }
   };
 };
+
+const testChainConfigs = [
+  {
+    name: 'eth-mainnet',
+    chain_id: '1',
+    is_testnet: false,
+    label: 'Ethereum Mainnet',
+    category_label: 'Ethereum',
+    logo_url: '/eth.png',
+    black_logo_url: '/eth.png',
+    white_logo_url: '/eth.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [
+      {
+        address: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+        label: 'Uniswap',
+        logo_url: '/protocols/uniswap.png'
+      },
+      {
+        address: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
+        label: 'Pepe',
+        logo_url: '/protocols/uniswap.png'
+      },
+      {
+        address: '0x000000000000Ad05Ccc4F10045630fb830B95127',
+        label: 'Blur',
+        logo_url: '/protocols/uniswap.png'
+      }
+    ]
+  },
+  {
+    name: 'eth-goerli',
+    chain_id: '5',
+    is_testnet: true,
+    label: 'Ethereum Goerli Testnet',
+    category_label: 'Ethereum',
+    logo_url: '/eth.png',
+    black_logo_url: '/eth.png',
+    white_logo_url: '/eth.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: []
+  }
+];

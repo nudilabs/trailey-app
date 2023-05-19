@@ -34,13 +34,17 @@ type ProfileCardProps = {
   chainConfigs: Chain[];
   txSummary?: TxSummary;
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
+  localChain: string;
+  setLocalChain: (chain: string) => void;
 };
 
 export default function ProfileCard({
   account,
   chainConfigs,
   txSummary,
-  handleSubmit
+  handleSubmit,
+  localChain,
+  setLocalChain
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
@@ -53,7 +57,11 @@ export default function ProfileCard({
           alignItems="center"
           justifyContent="space-between"
         >
-          <ChainSelector chainConfigs={chainConfigs} />
+          <ChainSelector
+            chainConfigs={chainConfigs}
+            localChain={localChain}
+            setLocalChain={setLocalChain}
+          />
           <Flex direction="row" alignItems="center" gap={1}>
             <Text
               color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}

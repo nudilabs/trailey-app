@@ -29,6 +29,7 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 
 import { trpc } from '../connectors/Trpc';
+import { useRouter } from 'next/router';
 
 const { chains, provider } = configureChains(
   [mainnet, polygon, optimism, arbitrum],
@@ -55,11 +56,14 @@ const App = ({
 }>) => {
   const [currentProfile, setCurrentProfile] = useState(0);
   const [profilesData, setProfilesData] = useState<IProfile[]>([]);
+  const [localChain, setLocalChain] = useState('eth-mainnet'); // default to mainnet
   const profileProps = {
     currentProfile,
     setCurrentProfile,
     profilesData,
-    setProfilesData
+    setProfilesData,
+    localChain,
+    setLocalChain
   };
 
   const getSiweMessageOptions: GetSiweMessageOptions = () => ({
@@ -75,12 +79,21 @@ const App = ({
     if (profiles) setProfilesData(JSON.parse(profiles));
     const currentProfileId = localStorage.getItem('profileId');
     if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
+    const localChain = localStorage.getItem('biway.chain');
+    if (localChain) setLocalChain(localChain);
 
     // rainbowkit colormode
     const rainbowTheme = localStorage.getItem('chakra-ui-color-mode');
     const isDark = rainbowTheme === 'dark';
     if (isDark) setIsDarkTheme(true);
-  }, [currentProfile, setCurrentProfile, setProfilesData, isDarkTheme]);
+  }, [
+    currentProfile,
+    setCurrentProfile,
+    setProfilesData,
+    isDarkTheme,
+    localChain,
+    setLocalChain
+  ]);
 
   return (
     <WagmiConfig client={wagmiClient}>

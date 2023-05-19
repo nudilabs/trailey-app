@@ -10,24 +10,39 @@ import {
   Badge
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import { Chain } from '@/types/Chains';
 
-const ChainSelector = ({ chainConfigs }: { chainConfigs: Chain[] }) => {
+const ChainSelector = ({
+  chainConfigs,
+  localChain,
+  setLocalChain
+}: {
+  chainConfigs: Chain[];
+  localChain: string;
+  setLocalChain: (chain: string) => void;
+}) => {
   const router = useRouter();
-  const [selectedChain, setSelectedChain] = useState(
-    router.query.chain || chainConfigs[0].name.toLowerCase()
-  );
-  const currentChain = chainConfigs.find(
-    chain => chain.name.toLowerCase() === selectedChain
-  );
+  // const [selectedChain, setSelectedChain] = useState(
+  //   router.query.chain || chainConfigs[0].name.toLowerCase()
+  // );
+  const [currentChain, setCurrentChain] = useState<Chain | undefined>();
+
+  useEffect(() => {
+    const currentChain = chainConfigs.find(
+      chain => chain.name.toLowerCase() === localChain
+    );
+    setCurrentChain(currentChain);
+    const query = { ...router.query, chain: localChain };
+    router.push({ query });
+  }, [localChain]);
 
   const handleSelectChain = (chain: string) => {
-    setSelectedChain(chain);
+    setLocalChain(chain);
     localStorage.setItem('biway.chain', chain);
-    const query = { ...router.query, chain };
-    router.push({ query });
+    // const query = { ...router.query, chain };
+    // router.push({ query });
   };
 
   return (
