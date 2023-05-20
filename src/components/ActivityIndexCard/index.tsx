@@ -31,23 +31,23 @@ type ActivityIndexCardProps = {
 const scores = {
   txCount: {
     min: 1,
-    average: 50,
-    max: 100
+    average: 35,
+    max: 500
   },
   contractCount: {
     min: 1,
-    average: 41,
-    max: 100
+    average: 35,
+    max: 500
   },
   valueQuoteSum: {
     min: 1,
-    average: 1000000,
-    max: 2000000
+    average: 1000,
+    max: 1000000
   },
   gasQuoteSum: {
     min: 1,
-    average: 5079,
-    max: 10000
+    average: 3.5,
+    max: 50
   }
 };
 
