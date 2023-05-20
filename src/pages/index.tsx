@@ -325,8 +325,8 @@ export default function Home({
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  const chainConfigs = await get('chains');
-  // const chainConfigs = testChainConfigs;
+  // const chainConfigs = await get('chains');
+  const chainConfigs = testChainConfigs;
   return {
     props: { chainConfigs }
   };

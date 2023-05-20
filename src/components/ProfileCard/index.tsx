@@ -28,6 +28,8 @@ import {
 import { IAccount } from '@/types/Account';
 import { Chain } from '@/types/Chains';
 import { TxSummary } from '@/types/TxSummary';
+import { useEffect, useState } from 'react';
+import moment from 'moment';
 
 type ProfileCardProps = {
   account: IAccount;
@@ -49,6 +51,36 @@ export default function ProfileCard({
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
+  const [lastResynced, setLastResynced] = useState<Date>();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleResync = async () => {
+    handleSubmit;
+    setLastResynced(new Date());
+    const localStorage = window.localStorage;
+    localStorage.setItem('biway.lrs', new Date().toString());
+
+    toast({
+      title: 'Resyncing...',
+      status: 'info',
+      duration: 10000,
+      isClosable: true,
+      position: 'top-right'
+    });
+    // set timer to 10 seconds
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+    }, 10000);
+  };
+
+  useEffect(() => {
+    const localStorage = window.localStorage;
+    const lastResyncedString = localStorage.getItem('biway.lrs');
+    if (lastResyncedString) {
+      setLastResynced(new Date(lastResyncedString));
+    }
+  }, [lastResynced]);
   return (
     <Card size="lg">
       <CardHeader>
@@ -63,19 +95,33 @@ export default function ProfileCard({
             setLocalChain={setLocalChain}
           />
           <Flex direction="row" alignItems="center" gap={1}>
-            <Text
-              color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
-              fontSize="xs"
+            {lastResynced && (
+              <Text color={subHeadingColor} fontSize="xs">
+                {`Last resynced ${moment(lastResynced).fromNow()}`}
+              </Text>
+            )}
+            <Tooltip
+              label={
+                lastResynced &&
+                moment(lastResynced).add(10, 'minutes').isAfter(new Date())
+                  ? 'You can resync once every 10 minutes'
+                  : 'Resync data'
+              }
+              hasArrow
             >
-              Resynced 2 days ago
-            </Text>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              aria-label="refresh"
-              icon={<FiRefreshCw />}
-              onClick={handleSubmit}
-            />
+              <IconButton
+                size="sm"
+                variant="ghost"
+                aria-label="refresh"
+                icon={<FiRefreshCw />}
+                onClick={handleResync}
+                isLoading={isSyncing}
+                isDisabled={
+                  lastResynced &&
+                  moment(lastResynced).add(10, 'minutes').isAfter(new Date())
+                }
+              />
+            </Tooltip>
           </Flex>
         </Flex>
       </CardHeader>
