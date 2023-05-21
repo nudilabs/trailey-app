@@ -53,9 +53,16 @@ export default function TopProtocolsUsageCard({
           {txsSummaryByContract &&
             txsSummaryByContract.contracts.map(
               (contract: any, index: number) => {
-                const protocol = currentChain.protocols.find(
-                  (protocol: any) => contract.address === protocol.address
-                );
+                const protocol = currentChain.protocols.find(protocol => {
+                  if (contract.address && protocol.address) {
+                    return (
+                      contract.address.toLowerCase() ===
+                      protocol.address.toLowerCase()
+                    );
+                  }
+                  return false;
+                });
+
                 if (!protocol) return null;
                 return (
                   <Card

@@ -328,7 +328,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
   const chainConfigs = process.env.VERCEL_URL
     ? await get('chains')
     : testChainConfigs;
-  // const chainConfigs = testChainConfigs;
   return {
     props: { chainConfigs }
   };

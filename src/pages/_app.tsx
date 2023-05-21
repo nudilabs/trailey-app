@@ -56,7 +56,7 @@ const App = ({
 }>) => {
   const [currentProfile, setCurrentProfile] = useState(0);
   const [profilesData, setProfilesData] = useState<IProfile[]>([]);
-  const [localChain, setLocalChain] = useState('eth-mainnet'); // default to mainnet
+  const [localChain, setLocalChain] = useState('scroll-alpha-testnet'); // default to mainnet
   const profileProps = {
     currentProfile,
     setCurrentProfile,

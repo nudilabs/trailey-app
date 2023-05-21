@@ -150,7 +150,7 @@ export default function Account({
   };
 
   useEffect(() => {
-    if (chain) {
+    if (chain || localChain) {
       const currentChain = chainConfigs.find(c => c.name === chain);
       setCurrentChain(currentChain ?? chainConfigs[0]);
       setLocalChain(chain as string);
@@ -474,45 +474,49 @@ export const getServerSideProps = async (context: {
 
 const testChainConfigs = [
   {
-    name: 'eth-mainnet',
-    chain_id: '1',
-    is_testnet: false,
-    label: 'Ethereum Mainnet',
+    name: 'scroll-alpha-testnet',
+    chain_id: '534353',
+    is_testnet: true,
+    label: 'Scroll Alpha Testnet',
     category_label: 'Ethereum',
-    logo_url: '/eth.png',
-    black_logo_url: '/eth.png',
-    white_logo_url: '/eth.png',
+    logo_url:
+      'https://pbs.twimg.com/profile_images/1523593944386326528/rVjsezsD_400x400.jpg',
+    black_logo_url:
+      'https://pbs.twimg.com/profile_images/1523593944386326528/rVjsezsD_400x400.jpg',
+    white_logo_url:
+      'https://pbs.twimg.com/profile_images/1523593944386326528/rVjsezsD_400x400.jpg',
     is_appchain: false,
     appchain_of: null,
     protocols: [
       {
-        address: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+        address: '0xd9880690bd717189cc3fbe7b9020f27fae7ac76f',
         label: 'Uniswap',
         logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
-        label: 'Pepe',
-        logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0x000000000000Ad05Ccc4F10045630fb830B95127',
-        label: 'Blur',
-        logo_url: '/protocols/uniswap.png'
       }
-    ]
+    ],
+    achievements: []
   },
   {
-    name: 'eth-goerli',
-    chain_id: '5',
+    name: 'linea-testnet',
+    chain_id: '59140',
     is_testnet: true,
-    label: 'Ethereum Goerli Testnet',
+    label: 'Linea Testnet',
     category_label: 'Ethereum',
-    logo_url: '/eth.png',
-    black_logo_url: '/eth.png',
-    white_logo_url: '/eth.png',
+    logo_url:
+      'https://www.datocms-assets.com/86369/1679953850-property-1-linea-colour.png',
+    black_logo_url:
+      'https://www.datocms-assets.com/86369/1679953850-property-1-linea-colour.png',
+    white_logo_url:
+      'https://www.datocms-assets.com/86369/1679953850-property-1-linea-colour.png',
     is_appchain: false,
     appchain_of: null,
-    protocols: []
+    protocols: [
+      {
+        address: '0x7191061d5d4c60f598214cc6913502184baddf18',
+        label: 'Hop',
+        logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+      }
+    ],
+    achievements: []
   }
 ];
