@@ -520,8 +520,8 @@ export const getServerSideProps = async (context: {
   );
   const p = context.params;
   const addressType = getAddressType(p.address);
-  // const chainConfigs = await get('chains');
-  const chainConfigs = testChainConfigs;
+  const chainConfigs = await get('chains');
+  // const chainConfigs = testChainConfigs;
 
   if (!addressType) {
     return {

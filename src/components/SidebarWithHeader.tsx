@@ -198,15 +198,6 @@ const SidebarContent = ({
           <NavItem
             onClose={onClose}
             isHover={isHover}
-            key={'settings'}
-            icon={FiSettings}
-            href={'/settings'}
-          >
-            Settings
-          </NavItem>
-          <NavItem
-            onClose={onClose}
-            isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
             href={'https://twitter.com/BiwayAnalytics'}
