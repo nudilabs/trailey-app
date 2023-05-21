@@ -325,7 +325,9 @@ export default function Home({
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  const chainConfigs = await get('chains');
+  const chainConfigs = process.env.VERCEL_URL
+    ? await get('chains')
+    : testChainConfigs;
   // const chainConfigs = testChainConfigs;
   return {
     props: { chainConfigs }

@@ -70,7 +70,7 @@ const App = ({
     statement: 'Sign in to Biway Analytics'
   });
 
-  const [isDarkTheme, setIsDarkTheme] = useState(false); // light mode by default
+  const [isDarkTheme, setIsDarkTheme] = useState(true); // light mode by default
 
   useEffect(() => {
     const localStorage = window.localStorage;

@@ -81,10 +81,10 @@ export default function ActivityIndexCard({
   let normalizedGasQuoteSum = 0;
 
   //colors
-  const red = useColorModeValue('red.500', 'red.300');
-  const yellow = useColorModeValue('yellow.500', 'yellow.300');
-  const average = useColorModeValue('gray.700', 'gray.300');
-  const green = useColorModeValue('green.500', 'green.300');
+  const red = useColorModeValue('red.500', 'red.400');
+  const yellow = useColorModeValue('yellow.500', 'yellow.400');
+  const average = useColorModeValue('gray.700', 'gray.400');
+  const green = useColorModeValue('green.500', 'green.400');
 
   const getScoreColor = (score: number): string => {
     if (score <= 45) {
@@ -283,54 +283,63 @@ export default function ActivityIndexCard({
               )}
             </Table>
           </TableContainer>
-
-          <Flex
-            direction="row"
-            w="100%"
-            rounded="full"
-            overflow="hidden"
-            mt={4}
-          >
-            <Flex
-              px={2}
-              bgColor={red}
-              direction="row"
-              w="30%"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text fontSize="xs" color={useColorModeValue('white', 'black')}>
-                1%+
-              </Text>
-            </Flex>
-
-            <Flex
-              bgColor={yellow}
-              direction="row"
-              w="19%"
-              alignItems="center"
-              px={2}
-              justifyContent="center"
-            >
-              <Text fontSize="xs" color={useColorModeValue('white', 'black')}>
-                30%+
-              </Text>
-            </Flex>
-            <Tooltip label="Average" placement="top" hasArrow defaultIsOpen>
-              <Flex bgColor={average} direction="row" w="1%" />
-            </Tooltip>
-
-            <Flex
-              px={2}
-              bgColor={green}
-              direction="row"
-              w="50%"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text fontSize="xs" color={useColorModeValue('white', 'black')}>
-                50%+
-              </Text>
+          <Flex justifyContent="center">
+            <Flex direction="row" w="87%" mt={4}>
+              <Flex direction="column" w="30%">
+                <Flex
+                  px={2}
+                  bgColor={red}
+                  direction="row"
+                  h="8px"
+                  w="100%"
+                  border="1px solid"
+                  borderColor={useColorModeValue('white', 'gray.900')}
+                  roundedStart="full"
+                />
+                <Text
+                  fontSize="xs"
+                  color={useColorModeValue('black', 'gray.400')}
+                >
+                  0
+                </Text>
+              </Flex>
+              <Flex direction="column" w="20%">
+                <Flex
+                  px={2}
+                  bgColor={yellow}
+                  direction="row"
+                  h="8px"
+                  w="100%"
+                  border="1px solid"
+                  borderColor={useColorModeValue('white', 'gray.900')}
+                />
+                <Text
+                  fontSize="xs"
+                  color={useColorModeValue('black', 'gray.400')}
+                >
+                  30
+                </Text>
+              </Flex>
+              <Flex direction="column" w="50%">
+                <Flex
+                  px={2}
+                  bgColor={green}
+                  direction="row"
+                  h="8px"
+                  w="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                  border="1px solid"
+                  borderColor={useColorModeValue('white', 'gray.900')}
+                  roundedEnd="full"
+                />
+                <Text
+                  fontSize="xs"
+                  color={useColorModeValue('black', 'gray.400')}
+                >
+                  50
+                </Text>
+              </Flex>
             </Flex>
           </Flex>
         </Flex>
