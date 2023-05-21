@@ -6,16 +6,14 @@ import {
   InputRightElement,
   Kbd,
   Menu,
-  MenuButton,
   MenuItem,
   MenuList,
-  useColorModeValue,
   Button,
   Flex
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
-import { FiChevronDown, FiSearch } from 'react-icons/fi';
+import { FiSearch } from 'react-icons/fi';
 
 export default function SearchBar({
   kbd,
@@ -49,10 +47,14 @@ export default function SearchBar({
   }, []);
 
   useEffect(() => {
-    const recentSearchesFromStorage = localStorage.getItem('recentSearches');
+    const recentSearchesFromStorage = localStorage.getItem(
+      'biway.recentSearches'
+    );
 
     if (recentSearchesFromStorage) {
-      setRecentSearches(JSON.parse(recentSearchesFromStorage));
+      const parsedRecentSearches = JSON.parse(recentSearchesFromStorage);
+      const updatedRecentSearches = parsedRecentSearches.slice(0, 10);
+      setRecentSearches(updatedRecentSearches);
     }
   }, []);
 
@@ -69,12 +71,16 @@ export default function SearchBar({
       router.push(`/account/${searchTerm.trim()}`);
 
       // Add the search term to the recent searches
-      setRecentSearches([searchTerm.trim(), ...recentSearches]);
+      const updatedRecentSearches = [
+        searchTerm.trim(),
+        ...recentSearches
+      ].slice(0, 10);
+      setRecentSearches(updatedRecentSearches);
 
       // Save the recent searches to local storage
       localStorage.setItem(
-        'recentSearches',
-        JSON.stringify([searchTerm.trim(), ...recentSearches])
+        'biway.recentSearches',
+        JSON.stringify(updatedRecentSearches)
       );
       setSearchTerm('');
 
@@ -131,7 +137,7 @@ export default function SearchBar({
                   size="sm"
                   onClick={() => {
                     setRecentSearches([]);
-                    localStorage.removeItem('recentSearches');
+                    localStorage.removeItem('biway.recentSearches');
                   }}
                 >
                   Clear
