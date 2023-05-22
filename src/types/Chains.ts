@@ -10,10 +10,21 @@ export type Chain = {
   is_appchain: boolean;
   appchain_of: string | null;
   protocols: Protocol[];
+  achievements: Achievement[];
 };
 
 type Protocol = {
   address: string;
   label: string;
   logo_url: string;
+};
+
+export type Achievement = {
+  name: string;
+  description: string;
+  image_url: string;
+  conditions: {
+    type: string;
+    value: number;
+  }[];
 };

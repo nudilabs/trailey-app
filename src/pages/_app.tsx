@@ -2,7 +2,7 @@ import '@/styles/globals.css';
 import '@fontsource/outfit/400.css';
 import '@fontsource/poppins/700.css';
 import type { AppProps } from 'next/app';
-import { ChakraProvider, useColorMode } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import Layout from '@/components/Layout';
 import theme from '@/styles/theme';
 import { useEffect, useState } from 'react';
@@ -16,7 +16,7 @@ import {
   RainbowKitProvider
 } from '@rainbow-me/rainbowkit';
 import { configureChains, createClient, WagmiConfig } from 'wagmi';
-import { mainnet, polygon, optimism, arbitrum } from 'wagmi/chains';
+import { lineaTestnet, mainnet, scrollTestnet } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import ENV from '@/utils/Env';
@@ -32,7 +32,7 @@ import { trpc } from '../connectors/Trpc';
 import { useRouter } from 'next/router';
 
 const { chains, provider } = configureChains(
-  [mainnet, polygon, optimism, arbitrum],
+  [mainnet, scrollTestnet, lineaTestnet],
   [alchemyProvider({ apiKey: ENV.ALCHEMY_ID }), publicProvider()]
 );
 

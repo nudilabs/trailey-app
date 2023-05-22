@@ -30,6 +30,7 @@ import { Chain } from '@/types/Chains';
 import { TxSummary } from '@/types/TxSummary';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
+import { useBalance } from 'wagmi';
 
 type ProfileCardProps = {
   account: IAccount;
@@ -38,6 +39,12 @@ type ProfileCardProps = {
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
   localChain: string;
   setLocalChain: (chain: string) => void;
+  balance:
+    | {
+        formatted: string;
+        symbol: string;
+      }
+    | undefined;
 };
 
 export default function ProfileCard({
@@ -45,6 +52,7 @@ export default function ProfileCard({
   chainConfigs,
   txSummary,
   handleSubmit,
+  balance,
   localChain,
   setLocalChain
 }: ProfileCardProps) {
@@ -140,22 +148,29 @@ export default function ProfileCard({
             >
               {account.ensName}
             </Heading>
-            <Button
-              color={subHeadingColor}
-              size="sm"
-              onClick={() => {
-                navigator.clipboard.writeText(account.address);
-                toast({
-                  title: 'Copied to clipboard',
-                  status: 'info',
-                  duration: 1500,
-                  isClosable: true,
-                  position: 'top-right'
-                });
-              }}
-            >
-              {getFormattedAddress(account.address)}
-            </Button>
+            <Flex direction="row" alignItems="center" gap={1}>
+              <Button
+                color={subHeadingColor}
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(account.address);
+                  toast({
+                    title: 'Copied to clipboard',
+                    status: 'info',
+                    duration: 1500,
+                    isClosable: true,
+                    position: 'top-right'
+                  });
+                }}
+              >
+                {getFormattedAddress(account.address)}
+              </Button>
+              {balance && (
+                <Text color={subHeadingColor} fontSize="xs">
+                  {`${formatPrettyNumber(balance.formatted)} ${balance.symbol}`}
+                </Text>
+              )}
+            </Flex>
           </Flex>
           <Flex direction="row" width="100%" justifyContent="space-between">
             <Stat textAlign="center">

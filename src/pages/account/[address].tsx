@@ -50,6 +50,8 @@ import {
 import Head from 'next/head';
 import ActivityIndexCard from '@/components/ActivityIndexCard';
 import { formatPrettyNumber } from '@/utils/format';
+import { fetchBalance } from '@wagmi/core';
+import useLocalChain from '@/hooks/useLocalChain';
 
 export default function Account({
   account,
@@ -68,11 +70,15 @@ export default function Account({
   localChain: string;
   setLocalChain: (chain: string) => void;
 }) {
-  const toast = useToast();
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
 
+  const [balance, setBalance] = useState<{
+    formatted: string;
+    symbol: string;
+  }>();
   const router = useRouter();
   const { chain } = router.query;
+
   const subHeadingColor = useColorModeValue(
     'RGBA(0, 0, 0, 0.36)',
     'RGBA(255, 255, 255, 0.36)'
@@ -158,6 +164,17 @@ export default function Account({
       const currentChain = chainConfigs.find(c => c.name === localChain);
       setCurrentChain(currentChain ?? chainConfigs[0]);
     }
+    const getBalance = async () => {
+      const balance = await fetchBalance({
+        address: `0x${account.address.slice(2)}`,
+        chainId: Number(currentChain.chain_id)
+      });
+      setBalance({
+        formatted: balance.formatted,
+        symbol: balance.symbol
+      });
+    };
+    getBalance();
   }, [chain, localChain]);
 
   return (
@@ -182,6 +199,7 @@ export default function Account({
               chainConfigs={chainConfigs}
               txSummary={txSummary}
               handleSubmit={handleSubmit}
+              balance={balance}
               localChain={localChain}
               setLocalChain={setLocalChain}
             />
@@ -192,7 +210,7 @@ export default function Account({
               setProfilesData={setProfilesData}
             />
             <Box>
-              <AchievementsCard />
+              <AchievementsCard achievements={currentChain.achievements} />
             </Box>
           </Flex>
         </GridItem>
@@ -203,14 +221,14 @@ export default function Account({
                 <ActivityIndexCard txSummary={txSummary} />
               </Flex>
             </GridItem>
-            <GridItem colSpan={{ base: 12, lg: 6 }}>
+            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
               <TopProtocolsUsageCard
                 txsSummaryByContract={txsSummaryByContract}
                 currentChain={currentChain}
                 account={account}
               />
             </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6 }}>
+            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
               <Card>
                 <CardHeader>
                   <Flex
@@ -289,7 +307,7 @@ export default function Account({
                 </CardBody>
               </Card>
             </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6 }}>
+            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
               <Card>
                 <CardHeader>
                   <Flex
@@ -459,10 +477,21 @@ export const getServerSideProps = async (context: {
   try {
     if (addressType === 'address') {
       const account = await fetchAddressProps(p.address);
-      return { props: { chainConfigs, account } };
+      return {
+        props: {
+          chainConfigs,
+          account
+        }
+      };
     } else if (addressType === 'ens') {
       const account = await fetchEnsProps(p.address);
-      return { props: { chainConfigs, account } };
+
+      return {
+        props: {
+          chainConfigs,
+          account
+        }
+      };
     }
   } catch (error) {
     console.error(error);
@@ -494,7 +523,19 @@ const testChainConfigs = [
         logo_url: '/protocols/uniswap.png'
       }
     ],
-    achievements: []
+    achievements: [
+      {
+        name: 'Welcome to Scroll Alpha Testnet',
+        description: 'Have at least one transaction on Scroll Alpha Testnet',
+        image_url: '/badges/scroll-alpha-testnet/welcome.png',
+        conditions: [
+          {
+            type: 'txCount',
+            value: 1
+          }
+        ]
+      }
+    ]
   },
   {
     name: 'linea-testnet',
