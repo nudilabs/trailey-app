@@ -8,15 +8,14 @@ const AvatarGroup = ({
   wallets: { address: string; type: string }[];
   max: number;
 }) => {
-  const avatarBorderColor = useColorModeValue('white', 'gray.700');
+  const avatarBorderColor = useColorModeValue('white', 'blackAlpha.900');
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
   return (
     <Flex direction="row">
       {wallets.map((wallet, i) => (
-        <>
+        <Box key={i}>
           {i < max && (
             <Box
-              key={wallet.address}
               mr={-3}
               rounded="full"
               border="2px"
@@ -25,7 +24,7 @@ const AvatarGroup = ({
               <Avatar address={wallet.address} size={40} />
             </Box>
           )}
-        </>
+        </Box>
       ))}
       {wallets.length > max && (
         <Box
