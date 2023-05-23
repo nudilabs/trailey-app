@@ -71,7 +71,6 @@ export default function Account({
   setLocalChain: (chain: string) => void;
 }) {
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
-  console.log('currentChain: ', currentChain.name);
 
   const [balance, setBalance] = useState<{
     formatted: string;

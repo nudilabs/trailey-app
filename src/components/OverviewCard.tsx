@@ -43,21 +43,88 @@ import { Avatar } from './Avatar';
 import ChainSelector from './ChainSelector';
 import { Chain } from '@/types/Chains';
 
+const scores = {
+  txCount: {
+    min: 1,
+    average: 35,
+    max: 500
+  },
+  contractCount: {
+    min: 1,
+    average: 35,
+    max: 500
+  },
+  valueQuoteSum: {
+    min: 1,
+    average: 1000,
+    max: 1000000
+  },
+  gasQuoteSum: {
+    min: 1,
+    average: 3.5,
+    max: 50
+  }
+};
+
 const OverviewCard = ({
   txSummaries,
-  isLoading,
   localChain,
   setLocalChain,
   chainConfigs
 }: {
-  txSummaries: any;
-  isLoading: boolean;
+  txSummaries: any[];
   localChain: string;
   setLocalChain: (chain: string) => void;
   chainConfigs: Chain[];
 }) => {
-  const goalColor = useColorModeValue('gray.500', 'gray.400');
   const router = useRouter();
+
+  const getScoreColor = (score: number): string => {
+    if (score <= 45) {
+      return 'red';
+    } else if (score <= 49) {
+      return 'yellow';
+    } else if (score == 50) {
+      return 'gray';
+    } else {
+      return 'green';
+    }
+  };
+
+  let normalizedTxCount: any[] = [];
+  let normalizedContractCount: any[] = [];
+  let normalizedValueQuoteSum: any[] = [];
+  let normalizedGasQuoteSum: any[] = [];
+
+  // Calculate normalized value for the minimum to average range
+  if (txSummaries.every((summary: any) => !summary.isLoading)) {
+    txSummaries.forEach((summary: any) => {
+      normalizedTxCount[summary.address] = calculateNormalizedValue(
+        summary.data.txCount.allTime,
+        scores.txCount.min,
+        scores.txCount.average,
+        scores.txCount.max
+      );
+      normalizedContractCount[summary.address] = calculateNormalizedValue(
+        summary.data.contractCount.allTime,
+        scores.contractCount.min,
+        scores.contractCount.average,
+        scores.contractCount.max
+      );
+      normalizedValueQuoteSum[summary.address] = calculateNormalizedValue(
+        summary.data.valueQuoteSum.allTime,
+        scores.valueQuoteSum.min,
+        scores.valueQuoteSum.average,
+        scores.valueQuoteSum.max
+      );
+      normalizedGasQuoteSum[summary.address] = calculateNormalizedValue(
+        summary.data.gasQuoteSum.allTime,
+        scores.gasQuoteSum.min,
+        scores.gasQuoteSum.average,
+        scores.gasQuoteSum.max
+      );
+    });
+  }
 
   return (
     <Card size="lg">
@@ -79,67 +146,98 @@ const OverviewCard = ({
               <Tr>
                 <Th>Address</Th>
                 <Th>Txs</Th>
+                <Th>Contracts</Th>
                 <Th>Value</Th>
+                <Th>Gas</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {isLoading ? (
+              {txSummaries.some((summary: any) => summary.isLoading) ? (
                 <Tr>
                   <Td colSpan={6}>
                     <SkeletonText noOfLines={4} spacing="4" />
                   </Td>
                 </Tr>
               ) : (
-                txSummaries.map((data: any, i: number) => (
+                txSummaries.map((summary: any, i: number) => (
                   <Tr key={i}>
                     <Td>
                       <Flex direction="row" alignItems="center" gap={2}>
-                        <Avatar address={data.address} size={24} />
+                        <Avatar address={summary.address} size={24} />
                         <Button
                           colorScheme="primary"
                           variant="link"
                           rightIcon={<FiArrowRight />}
                           onClick={() => {
-                            router.push(`/account/${data.address}`);
+                            router.push(`/account/${summary.address}`);
                           }}
                         >
-                          {getFormattedAddress(data.address)}
+                          {getFormattedAddress(summary.address)}
                         </Button>
                       </Flex>
                     </Td>
                     <Td>
                       <Tooltip
-                        label={getPercentile(Number(data?.txCount?.value))}
+                        label={normalizedTxCount[summary.address].toFixed(2)}
                       >
                         <Progress
                           hasStripe
                           size="sm"
                           rounded="full"
-                          value={
-                            (Number(data?.txCount?.value) / percentile[50]) *
-                            100
-                          }
-                          colorScheme={getProgressBarColor(
-                            Number(data?.txCount?.value)
+                          value={normalizedTxCount[summary.address]}
+                          colorScheme={getScoreColor(
+                            normalizedTxCount[summary.address]
                           )}
                         />
                       </Tooltip>
                     </Td>
                     <Td>
                       <Tooltip
-                        label={getPercentile(Number(data.valueQuoteSum))}
+                        label={normalizedContractCount[summary.address].toFixed(
+                          2
+                        )}
                       >
                         <Progress
                           hasStripe
                           size="sm"
                           rounded="full"
-                          value={
-                            (Number(data.valueQuoteSum?.value) /
-                              percentile[50]) *
-                            100
-                          }
-                          colorScheme={getProgressBarColor(
-                            Number(data.valueQuoteSum?.value)
+                          value={normalizedContractCount[summary.address]}
+                          colorScheme={getScoreColor(
+                            normalizedContractCount[summary.address]
+                          )}
+                        />
+                      </Tooltip>
+                    </Td>
+                    <Td>
+                      <Tooltip
+                        label={normalizedValueQuoteSum[summary.address].toFixed(
+                          2
+                        )}
+                      >
+                        <Progress
+                          hasStripe
+                          size="sm"
+                          rounded="full"
+                          value={normalizedValueQuoteSum[summary.address]}
+                          colorScheme={getScoreColor(
+                            normalizedValueQuoteSum[summary.address]
+                          )}
+                        />
+                      </Tooltip>
+                    </Td>
+                    <Td>
+                      <Tooltip
+                        label={normalizedGasQuoteSum[summary.address].toFixed(
+                          2
+                        )}
+                      >
+                        <Progress
+                          hasStripe
+                          size="sm"
+                          rounded="full"
+                          value={normalizedGasQuoteSum[summary.address]}
+                          colorScheme={getScoreColor(
+                            normalizedGasQuoteSum[summary.address]
                           )}
                         />
                       </Tooltip>
@@ -187,5 +285,18 @@ const getProgressBarColor = (value: number) => {
     default:
       if (value > percentile[75]) return 'purple';
       return 'blue';
+  }
+};
+
+const calculateNormalizedValue = (
+  value: number,
+  min: number,
+  average: number,
+  max: number
+) => {
+  if (value <= average) {
+    return ((value - min) / (average - min)) * 0.5 * 100;
+  } else {
+    return (0.5 + ((value - average) / (max - average)) * 0.5) * 100;
   }
 };

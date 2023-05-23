@@ -59,15 +59,12 @@ export default function Home({
   setLocalChain: (chain: string) => void;
 }) {
   const [address, setAddress] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { data: session, status: sessionStatus } = useSession();
   const { openConnectModal } = useConnectModal();
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
-  const maxAvatarsShown = 1;
 
   const router = useRouter();
-  const { chain } = router.query;
 
   const txSummaries = trpc.useQueries(
     t =>
@@ -76,7 +73,7 @@ export default function Home({
           chainName: localChain,
           walletAddr: addr.address
         })
-      ) || []
+      ) ?? []
   );
 
   const txSummariesWithAddress = txSummaries.map((txSummary, index) => ({
@@ -89,7 +86,6 @@ export default function Home({
   }, [sessionStatus]);
 
   if (!session || !address) {
-    console.log('no session return');
     return (
       <Flex minH="calc(100vh - 88px)" alignItems="center">
         <Container maxW="container.lg" py={{ base: 12, md: 0 }}>
@@ -145,11 +141,9 @@ export default function Home({
   }
 
   if (profilesData.length === 0) {
-    console.log('no profile return');
     router.push(`/account/${address}`);
     return null;
   }
-  console.log('normal return');
 
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
@@ -260,7 +254,6 @@ export default function Home({
         </GridItem>
         <GridItem colSpan={{ base: 12, lg: 8 }}>
           <OverviewCard
-            isLoading={isLoading}
             txSummaries={txSummariesWithAddress}
             chainConfigs={chainConfigs}
             localChain={localChain}
