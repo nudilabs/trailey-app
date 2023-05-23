@@ -12,28 +12,12 @@ import {
   GridItem,
   Heading,
   Highlight,
-  Image,
-  Spinner,
   Stack,
   Stat,
   StatLabel,
   StatNumber,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
   useColorModeValue,
-  TableContainer,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Tfoot,
-  Icon,
   StatArrow,
   StatHelpText,
   IconButton,
@@ -41,41 +25,16 @@ import {
 } from '@chakra-ui/react';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { GetServerSideProps } from 'next';
-import { getToken } from 'next-auth/jwt';
-import { getSession, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { trpc } from '@/connectors/Trpc';
-import { Avatar } from '@/components/Avatar';
 import AvatarGroup from '@/components/AvatarGroup';
-import { FiEdit, FiPlusCircle, FiUmbrella } from 'react-icons/fi';
+import { FiEdit } from 'react-icons/fi';
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
-
-const MOCK_OVERVIEW_DATA = [
-  {
-    address: '0x293j...293k',
-    bridged: { value: 20, goal: 25 },
-    txns: {
-      smartContract: { value: 5, goal: 10 },
-      general: { value: 28, goal: 35 },
-      average: { value: 5.5, goal: 10 },
-      value: { value: 28.5283, goal: 40 }
-    }
-  }
-];
-
-const MOCK_CHAINS = [
-  {
-    name: 'Ethereum',
-    icon: '/eth.png'
-  },
-  {
-    name: 'Polygon',
-    icon: '/polygon.jpeg'
-  }
-];
+import { CHAINS } from '@/configs/chains';
 
 interface Session {
   user: {
@@ -85,17 +44,6 @@ interface Session {
   address: string;
   expires: string;
 }
-
-const chains: { [key: string]: string } = {
-  ethereum: 'eth-mainnet'
-};
-
-const times: { [key: string]: number } = {
-  '24h': 1,
-  '7d': 7,
-  '30d': 30,
-  all: 0
-};
 
 export default function Home({
   currentProfile,
@@ -111,8 +59,6 @@ export default function Home({
   setLocalChain: (chain: string) => void;
 }) {
   const [address, setAddress] = useState<string | null>(null);
-  const [currentChain, setCurrentChain] = useState<string>('ethereum');
-  const [currentTime, setCurrentTime] = useState<string>('7d');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { data: session, status: sessionStatus } = useSession();
@@ -121,13 +67,13 @@ export default function Home({
   const maxAvatarsShown = 1;
 
   const router = useRouter();
-  const { chain, time } = router.query;
+  const { chain } = router.query;
 
   const txSummaries = trpc.useQueries(
     t =>
       profilesData[currentProfile]?.wallets?.map(addr =>
         t.txs.getSummary({
-          chainName: chains[currentChain],
+          chainName: localChain,
           walletAddr: addr.address
         })
       ) || []
@@ -140,16 +86,10 @@ export default function Home({
 
   useEffect(() => {
     setAddress((session as Session)?.address ?? null);
-
-    if (chain) {
-      setCurrentChain(chain as string);
-    }
-    if (time) {
-      setCurrentTime(time as string);
-    }
-  }, [sessionStatus, chain, time]);
+  }, [sessionStatus]);
 
   if (!session || !address) {
+    console.log('no session return');
     return (
       <Flex minH="calc(100vh - 88px)" alignItems="center">
         <Container maxW="container.lg" py={{ base: 12, md: 0 }}>
@@ -205,9 +145,11 @@ export default function Home({
   }
 
   if (profilesData.length === 0) {
+    console.log('no profile return');
     router.push(`/account/${address}`);
     return null;
   }
+  console.log('normal return');
 
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
@@ -325,55 +267,8 @@ export default function Home({
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  const chainConfigs = process.env.VERCEL_URL
-    ? await get('chains')
-    : testChainConfigs;
+  const chainConfigs = process.env.VERCEL_URL ? await get('chains') : CHAINS;
   return {
     props: { chainConfigs }
   };
 };
-
-const testChainConfigs = [
-  {
-    name: 'eth-mainnet',
-    chain_id: '1',
-    is_testnet: false,
-    label: 'Ethereum Mainnet',
-    category_label: 'Ethereum',
-    logo_url: '/eth.png',
-    black_logo_url: '/eth.png',
-    white_logo_url: '/eth.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [
-      {
-        address: '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
-        label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
-        label: 'Pepe',
-        logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0x000000000000Ad05Ccc4F10045630fb830B95127',
-        label: 'Blur',
-        logo_url: '/protocols/uniswap.png'
-      }
-    ]
-  },
-  {
-    name: 'eth-goerli',
-    chain_id: '5',
-    is_testnet: true,
-    label: 'Ethereum Goerli Testnet',
-    category_label: 'Ethereum',
-    logo_url: '/eth.png',
-    black_logo_url: '/eth.png',
-    white_logo_url: '/eth.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: []
-  }
-];
