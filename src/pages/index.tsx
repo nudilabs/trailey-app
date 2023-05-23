@@ -31,7 +31,7 @@ import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { trpc } from '@/connectors/Trpc';
 import AvatarGroup from '@/components/AvatarGroup';
-import { FiEdit } from 'react-icons/fi';
+import { FiEdit, FiPlus } from 'react-icons/fi';
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
 import { CHAINS } from '@/configs/chains';
@@ -165,7 +165,13 @@ export default function Home({
                     alignItems="center"
                   >
                     <Heading size="md">Profile</Heading>
-                    <IconButton aria-label="Profile" icon={<FiEdit />} />
+                    <IconButton
+                      aria-label="Profile"
+                      icon={<FiPlus />}
+                      onClick={() => {
+                        router.push(`/profile/${currentProfile}`);
+                      }}
+                    />
                   </Flex>
                 </CardHeader>
                 <CardBody>

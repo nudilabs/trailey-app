@@ -70,7 +70,6 @@ const OverviewCard = ({
             localChain={localChain}
             setLocalChain={setLocalChain}
           />
-          <IconButton aria-label="Add Wallet" icon={<FiPlus />} />
         </Flex>
       </CardHeader>
       <CardBody>
