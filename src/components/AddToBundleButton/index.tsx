@@ -1,6 +1,7 @@
 import { IAccount } from '@/types/Account';
 import { IProfile } from '@/types/IProfile';
 import { Button } from '@chakra-ui/button';
+import { useColorModeValue } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/toast';
 import { useState } from 'react';
 import { FiPlusCircle } from 'react-icons/fi';
@@ -52,13 +53,13 @@ export default function AddToBundleBtn({
   return (
     <Button
       w="100%"
-      variant="solid"
-      colorScheme="primary"
+      colorScheme={useColorModeValue('primary', 'secondary')}
       leftIcon={<FiPlusCircle />}
       rounded="3xl"
       onClick={handleAddToBundle}
       isLoading={isLoading}
       isDisabled={addressExists} // Disable the button if the address exists
+      display={addressExists ? 'none' : 'flex'}
     >
       Add to Bundle
     </Button>
