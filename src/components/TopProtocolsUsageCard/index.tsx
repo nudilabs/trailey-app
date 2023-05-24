@@ -86,7 +86,7 @@ export default function TopProtocolsUsageCard({
                             fontWeight="bold"
                             color={subHeadingColor}
                             as="a"
-                            href={`https://etherscan.io/address/${protocol?.address}?fromaddress=${account.address}`}
+                            href={`${currentChain.block_explorer_url}address/${protocol.address}`}
                             target="_blank"
                             textDecor="underline"
                           >

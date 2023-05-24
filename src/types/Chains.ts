@@ -11,6 +11,7 @@ export type Chain = {
   appchain_of: string | null;
   protocols: Protocol[];
   achievements: Achievement[];
+  block_explorer_url: string;
 };
 
 type Protocol = {

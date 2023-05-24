@@ -32,7 +32,8 @@ export const CHAINS = [
           }
         ]
       }
-    ]
+    ],
+    block_explorer_url: 'https://blockscout.scroll.io/'
   },
   {
     name: 'linea-testnet',
@@ -55,6 +56,7 @@ export const CHAINS = [
         logo_url: 'https://app.hop.exchange/images/hop_logo.png'
       }
     ],
-    achievements: []
+    achievements: [],
+    block_explorer_url: 'https://explorer.goerli.linea.build/'
   }
 ];
