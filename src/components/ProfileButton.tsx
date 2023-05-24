@@ -22,6 +22,7 @@ import {
 import { FiUser, FiChevronDown, FiSettings, FiPlus } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { IProfile } from '@/types/IProfile';
+import { useSession } from 'next-auth/react';
 
 export default function ProfileButton({
   onClose,
@@ -42,6 +43,7 @@ export default function ProfileButton({
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const hasBundle = profilesData.length > 0;
+  const { data: session, status: sessionStatus } = useSession();
 
   const handleProfileClick = () => {
     if (!hasBundle) {
@@ -68,7 +70,7 @@ export default function ProfileButton({
   }
 
   return (
-    <Flex direction="column" {...rest}>
+    <Flex direction="column" {...rest} display={session ? 'flex' : 'none'}>
       {isHover ? (
         hasBundle ? (
           <Button
