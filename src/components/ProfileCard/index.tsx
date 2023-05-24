@@ -63,7 +63,7 @@ export default function ProfileCard({
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleResync = async () => {
-    handleSubmit;
+    handleSubmit({ preventDefault: () => {} });
     setLastResynced(new Date());
     const localStorage = window.localStorage;
     localStorage.setItem('biway.lrs', new Date().toString());

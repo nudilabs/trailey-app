@@ -87,8 +87,8 @@ export default function Account({
   // resync wallet
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
     console.log('handleSubmit localChain: ', localChain);
+    e.preventDefault();
     const data = mutate({
       chainName: localChain,
       walletAddr: account.address
@@ -158,13 +158,21 @@ export default function Account({
   };
 
   useEffect(() => {
-    const c = chainConfigs.find(c => c.name === chain);
-    if (c) setCurrentChain(c);
+    // check if type is string
+    if (typeof chain === 'string') {
+      setLocalChain(chain);
+      localStorage.setItem('biway.chain', chain);
+    }
+    // clear query params
+    router.push(`/account/${account.address}`, undefined, { shallow: true });
   }, [chain]);
 
   useEffect(() => {
-    const chain = chainConfigs.find(c => c.name === localChain);
-    if (chain) setCurrentChain(chain);
+    const selectedChain = chainConfigs.find(c => c.name === localChain);
+    if (selectedChain) setCurrentChain(selectedChain);
+  }, [localChain]);
+
+  useEffect(() => {
     const getBalance = async () => {
       const balance = await fetchBalance({
         address: `0x${account.address.slice(2)}`,
@@ -176,7 +184,7 @@ export default function Account({
       });
     };
     getBalance();
-  }, [localChain]);
+  }, [currentChain]);
 
   return (
     <Flex direction="column">

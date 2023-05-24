@@ -23,26 +23,19 @@ const ChainSelector = ({
   localChain: string;
   setLocalChain: (chain: string) => void;
 }) => {
-  const router = useRouter();
-  // const [selectedChain, setSelectedChain] = useState(
-  //   router.query.chain || chainConfigs[0].name.toLowerCase()
-  // );
+  // const router = useRouter();
   const [currentChain, setCurrentChain] = useState<Chain | undefined>();
 
   useEffect(() => {
-    const currentChain = chainConfigs.find(
+    const selectedChain = chainConfigs.find(
       chain => chain.name.toLowerCase() === localChain
     );
-    setCurrentChain(currentChain);
-    const query = { ...router.query, chain: localChain };
-    router.push({ query });
+    setCurrentChain(selectedChain);
   }, [localChain]);
 
   const handleSelectChain = (chain: string) => {
     setLocalChain(chain);
     localStorage.setItem('biway.chain', chain);
-    // const query = { ...router.query, chain };
-    // router.push({ query });
   };
 
   return (
