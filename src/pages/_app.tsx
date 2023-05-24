@@ -81,19 +81,14 @@ const App = ({
     if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
     const localChain = localStorage.getItem('biway.chain');
     if (localChain) setLocalChain(localChain);
+  }, []);
 
+  useEffect(() => {
     // rainbowkit colormode
-    const rainbowTheme = localStorage.getItem('chakra-ui-color-mode');
+    const rainbowTheme = window.localStorage.getItem('chakra-ui-color-mode');
     const isDark = rainbowTheme === 'dark';
-    if (isDark) setIsDarkTheme(true);
-  }, [
-    currentProfile,
-    setCurrentProfile,
-    setProfilesData,
-    isDarkTheme,
-    localChain,
-    setLocalChain
-  ]);
+    setIsDarkTheme(isDark);
+  }, []);
 
   return (
     <WagmiConfig client={wagmiClient}>
