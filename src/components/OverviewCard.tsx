@@ -197,6 +197,7 @@ const OverviewCard = ({
             <Tooltip
               label={
                 lastResynced &&
+                lastResynced.length > 0 &&
                 moment(lastResynced[0].timestamp)
                   .add(10, 'minutes')
                   .isAfter(new Date())
@@ -214,6 +215,7 @@ const OverviewCard = ({
                 isLoading={isSyncing}
                 isDisabled={
                   lastResynced &&
+                  lastResynced.length > 0 &&
                   moment(lastResynced[0].timestamp)
                     .add(10, 'minutes')
                     .isAfter(new Date())
@@ -276,7 +278,9 @@ const OverviewCard = ({
                       </Td>
                       <Td>
                         <Text fontSize="sm">
-                          {moment(lastResyncStatus?.timestamp).fromNow()}
+                          {lastResyncStatus?.timestamp
+                            ? moment(lastResyncStatus?.timestamp).fromNow()
+                            : ''}
                         </Text>
                       </Td>
                       <Td>
