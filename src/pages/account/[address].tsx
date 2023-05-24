@@ -88,10 +88,12 @@ export default function Account({
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    console.log('handleSubmit localChain: ', localChain);
     const data = mutate({
       chainName: localChain,
       walletAddr: account.address
     });
+    console.log('handleSubmit data: ', data);
   };
 
   const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery({
