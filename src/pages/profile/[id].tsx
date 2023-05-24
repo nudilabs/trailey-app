@@ -238,7 +238,12 @@ export default function Profile({
             <Flex direction="column" gap={4}>
               <FormControl isInvalid={isError}>
                 <FormLabel>Address</FormLabel>
-                <Input type="text" value={input} onChange={handleInputChange} />
+                <Input
+                  type="text"
+                  value={input}
+                  onChange={handleInputChange}
+                  autoFocus
+                />
                 {isError && (
                   <FormErrorMessage>
                     Please enter a valid address
@@ -264,6 +269,7 @@ export default function Profile({
                   if (!isError) {
                     handleAddAddress(input, type);
                     setShowModal(false);
+                    setInput('');
                   }
                 }}
               >
@@ -289,6 +295,7 @@ export default function Profile({
                 type="text"
                 value={editInput}
                 onChange={handleEditInputChange}
+                autoFocus
               />
             </FormControl>
           </ModalBody>
