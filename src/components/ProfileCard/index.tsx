@@ -124,10 +124,10 @@ export default function ProfileCard({
                 icon={<FiRefreshCw />}
                 onClick={handleResync}
                 isLoading={isSyncing}
-                isDisabled={
-                  lastResynced &&
-                  moment(lastResynced).add(10, 'minutes').isAfter(new Date())
-                }
+                // isDisabled={
+                //   lastResynced &&
+                //   moment(lastResynced).add(10, 'minutes').isAfter(new Date())
+                // }
               />
             </Tooltip>
           </Flex>
