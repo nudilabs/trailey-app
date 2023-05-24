@@ -254,6 +254,7 @@ const OverviewCard = ({
                 txSummaries.map((summary: any, i: number) => {
                   const lastResyncStatus =
                     lastResynced &&
+                    lastResynced.length > 0 &&
                     lastResynced.find(
                       (item: { chain: string; address: string }) =>
                         item.chain === localChain &&
@@ -277,11 +278,13 @@ const OverviewCard = ({
                         </Flex>
                       </Td>
                       <Td>
-                        <Text fontSize="sm">
-                          {lastResyncStatus?.timestamp
-                            ? moment(lastResyncStatus?.timestamp).fromNow()
-                            : ''}
-                        </Text>
+                        {lastResyncStatus && (
+                          <Text fontSize="sm">
+                            {lastResyncStatus?.timestamp
+                              ? moment(lastResyncStatus?.timestamp).fromNow()
+                              : ''}
+                          </Text>
+                        )}
                       </Td>
                       <Td>
                         <Tooltip
