@@ -59,19 +59,51 @@ export default function ProfileCard({
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
-  const [lastResynced, setLastResynced] = useState<Date>();
+  const [lastResynced, setLastResynced] = useState<LastResync>();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  const handleResync = async () => {
+  type LastResync = {
+    chain: string;
+    address: string;
+    timestamp: Date;
+  };
+
+  const handleResync = () => {
+    console.log('resyncing start...');
     handleSubmit({ preventDefault: () => {} });
-    setLastResynced(new Date());
+    const currentDate = new Date();
+    const obj = {
+      chain: localChain,
+      address: account.address,
+      timestamp: currentDate
+    };
     const localStorage = window.localStorage;
-    localStorage.setItem('biway.lrs', new Date().toString());
+    const lrsFromLocal = localStorage.getItem('biway.lrs');
+    // find the old lrs in storage
+    if (lrsFromLocal) {
+      let lrsFromLocalObj = JSON.parse(lrsFromLocal);
+      let currentLsrObj = lrsFromLocalObj.find(
+        (item: { chain: string; address: string }) =>
+          item.chain === localChain && item.address === account.address
+      );
+      if (currentLsrObj) {
+        // if found, update the timestamp
+        currentLsrObj.timestamp = currentDate;
+      } else {
+        lrsFromLocalObj.push(obj);
+      }
+      localStorage.setItem('biway.lrs', JSON.stringify(lrsFromLocalObj));
+      setLastResynced(currentLsrObj);
+    } else {
+      // if not found, create a new one
+      localStorage.setItem('biway.lrs', JSON.stringify([obj]));
+      setLastResynced(obj);
+    }
 
     toast({
       title: 'Resyncing...',
       status: 'info',
-      duration: 10000,
+      duration: 2000,
       isClosable: true,
       position: 'top-right'
     });
@@ -79,16 +111,21 @@ export default function ProfileCard({
     setIsSyncing(true);
     setTimeout(() => {
       setIsSyncing(false);
-    }, 10000);
+    }, 2000);
+    console.log('resyncing end...');
   };
 
   useEffect(() => {
     const localStorage = window.localStorage;
     const lastResyncedString = localStorage.getItem('biway.lrs');
     if (lastResyncedString) {
-      setLastResynced(new Date(lastResyncedString));
+      const lastResynced = JSON.parse(lastResyncedString).find(
+        (item: { chain: string; address: string }) =>
+          item.chain === localChain && item.address === account.address
+      );
+      setLastResynced(lastResynced);
     }
-  }, [lastResynced]);
+  }, [localChain]);
   return (
     <Card size="lg">
       <CardHeader>
@@ -105,13 +142,15 @@ export default function ProfileCard({
           <Flex direction="row" alignItems="center" gap={1}>
             {lastResynced && (
               <Text color={subHeadingColor} fontSize="xs">
-                {`Last resynced ${moment(lastResynced).fromNow()}`}
+                {`Last resynced ${moment(lastResynced.timestamp).fromNow()}`}
               </Text>
             )}
             <Tooltip
               label={
                 lastResynced &&
-                moment(lastResynced).add(10, 'minutes').isAfter(new Date())
+                moment(lastResynced.timestamp)
+                  .add(10, 'minutes')
+                  .isAfter(new Date())
                   ? 'You can resync once every 10 minutes'
                   : 'Resync data'
               }
@@ -124,10 +163,12 @@ export default function ProfileCard({
                 icon={<FiRefreshCw />}
                 onClick={handleResync}
                 isLoading={isSyncing}
-                // isDisabled={
-                //   lastResynced &&
-                //   moment(lastResynced).add(10, 'minutes').isAfter(new Date())
-                // }
+                isDisabled={
+                  lastResynced &&
+                  moment(lastResynced.timestamp)
+                    .add(10, 'minutes')
+                    .isAfter(new Date())
+                }
               />
             </Tooltip>
           </Flex>
