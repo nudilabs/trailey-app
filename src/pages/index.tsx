@@ -80,6 +80,17 @@ export default function Home({
     address: profilesData[currentProfile]?.wallets[index]?.address
   }));
 
+  const { mutate } = trpc.txs.syncWalletTxs.useMutation();
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    txSummariesWithAddress.forEach(txSummary => {
+      mutate({
+        chainName: localChain,
+        walletAddr: txSummary.address
+      });
+    });
+  };
+
   useEffect(() => {
     setAddress((session as Session)?.address ?? null);
   }, [sessionStatus]);
@@ -257,6 +268,7 @@ export default function Home({
             chainConfigs={chainConfigs}
             localChain={localChain}
             setLocalChain={setLocalChain}
+            handleSubmit={handleSubmit}
           />
         </GridItem>
       </Grid>

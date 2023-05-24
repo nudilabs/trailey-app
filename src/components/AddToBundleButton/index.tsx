@@ -23,7 +23,6 @@ export default function AddToBundleBtn({
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const { data: session } = useSession();
-  console.log('session:', session);
 
   const handleAddToBundle = () => {
     setIsLoading(true);

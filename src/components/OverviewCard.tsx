@@ -13,35 +13,25 @@ import {
   Td,
   useColorModeValue,
   Button,
-  Tfoot,
   Text,
   Tooltip,
   IconButton,
   Spacer,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   SkeletonText,
-  Progress
+  Progress,
+  useToast
 } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
-import {
-  FiArrowRight,
-  FiExternalLink,
-  FiFlag,
-  FiPlus,
-  FiPlusCircle,
-  FiSettings
-} from 'react-icons/fi';
-import TimeFilter from './TimeFilter';
-import Link from 'next/link';
+
+import { FiArrowRight, FiRefreshCw } from 'react-icons/fi';
+
 import { getFormattedAddress } from '@/utils/format';
-import { getEthFromWei } from '@/utils/format';
 import { useRouter } from 'next/router';
 import { Avatar } from './Avatar';
 import ChainSelector from './ChainSelector';
 import { Chain } from '@/types/Chains';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { LastResync } from '@/types/LastResync';
 
 const scores = {
   txCount: {
@@ -70,14 +60,85 @@ const OverviewCard = ({
   txSummaries,
   localChain,
   setLocalChain,
-  chainConfigs
+  chainConfigs,
+  handleSubmit
 }: {
   txSummaries: any[];
   localChain: string;
   setLocalChain: (chain: string) => void;
   chainConfigs: Chain[];
+  handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
 }) => {
+  const [lastResynced, setLastResynced] = useState<LastResync[]>();
+  const [isSyncing, setIsSyncing] = useState(false);
+
   const router = useRouter();
+  const toast = useToast();
+
+  const handleResync = () => {
+    handleSubmit({ preventDefault: () => {} });
+    const currentDate = new Date();
+    const lastResyncs: LastResync[] = [];
+    txSummaries.forEach((summary: any) => {
+      const obj = {
+        chain: localChain,
+        address: summary.address,
+        timestamp: currentDate
+      };
+      const localStorage = window.localStorage;
+      const lrsFromLocal = localStorage.getItem('biway.lrs');
+      // find the old lrs in storage
+      if (lrsFromLocal) {
+        let lrsFromLocalObj = JSON.parse(lrsFromLocal);
+        let currentLsrObj = lrsFromLocalObj.find(
+          (item: { chain: string; address: string }) =>
+            item.chain === localChain && item.address === summary.address
+        );
+        if (currentLsrObj) {
+          // if found, update the timestamp
+          currentLsrObj.timestamp = currentDate;
+        } else {
+          lrsFromLocalObj.push(obj);
+        }
+        localStorage.setItem('biway.lrs', JSON.stringify(lrsFromLocalObj));
+        lastResyncs.push(currentLsrObj);
+      } else {
+        // if not found, create a new one
+        localStorage.setItem('biway.lrs', JSON.stringify([obj]));
+        lastResyncs.push(obj);
+      }
+      setLastResynced(lastResyncs);
+
+      toast({
+        title: `Resyncing ${getFormattedAddress(summary.address)}...`,
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+        position: 'top-right'
+      });
+    });
+    // set timer to 10 seconds
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    const localStorage = window.localStorage;
+    const lastResyncedString = localStorage.getItem('biway.lrs');
+    const lastResyncs: LastResync[] = [];
+    txSummaries.forEach((summary: any) => {
+      if (lastResyncedString) {
+        const lastResynced = JSON.parse(lastResyncedString).find(
+          (item: { chain: string; address: string }) =>
+            item.chain === localChain && item.address === summary.address
+        );
+        lastResyncs.push(lastResynced);
+      }
+    });
+    setLastResynced(lastResyncs);
+  }, [localChain]);
 
   const getScoreColor = (score: number): string => {
     if (score <= 45) {
@@ -132,6 +193,34 @@ const OverviewCard = ({
         <Flex direction="row" alignItems="center" gap={4}>
           <Heading fontSize={{ base: 'md', lg: 'xl' }}>Overview</Heading>
           <Spacer />
+          <Flex direction="row" alignItems="center" gap={1}>
+            <Tooltip
+              label={
+                lastResynced &&
+                moment(lastResynced[0].timestamp)
+                  .add(10, 'minutes')
+                  .isAfter(new Date())
+                  ? 'You can resync once every 10 minutes'
+                  : 'Resync data'
+              }
+              hasArrow
+            >
+              <IconButton
+                size="sm"
+                variant="ghost"
+                aria-label="refresh"
+                icon={<FiRefreshCw />}
+                onClick={handleResync}
+                isLoading={isSyncing}
+                isDisabled={
+                  lastResynced &&
+                  moment(lastResynced[0].timestamp)
+                    .add(10, 'minutes')
+                    .isAfter(new Date())
+                }
+              />
+            </Tooltip>
+          </Flex>
           <ChainSelector
             chainConfigs={chainConfigs}
             localChain={localChain}
@@ -145,6 +234,7 @@ const OverviewCard = ({
             <Thead>
               <Tr>
                 <Th>Address</Th>
+                <Th>Last Synced</Th>
                 <Th>Txs</Th>
                 <Th>Contracts</Th>
                 <Th>Value</Th>
@@ -159,91 +249,105 @@ const OverviewCard = ({
                   </Td>
                 </Tr>
               ) : (
-                txSummaries.map((summary: any, i: number) => (
-                  <Tr key={i}>
-                    <Td>
-                      <Flex direction="row" alignItems="center" gap={2}>
-                        <Avatar address={summary.address} size={24} />
-                        <Button
-                          colorScheme="primary"
-                          variant="link"
-                          rightIcon={<FiArrowRight />}
-                          onClick={() => {
-                            router.push(`/account/${summary.address}`);
-                          }}
+                txSummaries.map((summary: any, i: number) => {
+                  const lastResyncStatus =
+                    lastResynced &&
+                    lastResynced.find(
+                      (item: { chain: string; address: string }) =>
+                        item.chain === localChain &&
+                        item.address === summary.address
+                    );
+                  return (
+                    <Tr key={i}>
+                      <Td>
+                        <Flex direction="row" alignItems="center" gap={2}>
+                          <Avatar address={summary.address} size={24} />
+                          <Button
+                            colorScheme="primary"
+                            variant="link"
+                            rightIcon={<FiArrowRight />}
+                            onClick={() => {
+                              router.push(`/account/${summary.address}`);
+                            }}
+                          >
+                            {getFormattedAddress(summary.address)}
+                          </Button>
+                        </Flex>
+                      </Td>
+                      <Td>
+                        <Text fontSize="sm">
+                          {moment(lastResyncStatus?.timestamp).fromNow()}
+                        </Text>
+                      </Td>
+                      <Td>
+                        <Tooltip
+                          label={normalizedTxCount[summary.address].toFixed(2)}
                         >
-                          {getFormattedAddress(summary.address)}
-                        </Button>
-                      </Flex>
-                    </Td>
-                    <Td>
-                      <Tooltip
-                        label={normalizedTxCount[summary.address].toFixed(2)}
-                      >
-                        <Progress
-                          hasStripe
-                          size="sm"
-                          rounded="full"
-                          value={normalizedTxCount[summary.address]}
-                          colorScheme={getScoreColor(
-                            normalizedTxCount[summary.address]
+                          <Progress
+                            hasStripe
+                            size="sm"
+                            rounded="full"
+                            value={normalizedTxCount[summary.address]}
+                            colorScheme={getScoreColor(
+                              normalizedTxCount[summary.address]
+                            )}
+                          />
+                        </Tooltip>
+                      </Td>
+                      <Td>
+                        <Tooltip
+                          label={normalizedContractCount[
+                            summary.address
+                          ].toFixed(2)}
+                        >
+                          <Progress
+                            hasStripe
+                            size="sm"
+                            rounded="full"
+                            value={normalizedContractCount[summary.address]}
+                            colorScheme={getScoreColor(
+                              normalizedContractCount[summary.address]
+                            )}
+                          />
+                        </Tooltip>
+                      </Td>
+                      <Td>
+                        <Tooltip
+                          label={normalizedValueQuoteSum[
+                            summary.address
+                          ].toFixed(2)}
+                        >
+                          <Progress
+                            hasStripe
+                            size="sm"
+                            rounded="full"
+                            value={normalizedValueQuoteSum[summary.address]}
+                            colorScheme={getScoreColor(
+                              normalizedValueQuoteSum[summary.address]
+                            )}
+                          />
+                        </Tooltip>
+                      </Td>
+                      <Td>
+                        <Tooltip
+                          label={normalizedGasQuoteSum[summary.address].toFixed(
+                            2
                           )}
-                        />
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <Tooltip
-                        label={normalizedContractCount[summary.address].toFixed(
-                          2
-                        )}
-                      >
-                        <Progress
-                          hasStripe
-                          size="sm"
-                          rounded="full"
-                          value={normalizedContractCount[summary.address]}
-                          colorScheme={getScoreColor(
-                            normalizedContractCount[summary.address]
-                          )}
-                        />
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <Tooltip
-                        label={normalizedValueQuoteSum[summary.address].toFixed(
-                          2
-                        )}
-                      >
-                        <Progress
-                          hasStripe
-                          size="sm"
-                          rounded="full"
-                          value={normalizedValueQuoteSum[summary.address]}
-                          colorScheme={getScoreColor(
-                            normalizedValueQuoteSum[summary.address]
-                          )}
-                        />
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <Tooltip
-                        label={normalizedGasQuoteSum[summary.address].toFixed(
-                          2
-                        )}
-                      >
-                        <Progress
-                          hasStripe
-                          size="sm"
-                          rounded="full"
-                          value={normalizedGasQuoteSum[summary.address]}
-                          colorScheme={getScoreColor(
-                            normalizedGasQuoteSum[summary.address]
-                          )}
-                        />
-                      </Tooltip>
-                    </Td>
-                  </Tr>
-                ))
+                        >
+                          <Progress
+                            hasStripe
+                            size="sm"
+                            rounded="full"
+                            value={normalizedGasQuoteSum[summary.address]}
+                            colorScheme={getScoreColor(
+                              normalizedGasQuoteSum[summary.address]
+                            )}
+                          />
+                        </Tooltip>
+                      </Td>
+                    </Tr>
+                  );
+                })
               )}
             </Tbody>
           </Table>

@@ -31,6 +31,7 @@ import { TxSummary } from '@/types/TxSummary';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { useBalance } from 'wagmi';
+import { LastResync } from '@/types/LastResync';
 
 type ProfileCardProps = {
   account: IAccount;
@@ -62,14 +63,7 @@ export default function ProfileCard({
   const [lastResynced, setLastResynced] = useState<LastResync>();
   const [isSyncing, setIsSyncing] = useState(false);
 
-  type LastResync = {
-    chain: string;
-    address: string;
-    timestamp: Date;
-  };
-
   const handleResync = () => {
-    console.log('resyncing start...');
     handleSubmit({ preventDefault: () => {} });
     const currentDate = new Date();
     const obj = {
@@ -112,7 +106,6 @@ export default function ProfileCard({
     setTimeout(() => {
       setIsSyncing(false);
     }, 2000);
-    console.log('resyncing end...');
   };
 
   useEffect(() => {
