@@ -29,7 +29,6 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 
 import { trpc } from '../connectors/Trpc';
-import { useRouter } from 'next/router';
 
 const { chains, provider } = configureChains(
   [mainnet, scrollTestnet, lineaTestnet],

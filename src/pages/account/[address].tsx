@@ -23,11 +23,6 @@ import { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
-  Cell,
-  Legend,
-  Rectangle,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -195,12 +190,7 @@ export default function Account({
       </Head>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
         <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
-          <Flex
-            direction="column"
-            gap={4}
-            // justifyContent={{ base: 'normal', xl: 'space-between' }}
-            // h="100%"
-          >
+          <Flex direction="column" gap={4}>
             <ProfileCard
               account={account}
               chainConfigs={chainConfigs}

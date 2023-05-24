@@ -1,42 +1,22 @@
 import { IProfile } from '@/types/IProfile';
 import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Flex,
   Grid,
   GridItem,
   Heading,
   IconButton,
-  Image,
   Input,
-  Link,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
   Tooltip,
   useToast,
-  useColorModeValue,
   Tag,
   TagLabel,
   TagCloseButton,
   TagLeftIcon,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Modal,
   ModalFooter,
   Divider,
@@ -48,19 +28,13 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-  FormHelperText,
   RadioGroup,
   Radio,
   Stack
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import {
-  FiArrowLeft,
-  FiChevronLeft,
-  FiEdit,
-  FiPlusCircle
-} from 'react-icons/fi';
+import { FiChevronLeft, FiEdit, FiPlusCircle } from 'react-icons/fi';
 import { isAddress } from 'viem';
 
 interface ProfileProps {

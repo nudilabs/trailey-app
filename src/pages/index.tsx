@@ -1,4 +1,3 @@
-import ChainSelector from '@/components/ChainSelector';
 import OverviewCard from '@/components/OverviewCard';
 import { IProfile } from '@/types/IProfile';
 import {
@@ -31,7 +30,7 @@ import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { trpc } from '@/connectors/Trpc';
 import AvatarGroup from '@/components/AvatarGroup';
-import { FiEdit, FiPlus } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
 import { CHAINS } from '@/configs/chains';
