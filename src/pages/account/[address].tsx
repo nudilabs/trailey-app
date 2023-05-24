@@ -89,7 +89,7 @@ export default function Account({
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     const data = mutate({
-      chainName: currentChain.name,
+      chainName: localChain,
       walletAddr: account.address
     });
   };
