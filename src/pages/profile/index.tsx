@@ -250,6 +250,7 @@ export default function Profiles({
                   type="text"
                   value={profileInput}
                   onChange={handleProfileInputChange}
+                  autoFocus
                 />
               </FormControl>
               <Flex direction="column" gap={4}>
