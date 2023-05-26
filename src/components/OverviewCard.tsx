@@ -165,7 +165,7 @@ const OverviewCard = ({
   let normalizedGasQuoteSum: any[] = [];
 
   // Calculate normalized value for the minimum to average range
-  if (txSummaries.every((summary: any) => !summary.isLoading)) {
+  if (txSummaries.every((summary: any) => !summary.isLoading) && scores) {
     txSummaries.forEach((summary: any) => {
       normalizedTxCount[summary.address] = calculateNormalizedValue(
         summary.data.txCount.allTime,
