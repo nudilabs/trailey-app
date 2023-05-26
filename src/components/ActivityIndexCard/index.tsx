@@ -67,6 +67,9 @@ const calculateNormalizedValue = (
   average: number,
   max: number
 ) => {
+  if (value <= 0) {
+    return 0;
+  }
   if (value <= average) {
     return ((value - min) / (average - min)) * 0.5 * 100;
   } else {
@@ -79,7 +82,7 @@ export default function ActivityIndexCard({
   chainConfigs,
   localChain
 }: ActivityIndexCardProps) {
-  const [scores, setScores] = useState<any>({});
+  const [scores, setScores] = useState<any>();
   const [score, setScore] = useState<number>(0);
   let normalizedTxCount = 0;
   let normalizedContractCount = 0;
@@ -105,7 +108,7 @@ export default function ActivityIndexCard({
   };
 
   // Calculate normalized value for the minimum to average range
-  if (txSummary) {
+  if (txSummary && scores) {
     normalizedTxCount = calculateNormalizedValue(
       txSummary.txCount.allTime,
       scores.txCount.min,

@@ -85,7 +85,7 @@ export default function AchievementsCard({
       </CardHeader>
       <CardBody>
         <Flex direction="row" overflowX="scroll" paddingTop={2} pl={2}>
-          {filteredAchievements &&
+          {filteredAchievements && filteredAchievements.length > 0 ? (
             filteredAchievements.map((achievement, index) => (
               <motion.div
                 whileHover={{ scale: 1.1, y: -5 }}
@@ -107,7 +107,10 @@ export default function AchievementsCard({
                   </Flex>
                 </Tooltip>
               </motion.div>
-            ))}
+            ))
+          ) : (
+            <Text>No achievements found</Text>
+          )}
         </Flex>
       </CardBody>
       <Modal isOpen={isModalOpen} onClose={closeModal}>

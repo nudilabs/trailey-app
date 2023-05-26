@@ -62,6 +62,7 @@ export default function ProfileCard({
   const toolTipLabel = 'compared to prior week';
   const [lastResynced, setLastResynced] = useState<LastResync>();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [currentChain, setCurrentChain] = useState<Chain>();
 
   const handleResync = () => {
     handleSubmit({ preventDefault: () => {} });
@@ -118,6 +119,8 @@ export default function ProfileCard({
       );
       setLastResynced(lastResynced);
     }
+    const chain = chainConfigs.find(chain => chain.name === localChain);
+    if (chain) setCurrentChain(chain);
   }, [localChain]);
   return (
     <Card size="lg">

@@ -172,9 +172,16 @@ export function emojiAvatarForAddress(address: string) {
   return avatars[avatarIndex ?? 0];
 }
 
-export function formatPrettyNumber(num: number | string, decimals = 2) {
+export function formatPrettyNumber(
+  num: number | string | undefined,
+  decimals = 2
+) {
   // Convert num to a number if it's a string
   const numValue = typeof num === 'string' ? parseFloat(num) : num;
+
+  if (typeof numValue === 'undefined') {
+    return ''; // or return a default value if desired
+  }
 
   if (numValue >= 1000000) {
     return (numValue / 1000000).toFixed(decimals) + 'm';

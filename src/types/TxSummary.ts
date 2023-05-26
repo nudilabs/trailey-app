@@ -8,7 +8,9 @@ export type TxSummary = {
   // address?: string;
   txCount: TxSum;
   contractCount: TxSum;
+  valueSum: TxSum;
   valueQuoteSum: TxSum;
+  gasSum: TxSum;
   gasQuoteSum: TxSum;
 };
 

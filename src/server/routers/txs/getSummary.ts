@@ -29,7 +29,17 @@ export const getSummary = publicProcedure
           lastWeek: 0,
           percentChange: 0
         },
+        valueSum: {
+          allTime: 0,
+          lastWeek: 0,
+          percentChange: 0
+        },
         valueQuoteSum: {
+          allTime: 0,
+          lastWeek: 0,
+          percentChange: 0
+        },
+        gasSum: {
           allTime: 0,
           lastWeek: 0,
           percentChange: 0
@@ -45,14 +55,18 @@ export const getSummary = publicProcedure
     interface QueryResult {
       txCount: number;
       contractCount: number;
+      valueSum: number;
       valueQuoteSum: number;
+      gasSum: number;
       gasQuoteSum: number;
     }
     const dataAllTime = (await db
       .select({
         txCount: sql`count(tx_hash)`,
         contractCount: sql`count(case when is_interact then 1 else null end)`,
+        valueSum: sql`coalesce(sum(value), 0)`,
         valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasSum: sql`coalesce(sum(gas_quote), 0)`,
         gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
       })
       .from(transactions)
@@ -67,7 +81,9 @@ export const getSummary = publicProcedure
       .select({
         txCount: sql`count(tx_hash)`,
         contractCount: sql`count(case when is_interact then 1 else null end)`,
+        valueSum: sql`coalesce(sum(value), 0)`,
         valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasSum: sql`coalesce(sum(gas_quote), 0)`,
         gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
       })
       .from(transactions)
@@ -84,7 +100,9 @@ export const getSummary = publicProcedure
       .select({
         txCount: sql`count(tx_hash)`,
         contractCount: sql`count(case when is_interact then 1 else null end)`,
+        valueSum: sql`coalesce(sum(value), 0)`,
         valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
+        gasSum: sql`coalesce(sum(gas_quote), 0)`,
         gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`
       })
       .from(transactions)
@@ -109,9 +127,19 @@ export const getSummary = publicProcedure
         dataLastTwoWeeks[0].contractCount) *
       100;
 
+    const valueSumPercentChange =
+      ((dataLastWeek[0].valueSum - dataLastTwoWeeks[0].valueSum) /
+        dataLastTwoWeeks[0].valueSum) *
+      100;
+
     const valueQuoteSumPercentChange =
       ((dataLastWeek[0].valueQuoteSum - dataLastTwoWeeks[0].valueQuoteSum) /
         dataLastTwoWeeks[0].valueQuoteSum) *
+      100;
+
+    const gasSumPercentChange =
+      ((dataLastWeek[0].gasSum - dataLastTwoWeeks[0].gasSum) /
+        dataLastTwoWeeks[0].gasSum) *
       100;
 
     const gasQuoteSumPercentChange =
@@ -129,10 +157,20 @@ export const getSummary = publicProcedure
         lastWeek: dataLastWeek[0].contractCount,
         percentChange: contractCountPercentChange
       },
+      valueSum: {
+        allTime: dataAllTime[0].valueSum,
+        lastWeek: dataLastWeek[0].valueSum,
+        percentChange: valueSumPercentChange
+      },
       valueQuoteSum: {
         allTime: dataAllTime[0].valueQuoteSum,
         lastWeek: dataLastWeek[0].valueQuoteSum,
         percentChange: valueQuoteSumPercentChange
+      },
+      gasSum: {
+        allTime: dataAllTime[0].gasSum,
+        lastWeek: dataLastWeek[0].gasSum,
+        percentChange: gasSumPercentChange
       },
       gasQuoteSum: {
         allTime: dataAllTime[0].gasQuoteSum,
