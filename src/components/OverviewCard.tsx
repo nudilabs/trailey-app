@@ -257,8 +257,8 @@ const OverviewCard = ({
                     lastResynced.length > 0 &&
                     lastResynced.find(
                       (item: { chain: string; address: string }) =>
-                        item.chain === localChain &&
-                        item.address === summary.address
+                        item?.chain === localChain &&
+                        item?.address === summary.address
                     );
                   return (
                     <Tr key={i}>
