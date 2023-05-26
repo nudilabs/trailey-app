@@ -16,7 +16,7 @@ import {
   RainbowKitProvider
 } from '@rainbow-me/rainbowkit';
 import { configureChains, createClient, WagmiConfig } from 'wagmi';
-import { lineaTestnet, mainnet, scrollTestnet } from 'wagmi/chains';
+import { lineaTestnet, mainnet, scrollTestnet, baseGoerli } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import ENV from '@/utils/Env';
@@ -31,7 +31,7 @@ import { SessionProvider } from 'next-auth/react';
 import { trpc } from '../connectors/Trpc';
 
 const { chains, provider } = configureChains(
-  [mainnet, scrollTestnet, lineaTestnet],
+  [mainnet, scrollTestnet, lineaTestnet, baseGoerli],
   [alchemyProvider({ apiKey: ENV.ALCHEMY_ID }), publicProvider()]
 );
 
