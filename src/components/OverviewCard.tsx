@@ -392,6 +392,9 @@ const calculateNormalizedValue = (
   average: number,
   max: number
 ) => {
+  if (value <= 0) {
+    return 0;
+  }
   if (value <= average) {
     return ((value - min) / (average - min)) * 0.5 * 100;
   } else {
