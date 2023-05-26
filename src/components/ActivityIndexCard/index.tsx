@@ -46,8 +46,8 @@ const scores = {
   },
   gasQuoteSum: {
     min: 1,
-    average: 3.5,
-    max: 50
+    average: 35,
+    max: 500
   }
 };
 
