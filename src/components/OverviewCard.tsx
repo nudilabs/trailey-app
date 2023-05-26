@@ -33,28 +33,28 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { LastResync } from '@/types/LastResync';
 
-const scores = {
-  txCount: {
-    min: 1,
-    average: 35,
-    max: 500
-  },
-  contractCount: {
-    min: 1,
-    average: 35,
-    max: 500
-  },
-  valueQuoteSum: {
-    min: 1,
-    average: 1000,
-    max: 1000000
-  },
-  gasQuoteSum: {
-    min: 1,
-    average: 35,
-    max: 500
-  }
-};
+// const scores = {
+//   txCount: {
+//     min: 1,
+//     average: 35,
+//     max: 500
+//   },
+//   contractCount: {
+//     min: 1,
+//     average: 35,
+//     max: 500
+//   },
+//   valueQuoteSum: {
+//     min: 1,
+//     average: 1000,
+//     max: 1000000
+//   },
+//   gasQuoteSum: {
+//     min: 1,
+//     average: 35,
+//     max: 500
+//   }
+// };
 
 const OverviewCard = ({
   txSummaries,
@@ -71,6 +71,7 @@ const OverviewCard = ({
 }) => {
   const [lastResynced, setLastResynced] = useState<LastResync[]>();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [scores, setScores] = useState<any>({});
 
   const router = useRouter();
   const toast = useToast();
@@ -138,6 +139,12 @@ const OverviewCard = ({
       }
     });
     setLastResynced(lastResyncs);
+    if (chainConfigs) {
+      const scores = chainConfigs?.find(
+        (chain: Chain) => chain.name === localChain
+      )?.scores;
+      setScores(scores);
+    }
   }, [localChain]);
 
   const getScoreColor = (score: number): string => {

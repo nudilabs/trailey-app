@@ -84,7 +84,7 @@ export default function AchievementsCard({
         </Flex>
       </CardHeader>
       <CardBody>
-        <Flex direction="row" overflowX="scroll" paddingTop={2}>
+        <Flex direction="row" overflowX="scroll" paddingTop={2} pl={2}>
           {filteredAchievements &&
             filteredAchievements.map((achievement, index) => (
               <motion.div

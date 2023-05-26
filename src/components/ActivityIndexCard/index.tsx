@@ -23,33 +23,36 @@ import {
 import { TxSummary } from '@/types/TxSummary';
 import { FiInfo } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
+import { Chain } from '@/types/Chains';
 
 type ActivityIndexCardProps = {
   txSummary: TxSummary | undefined;
+  localChain: string;
+  chainConfigs: Chain[];
 };
 
-const scores = {
-  txCount: {
-    min: 1,
-    average: 35,
-    max: 500
-  },
-  contractCount: {
-    min: 1,
-    average: 35,
-    max: 500
-  },
-  valueQuoteSum: {
-    min: 1,
-    average: 1000,
-    max: 1000000
-  },
-  gasQuoteSum: {
-    min: 1,
-    average: 35,
-    max: 500
-  }
-};
+// const scores = {
+//   txCount: {
+//     min: 1,
+//     average: 35,
+//     max: 500
+//   },
+//   contractCount: {
+//     min: 1,
+//     average: 35,
+//     max: 500
+//   },
+//   valueQuoteSum: {
+//     min: 1,
+//     average: 1000,
+//     max: 1000000
+//   },
+//   gasQuoteSum: {
+//     min: 1,
+//     average: 35,
+//     max: 500
+//   }
+// };
 
 const weights = {
   txCount: 0.2,
@@ -72,8 +75,11 @@ const calculateNormalizedValue = (
 };
 
 export default function ActivityIndexCard({
-  txSummary
+  txSummary,
+  chainConfigs,
+  localChain
 }: ActivityIndexCardProps) {
+  const [scores, setScores] = useState<any>({});
   const [score, setScore] = useState<number>(0);
   let normalizedTxCount = 0;
   let normalizedContractCount = 0;
@@ -142,6 +148,15 @@ export default function ActivityIndexCard({
   useEffect(() => {
     setScore(overallScore);
   }, [overallScore]);
+
+  useEffect(() => {
+    if (chainConfigs) {
+      const scores = chainConfigs?.find(
+        (chain: Chain) => chain.name === localChain
+      )?.scores;
+      setScores(scores);
+    }
+  }, [localChain]);
 
   return (
     <Card size="lg">

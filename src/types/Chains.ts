@@ -12,6 +12,7 @@ export type Chain = {
   protocols: Protocol[];
   achievements: Achievement[];
   block_explorer_url: string;
+  scores: any;
 };
 
 type Protocol = {

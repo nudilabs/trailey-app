@@ -38,7 +38,29 @@ export const CHAINS = [
         ]
       }
     ],
-    block_explorer_url: 'https://blockscout.scroll.io/'
+    block_explorer_url: 'https://blockscout.scroll.io/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
   },
   {
     name: 'linea-testnet',
@@ -79,6 +101,28 @@ export const CHAINS = [
         ]
       }
     ],
-    block_explorer_url: 'https://explorer.goerli.linea.build/'
+    block_explorer_url: 'https://explorer.goerli.linea.build/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
   }
 ];
