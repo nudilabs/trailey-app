@@ -71,7 +71,7 @@ const OverviewCard = ({
 }) => {
   const [lastResynced, setLastResynced] = useState<LastResync[]>();
   const [isSyncing, setIsSyncing] = useState(false);
-  const [scores, setScores] = useState<any>({});
+  const [scores, setScores] = useState<any>();
 
   const router = useRouter();
   const toast = useToast();
@@ -139,13 +139,16 @@ const OverviewCard = ({
       }
     });
     setLastResynced(lastResyncs);
+  }, [localChain]);
+
+  useEffect(() => {
     if (chainConfigs) {
       const scores = chainConfigs?.find(
         (chain: Chain) => chain.name === localChain
       )?.scores;
       setScores(scores);
     }
-  }, [localChain]);
+  }, []);
 
   const getScoreColor = (score: number): string => {
     if (score <= 45) {
