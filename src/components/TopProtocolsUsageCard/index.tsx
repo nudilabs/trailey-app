@@ -73,12 +73,18 @@ export default function TopProtocolsUsageCard({
                   >
                     <CardBody>
                       <Flex direction="column">
-                        <Flex direction="row" alignItems="center" gap={2}>
+                        <Flex
+                          direction="row"
+                          alignItems="center"
+                          gap={2}
+                          py={1}
+                        >
                           {protocol?.logo_url && (
                             <Image
                               src={protocol?.logo_url}
-                              boxSize="24px"
+                              boxSize="18px"
                               alt={protocol?.label}
+                              rounded="lg"
                             />
                           )}
                           <Text

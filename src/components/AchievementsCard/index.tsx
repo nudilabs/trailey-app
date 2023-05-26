@@ -1,6 +1,5 @@
-import { Achievement } from '@/types/Chains';
+import { Achievement, Condition } from '@/types/Chains';
 import {
-  Box,
   Flex,
   Heading,
   IconButton,
@@ -16,20 +15,22 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  Button,
   Text,
   useColorModeValue
 } from '@chakra-ui/react';
 import { FiInfo } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { TxSummary } from '@/types/TxSummary';
 
 type AchievementsCardProps = {
   achievements?: Achievement[];
+  txSummary?: TxSummary;
 };
 
 export default function AchievementsCard({
-  achievements
+  achievements,
+  txSummary
 }: AchievementsCardProps) {
   const [selectedAchievement, setSelectedAchievement] =
     useState<Achievement | null>(null);
@@ -43,9 +44,30 @@ export default function AchievementsCard({
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  // Get the transaction summary value based on the condition type
+  const getTxSummaryValue = (conditionType: string, txSummary?: TxSummary) => {
+    if (!txSummary) return 0;
+    switch (conditionType) {
+      case 'txCount':
+        return txSummary.txCount.allTime;
+      case 'contractCount':
+        return txSummary.contractCount.allTime;
+      case 'valueQuoteSum':
+        return txSummary.valueQuoteSum.allTime;
+      case 'gasQuoteSum':
+        return txSummary.gasQuoteSum.allTime;
+      default:
+        return 0;
+    }
+  };
 
-  const theRestColor = useColorModeValue('gray.300', 'gray.700');
-  const maxShown = 7;
+  // Filter the achievements based on transaction summary values
+  const filteredAchievements = achievements?.filter(achievement =>
+    achievement.conditions.every(condition => {
+      const txSummaryValue = getTxSummaryValue(condition.type, txSummary);
+      return txSummaryValue >= condition.value;
+    })
+  );
 
   return (
     <Card size="lg">
@@ -62,9 +84,9 @@ export default function AchievementsCard({
         </Flex>
       </CardHeader>
       <CardBody>
-        <Flex direction="row">
-          {achievements &&
-            achievements.slice(0, maxShown).map((achievement, index) => (
+        <Flex direction="row" overflowX="scroll" paddingTop={2}>
+          {filteredAchievements &&
+            filteredAchievements.map((achievement, index) => (
               <motion.div
                 whileHover={{ scale: 1.1, y: -5 }}
                 whileTap={{ scale: 0.9 }}
@@ -86,21 +108,6 @@ export default function AchievementsCard({
                 </Tooltip>
               </motion.div>
             ))}
-
-          {achievements && achievements.length > maxShown && (
-            <Flex
-              boxSize="64px"
-              mr={-6}
-              justifyContent="center"
-              alignItems="center"
-              borderRadius="full"
-              bgColor={theRestColor}
-              cursor="pointer"
-              onClick={() => handleAchievementClick(achievements[5])}
-            >
-              <Text>+{achievements.length - maxShown}</Text>
-            </Flex>
-          )}
         </Flex>
       </CardBody>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -120,12 +127,12 @@ export default function AchievementsCard({
             </Flex>
           </ModalBody>
           <ModalFooter>
-            <Text
+            {/* <Text
               fontSize="xs"
               color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
             >
               1% of users have this achievement
-            </Text>
+            </Text> */}
           </ModalFooter>
         </ModalContent>
       </Modal>

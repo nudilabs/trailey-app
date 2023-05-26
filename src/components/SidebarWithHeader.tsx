@@ -95,7 +95,7 @@ export default function SidebarWithHeader({
       </Drawer>
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: '68px' }} p={8}>
+      <Box ml={{ base: 0, md: '68px' }} px={8} pt={'85px'}>
         {children}
       </Box>
     </Box>
@@ -339,7 +339,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
   return (
     <Flex
-      ml={{ base: 0, md: '68px' }}
+      pl={{ base: 0, md: '68px' }}
       p={{ base: 2, md: 2 }}
       gap={{ base: 2, md: 4 }}
       alignItems="center"
@@ -350,6 +350,10 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
       justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      position={'fixed'}
+      direction="row"
+      w="100%"
+      zIndex={1}
       {...rest}
     >
       <Flex alignItems="center" gap={2}>

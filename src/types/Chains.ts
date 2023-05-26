@@ -24,8 +24,10 @@ export type Achievement = {
   name: string;
   description: string;
   image_url: string;
-  conditions: {
-    type: string;
-    value: number;
-  }[];
+  conditions: Condition[];
+};
+
+export type Condition = {
+  type: string;
+  value: number;
 };

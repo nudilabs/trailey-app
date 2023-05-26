@@ -5,7 +5,7 @@ type TxSum = {
 };
 
 export type TxSummary = {
-  address?: string;
+  // address?: string;
   txCount: TxSum;
   contractCount: TxSum;
   valueQuoteSum: TxSum;
