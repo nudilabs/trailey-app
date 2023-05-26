@@ -31,29 +31,6 @@ type ActivityIndexCardProps = {
   chainConfigs: Chain[];
 };
 
-// const scores = {
-//   txCount: {
-//     min: 1,
-//     average: 35,
-//     max: 500
-//   },
-//   contractCount: {
-//     min: 1,
-//     average: 35,
-//     max: 500
-//   },
-//   valueQuoteSum: {
-//     min: 1,
-//     average: 1000,
-//     max: 1000000
-//   },
-//   gasQuoteSum: {
-//     min: 1,
-//     average: 35,
-//     max: 500
-//   }
-// };
-
 const weights = {
   txCount: 0.2,
   contractCount: 0.2,

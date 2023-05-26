@@ -33,29 +33,6 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { LastResync } from '@/types/LastResync';
 
-// const scores = {
-//   txCount: {
-//     min: 1,
-//     average: 35,
-//     max: 500
-//   },
-//   contractCount: {
-//     min: 1,
-//     average: 35,
-//     max: 500
-//   },
-//   valueQuoteSum: {
-//     min: 1,
-//     average: 1000,
-//     max: 1000000
-//   },
-//   gasQuoteSum: {
-//     min: 1,
-//     average: 35,
-//     max: 500
-//   }
-// };
-
 const OverviewCard = ({
   txSummaries,
   localChain,
@@ -298,7 +275,7 @@ const OverviewCard = ({
                       </Td>
                       <Td>
                         <Tooltip
-                          label={normalizedTxCount[summary.address].toFixed(2)}
+                          label={normalizedTxCount[summary.address]?.toFixed(2)}
                         >
                           <Progress
                             hasStripe
@@ -315,7 +292,7 @@ const OverviewCard = ({
                         <Tooltip
                           label={normalizedContractCount[
                             summary.address
-                          ].toFixed(2)}
+                          ]?.toFixed(2)}
                         >
                           <Progress
                             hasStripe
@@ -332,7 +309,7 @@ const OverviewCard = ({
                         <Tooltip
                           label={normalizedValueQuoteSum[
                             summary.address
-                          ].toFixed(2)}
+                          ]?.toFixed(2)}
                         >
                           <Progress
                             hasStripe
@@ -347,9 +324,9 @@ const OverviewCard = ({
                       </Td>
                       <Td>
                         <Tooltip
-                          label={normalizedGasQuoteSum[summary.address].toFixed(
-                            2
-                          )}
+                          label={normalizedGasQuoteSum[
+                            summary.address
+                          ]?.toFixed(2)}
                         >
                           <Progress
                             hasStripe
