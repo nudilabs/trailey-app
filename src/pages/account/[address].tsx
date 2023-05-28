@@ -213,8 +213,8 @@ export default function Account({
       >
         <GridItem
           colSpan={{ base: 12, lg: 6, xl: 4 }}
-          overflowY={'scroll'}
-          paddingBottom={8}
+          overflowY={{ base: 'auto', lg: 'scroll' }}
+          paddingBottom={{ base: 0, lg: 8 }}
         >
           <Flex direction="column" gap={4}>
             <ProfileCard
@@ -242,8 +242,8 @@ export default function Account({
         </GridItem>
         <GridItem
           colSpan={{ base: 12, lg: 6, xl: 8 }}
-          overflowY={'scroll'}
-          paddingBottom={8}
+          overflowY={{ base: 'auto', lg: 'scroll' }}
+          paddingBottom={{ base: 0, lg: 8 }}
         >
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
