@@ -425,7 +425,7 @@ export default function Account({
                             formatter={value => {
                               return [
                                 formatPrettyNumber(value as number, 0),
-                                'Transactions'
+                                'Tx Value'
                               ];
                             }}
                             labelStyle={{ color: 'black' }}
