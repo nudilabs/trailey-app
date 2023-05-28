@@ -209,7 +209,7 @@ export default function Account({
       <Grid
         templateColumns="repeat(12, 1fr)"
         gap={4}
-        h={{ base: '100%', lg: 'calc(100vh - 85px)' }}
+        h={{ base: 'fit-content', lg: 'calc(100vh - 85px)' }}
       >
         <GridItem
           colSpan={{ base: 12, lg: 6, xl: 4 }}
