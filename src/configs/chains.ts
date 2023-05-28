@@ -233,6 +233,43 @@ export const CHAINS = [
     }
   },
   {
+    name: 'eth-goerli',
+    chain_id: '5',
+    is_testnet: true,
+    label: 'Ethereum Goerli Testnet',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: 'https://goerli.etherscan.io/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
     name: 'base-testnet',
     chain_id: '84531',
     is_testnet: true,
