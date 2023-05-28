@@ -1,5 +1,238 @@
 export const CHAINS = [
   {
+    name: 'eth-mainnet',
+    chain_id: '1',
+    is_testnet: false,
+    label: 'Ethereum',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [
+      {
+        address: '0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B',
+        label: 'Uniswap',
+        logo_url: '/protocols/uniswap.png'
+      }
+    ],
+    achievements: [],
+    block_explorer_url: 'https://etherscan.io/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
+    name: 'arbitrum-mainnet',
+    chain_id: '42161',
+    is_testnet: false,
+    label: 'Arbitrum One',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: 'https://arbiscan.io/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
+    name: 'arbitrum-nova-mainnet',
+    chain_id: '42170',
+    is_testnet: false,
+    label: 'Arbitrum Nova',
+    category_label: 'Ethereum',
+    logo_url: 'https://l2beat.com/icons/nova.png',
+    black_logo_url: 'https://l2beat.com/icons/nova.png',
+    white_logo_url: 'https://l2beat.com/icons/nova.png',
+    is_appchain: true,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: 'https://nova.arbiscan.io/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
+    name: 'optimism-mainnet',
+    chain_id: '10',
+    is_testnet: false,
+    label: 'Optimism',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
+    black_logo_url:
+      'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
+    white_logo_url:
+      'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: 'https://arbiscan.io/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
+    name: 'bsc-mainnet',
+    chain_id: '56',
+    is_testnet: false,
+    label: 'BNB Chain',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: '	https://polygonscan.com/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
+    name: 'matic-mainnet',
+    chain_id: '137',
+    is_testnet: false,
+    label: 'Polygon',
+    category_label: 'Ethereum',
+    logo_url:
+      'https://pbs.twimg.com/profile_images/1624229555333373952/JXGKFcO__400x400.jpg',
+    black_logo_url:
+      'https://pbs.twimg.com/profile_images/1624229555333373952/JXGKFcO__400x400.jpg',
+    white_logo_url:
+      'https://pbs.twimg.com/profile_images/1624229555333373952/JXGKFcO__400x400.jpg',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: 'https://polygonscan.com/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
+  },
+  {
     name: 'base-testnet',
     chain_id: '84531',
     is_testnet: true,
@@ -154,83 +387,6 @@ export const CHAINS = [
       }
     ],
     block_explorer_url: 'https://explorer.goerli.linea.build/',
-    scores: {
-      txCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
-      },
-      gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
-      }
-    }
-  },
-
-  {
-    name: 'arbitrum-mainnet',
-    chain_id: '42161',
-    is_testnet: false,
-    label: 'Abritrum One',
-    category_label: 'Ethereum',
-    logo_url: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
-    black_logo_url: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
-    white_logo_url: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [],
-    achievements: [],
-    block_explorer_url: 'https://blockscout.scroll.io/',
-    scores: {
-      txCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
-      },
-      gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
-      }
-    }
-  },
-  {
-    name: 'optimism-mainnet',
-    chain_id: '10',
-    is_testnet: false,
-    label: 'Optimism',
-    category_label: 'Ethereum',
-    logo_url: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
-    black_logo_url:
-      'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
-    white_logo_url:
-      'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [],
-    achievements: [],
-    block_explorer_url: 'https://arbiscan.io/',
     scores: {
       txCount: {
         min: 1,

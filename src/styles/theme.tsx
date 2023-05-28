@@ -5,6 +5,8 @@ import { tabsTheme } from './tabs';
 import { buttonTheme } from './button';
 import { tableTheme } from './table';
 import { cardTheme } from './card';
+import { menuTheme } from './menu';
+import { modalTheme } from './modal';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
@@ -23,7 +25,9 @@ const theme = extendTheme({
     Tabs: tabsTheme,
     Button: buttonTheme,
     Table: tableTheme,
-    Card: cardTheme
+    Card: cardTheme,
+    Menu: menuTheme,
+    Modal: modalTheme
   },
   colors: {
     primary: {

@@ -211,7 +211,11 @@ export default function Account({
         gap={4}
         h={{ base: '100%', lg: 'calc(100vh - 85px)' }}
       >
-        <GridItem colSpan={{ base: 12, lg: 6, xl: 4 }}>
+        <GridItem
+          colSpan={{ base: 12, lg: 6, xl: 4 }}
+          overflowY={'scroll'}
+          paddingBottom={8}
+        >
           <Flex direction="column" gap={4}>
             <ProfileCard
               account={account}
@@ -236,7 +240,11 @@ export default function Account({
             </Box>
           </Flex>
         </GridItem>
-        <GridItem colSpan={{ base: 12, lg: 6, xl: 8 }} overflowY={'scroll'}>
+        <GridItem
+          colSpan={{ base: 12, lg: 6, xl: 8 }}
+          overflowY={'scroll'}
+          paddingBottom={8}
+        >
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
               <Flex direction="column" gap={4}>

@@ -62,14 +62,14 @@ const ChainSelector = ({
         {chainConfigs.map((chain, index) => (
           <MenuItem
             key={index}
-            gap={1}
+            gap={2}
             alignContent={'center'}
             onClick={() => handleSelectChain(chain.name.toLowerCase())}
           >
             <Image
               src={chain.logo_url}
               alt={chain.label}
-              boxSize={6}
+              boxSize={5}
               rounded="full"
             />
             {chain.label}
