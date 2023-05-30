@@ -1,4 +1,4 @@
-import { IAccount } from '@/types/Account';
+import { IAccount } from '@/types/IAccount';
 import { Chain } from '@/types/Chains';
 import { TxSummaryByContract } from '@/types/TxSummary';
 import { formatPrettyNumber, getColorScheme } from '@/utils/format';

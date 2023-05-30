@@ -121,7 +121,7 @@ const SidebarContent = ({
   const toggleBorderColor = useColorModeValue('blackAlpha.50', 'whiteAlpha.50');
   const darkModeButtonVariant = useColorModeValue('solid', 'ghost');
   const lightModeButtonVariant = useColorModeValue('ghost', 'solid');
-  const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
+  const logo = useColorModeValue('/logos/logo.svg', '/logos/logo-dark.svg');
   const [isHover, setIsHover] = useState(false);
 
   const handleHover = (hover: boolean) => {
@@ -147,7 +147,9 @@ const SidebarContent = ({
         {/* Sidebar header */}
         <Flex alignItems="center" justifyContent={'space-between'}>
           <Image
-            src={isHover ? logo : logo.replace('logo', 'logo-small')}
+            src={
+              isHover ? logo : logo.replace('/logos/logo', '/logos/logo-small')
+            }
             alt="Biway Logo"
             height={'40px'}
             display={{ base: 'none', md: 'block' }}
@@ -334,7 +336,7 @@ interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const logo = useColorModeValue('/logo.svg', '/logo-dark.svg');
+  const logo = useColorModeValue('/logos/logo.svg', '/logos/logo-dark.svg');
   return (
     <Flex
       pl={{ base: 0, md: '68px' }}

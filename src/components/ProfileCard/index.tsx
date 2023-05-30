@@ -25,7 +25,7 @@ import {
   getEthFromWei,
   getFormattedAddress
 } from '@/utils/format';
-import { IAccount } from '@/types/Account';
+import { IAccount } from '@/types/IAccount';
 import { Chain } from '@/types/Chains';
 import { TxSummary } from '@/types/TxSummary';
 import { useEffect, useState } from 'react';

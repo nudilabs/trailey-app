@@ -1,4 +1,4 @@
-import { IAccount } from '@/types/Account';
+import { IAccount } from '@/types/IAccount';
 import { IProfile } from '@/types/IProfile';
 import { Button } from '@chakra-ui/button';
 import { useColorModeValue } from '@chakra-ui/react';

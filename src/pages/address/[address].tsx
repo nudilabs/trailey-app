@@ -12,13 +12,10 @@ import {
   GridItem,
   Heading,
   Stat,
-  StatArrow,
   StatHelpText,
-  StatLabel,
   StatNumber,
   Text,
-  useColorModeValue,
-  useToast
+  useColorModeValue
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
@@ -37,7 +34,7 @@ import {
 import { get } from '@vercel/edge-config';
 import { Chain, Condition } from '@/types/Chains';
 import ProfileCard from '@/components/ProfileCard';
-import { IAccount } from '@/types/Account';
+import { IAccount } from '@/types/IAccount';
 import AchievementsCard from '@/components/AchievementsCard';
 import TopProtocolsUsageCard from '@/components/TopProtocolsUsageCard';
 import AddToBundleBtn from '@/components/AddToBundleButton';
