@@ -26,6 +26,18 @@ export const CHAINS = [
         address: '0xb8901acB165ed027E32754E0FFe830802919727f',
         label: 'Hop',
         logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+      },
+      {
+        address: '0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C',
+        label: 'Bepop',
+        logo_url:
+          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0'
+      },
+      {
+        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
+        label: 'Holograph',
+        logo_url:
+          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
       }
     ],
     achievements: [
@@ -92,6 +104,12 @@ export const CHAINS = [
         address: '0x3749C4f034022c39ecafFaBA182555d4508caCCC',
         label: 'Hop',
         logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+      },
+      {
+        address: '0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C',
+        label: 'Bepop',
+        logo_url:
+          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0'
       }
     ],
     achievements: [
@@ -111,23 +129,23 @@ export const CHAINS = [
     scores: {
       txCount: {
         min: 1,
-        average: 37.887706047840176,
-        max: 72689782
+        average: 3,
+        max: 73959657
       },
       contractCount: {
         min: 1,
-        average: 37.887706047840176,
-        max: 72689782
+        average: 3,
+        max: 73959657
       },
       valueQuoteSum: {
         min: 1,
-        average: 1000,
-        max: 1000000
+        average: 30.810660688,
+        max: 4625002573.91708
       },
       gasQuoteSum: {
         min: 1,
-        average: 35,
-        max: 500
+        average: 0.3085844272,
+        max: 1387152.37511605
       }
     }
   },
@@ -160,6 +178,12 @@ export const CHAINS = [
         address: '0x83f6244Bd87662118d96D9a6D44f09dffF14b30E',
         label: 'Hop',
         logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+      },
+      {
+        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
+        label: 'Holograph',
+        logo_url:
+          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
       }
     ],
     achievements: [
@@ -221,6 +245,18 @@ export const CHAINS = [
         address: '0x5Dc88340E1c5c6366864Ee415d6034cadd1A9897',
         label: 'Uniswap',
         logo_url: '/protocols/uniswap.png'
+      },
+      {
+        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
+        label: 'Holograph',
+        logo_url:
+          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
+      },
+      {
+        address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
+        label: 'PancakeSwap',
+        logo_url:
+          'https://www.gitbook.com/cdn-cgi/image/width=40,dpr=2,height=40,fit=contain,format=auto/https%3A%2F%2F1397868517-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fspaces%252F-MHREX7DHcljbY5IkjgJ%252Favatar-1602750187173.png%3Fgeneration%3D1602750187468978%26alt%3Dmedia'
       }
     ],
     achievements: [
@@ -285,6 +321,18 @@ export const CHAINS = [
         address: '0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5',
         label: 'Uniswap',
         logo_url: '/protocols/uniswap.png'
+      },
+      {
+        address: '0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C',
+        label: 'Bepop',
+        logo_url:
+          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0'
+      },
+      {
+        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
+        label: 'Holograph',
+        logo_url:
+          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
       }
     ],
     achievements: [

@@ -124,7 +124,7 @@ export default function ProfileCard({
   }, [localChain]);
   return (
     <Card size="lg">
-      <CardHeader>
+      <CardHeader paddingBottom={0}>
         <Flex
           direction="row"
           alignItems="center"
@@ -170,7 +170,7 @@ export default function ProfileCard({
           </Flex>
         </Flex>
       </CardHeader>
-      <CardBody>
+      <CardBody py={4}>
         <Flex direction="column" alignItems="center" gap={3}>
           <Avatar
             address={account.address}
@@ -278,7 +278,7 @@ export default function ProfileCard({
           </Flex>
         </Flex>
       </CardBody>
-      <CardFooter>
+      <CardFooter paddingTop={0}>
         <Text
           color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
           fontSize="xs"

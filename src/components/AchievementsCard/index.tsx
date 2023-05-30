@@ -71,7 +71,7 @@ export default function AchievementsCard({
 
   return (
     <Card size="lg">
-      <CardHeader>
+      <CardHeader paddingBottom={0}>
         <Flex direction="row" justifyContent="space-between">
           <Heading size="md">Achievements</Heading>
           <Tooltip label="More Info" hasArrow>
@@ -83,7 +83,7 @@ export default function AchievementsCard({
           </Tooltip>
         </Flex>
       </CardHeader>
-      <CardBody>
+      <CardBody paddingTop={4} paddingBottom={6}>
         <Flex direction="row" overflowX="scroll" paddingTop={2} pl={2}>
           {filteredAchievements && filteredAchievements.length > 0 ? (
             filteredAchievements.map((achievement, index) => (

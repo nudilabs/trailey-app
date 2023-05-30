@@ -211,7 +211,7 @@ export default function Account({
         <GridItem
           colSpan={{ base: 12, lg: 6, xl: 4 }}
           overflowY={{ base: 'auto', lg: 'scroll' }}
-          paddingBottom={{ base: 0, lg: 8 }}
+          paddingBottom={{ base: 0 }}
         >
           <Flex direction="column" gap={4}>
             <ProfileCard
