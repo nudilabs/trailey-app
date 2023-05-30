@@ -5339,11 +5339,11 @@
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "/account/[walletAddr]",
+      "text": "/address/[walletAddr]",
       "textAlign": "center",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "/account/[walletAddr]",
+      "originalText": "/address/[walletAddr]",
       "lineHeight": 1.25,
       "baseline": 18
     },

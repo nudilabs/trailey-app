@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import ChainSelector from '../ChainSelector';
 import { FiRefreshCw } from 'react-icons/fi';
-import { Avatar } from '../Avatar';
+import Avatar from '../Avatar';
 import {
   formatDecimals,
   formatPrettyNumber,

@@ -4,7 +4,7 @@ import { emojiAvatarForAddress } from '@/utils/format';
 
 import { Box, Spinner, Text } from '@chakra-ui/react';
 
-export const Avatar: AvatarComponent = ({ address, ensImage, size }) => {
+const Avatar: AvatarComponent = ({ address, ensImage, size }) => {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (ensImage) {
@@ -65,3 +65,5 @@ export const Avatar: AvatarComponent = ({ address, ensImage, size }) => {
     </Box>
   );
 };
+
+export default Avatar;

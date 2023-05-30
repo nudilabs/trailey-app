@@ -156,7 +156,7 @@ export default function Home({
   }
 
   if (profilesData.length === 0) {
-    router.push(`/account/${address}`);
+    router.push(`/address/${address}`);
     return null;
   }
 

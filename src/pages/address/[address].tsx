@@ -174,7 +174,7 @@ export default function Account({
       localStorage.setItem('biway.chain', chain);
     }
     // clear query params
-    // router.push(`/account/${account.address}`, undefined, { shallow: true });
+    // router.push(`/address/${account.address}`, undefined, { shallow: true });
   }, [chain]);
 
   useEffect(() => {

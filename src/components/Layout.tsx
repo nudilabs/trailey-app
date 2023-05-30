@@ -24,7 +24,7 @@ export default function Layout({
   const [pathname, setPathname] = useState('/');
 
   const pageTitle =
-    pathname === '/' || pathname === '/account/[address]'
+    pathname === '/' || pathname === '/address/[address]'
       ? 'Biway'
       : `Biway | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
 

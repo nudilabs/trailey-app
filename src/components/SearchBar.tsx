@@ -59,7 +59,7 @@ export default function SearchBar({
   }, []);
 
   function handleRecentSearchClick(searchTerm: string) {
-    router.push(`/account/${searchTerm}`);
+    router.push(`/address/${searchTerm}`);
     setSearchTerm(searchTerm);
     if (onClose) {
       onClose();
@@ -68,7 +68,7 @@ export default function SearchBar({
 
   function handleSearch() {
     if (searchTerm.trim()) {
-      router.push(`/account/${searchTerm.trim()}`);
+      router.push(`/address/${searchTerm.trim()}`);
 
       // Add the search term to the recent searches
       const updatedRecentSearches = [

@@ -1,5 +1,5 @@
 import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
-import { Avatar } from '@/components/Avatar';
+import Avatar from '@/components/Avatar';
 
 const AvatarGroup = ({
   wallets,

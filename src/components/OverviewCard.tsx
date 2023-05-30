@@ -11,7 +11,6 @@ import {
   Th,
   Tbody,
   Td,
-  useColorModeValue,
   Button,
   Text,
   Tooltip,
@@ -26,7 +25,7 @@ import { FiArrowRight, FiRefreshCw } from 'react-icons/fi';
 
 import { getFormattedAddress } from '@/utils/format';
 import { useRouter } from 'next/router';
-import { Avatar } from './Avatar';
+import Avatar from './Avatar';
 import ChainSelector from './ChainSelector';
 import { Chain } from '@/types/Chains';
 import moment from 'moment';
@@ -257,7 +256,7 @@ const OverviewCard = ({
                             variant="link"
                             rightIcon={<FiArrowRight />}
                             onClick={() => {
-                              router.push(`/account/${summary.address}`);
+                              router.push(`/address/${summary.address}`);
                             }}
                           >
                             {getFormattedAddress(summary.address)}
