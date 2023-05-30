@@ -52,7 +52,7 @@ const { chains, provider } = configureChains(
     scrollTestnet,
     baseGoerli
   ],
-  [alchemyProvider({ apiKey: ENV.ALCHEMY_ID }), publicProvider()]
+  [publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
