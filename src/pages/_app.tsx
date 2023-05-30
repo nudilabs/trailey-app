@@ -56,8 +56,8 @@ const { chains, provider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: 'Biway Analytics',
-  projectId: 'BiwayAnalytics',
+  appName: 'Abtrail Analytics',
+  projectId: 'AbtrailAnalytics',
   chains
 });
 
@@ -86,7 +86,7 @@ const App = ({
   };
 
   const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-    statement: 'Sign in to Biway Analytics'
+    statement: 'Sign in to Abtrail Analytics'
   });
 
   const [isDarkTheme, setIsDarkTheme] = useState(true); // light mode by default
@@ -94,11 +94,11 @@ const App = ({
   useEffect(() => {
     const localStorage = window.localStorage;
     // Get item from local storage
-    const profiles = localStorage.getItem('biway.profiles');
+    const profiles = localStorage.getItem('abtrail.profiles');
     if (profiles) setProfilesData(JSON.parse(profiles));
     const currentProfileId = localStorage.getItem('profileId');
     if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
-    const localChain = localStorage.getItem('biway.chain');
+    const localChain = localStorage.getItem('abtrail.chain');
     if (localChain) setLocalChain(localChain);
   }, []);
 

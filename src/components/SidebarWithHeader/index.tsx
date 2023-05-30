@@ -150,13 +150,13 @@ const SidebarContent = ({
             src={
               isHover ? logo : logo.replace('/logos/logo', '/logos/logo-small')
             }
-            alt="Biway Logo"
+            alt="Abtrail Logo"
             height={'40px'}
             display={{ base: 'none', md: 'block' }}
           />
           <Image
             src={logo}
-            alt="Biway Logo"
+            alt="Abtrail Logo"
             height={'40px'}
             display={{ base: 'block', md: 'none' }}
           />
@@ -200,7 +200,7 @@ const SidebarContent = ({
             isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
-            href={'https://twitter.com/BiwayAnalytics'}
+            href={'https://twitter.com/AbtrailAnalytics'}
           >
             Twitter
           </NavItem>
@@ -375,7 +375,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           icon={<FiMenu />}
         />
         <Box display={{ base: 'flex', md: 'none' }}>
-          <Image src={logo} alt="Biway Logo" width="128px" />
+          <Image src={logo} alt="Abtrail Logo" width="128px" />
         </Box>
       </Flex>
       {/* <ConnectButton

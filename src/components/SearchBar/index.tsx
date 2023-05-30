@@ -9,7 +9,8 @@ import {
   MenuItem,
   MenuList,
   Button,
-  Flex
+  Flex,
+  ButtonSpinner
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
@@ -28,6 +29,7 @@ export default function SearchBar({
   const [searchTerm, setSearchTerm] = useState('');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -48,7 +50,7 @@ export default function SearchBar({
 
   useEffect(() => {
     const recentSearchesFromStorage = localStorage.getItem(
-      'biway.recentSearches'
+      'abtrail.recentSearches'
     );
 
     if (recentSearchesFromStorage) {
@@ -59,11 +61,15 @@ export default function SearchBar({
   }, []);
 
   function handleRecentSearchClick(searchTerm: string) {
+    setIsLoading(true);
     router.push(`/address/${searchTerm}`);
     setSearchTerm(searchTerm);
     if (onClose) {
       onClose();
     }
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }
 
   function handleSearch() {
@@ -79,7 +85,7 @@ export default function SearchBar({
 
       // Save the recent searches to local storage
       localStorage.setItem(
-        'biway.recentSearches',
+        'abtrail.recentSearches',
         JSON.stringify(updatedRecentSearches)
       );
       setSearchTerm('');
@@ -103,7 +109,7 @@ export default function SearchBar({
     <Box position="relative" w="100%">
       <InputGroup>
         <InputLeftElement>
-          <FiSearch onClick={handleSearch} />
+          {isLoading ? <ButtonSpinner /> : <FiSearch />}
         </InputLeftElement>
         <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
           <Kbd>⌘K</Kbd>
@@ -137,7 +143,7 @@ export default function SearchBar({
                   size="sm"
                   onClick={() => {
                     setRecentSearches([]);
-                    localStorage.removeItem('biway.recentSearches');
+                    localStorage.removeItem('abtrail.recentSearches');
                   }}
                 >
                   Clear

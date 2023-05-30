@@ -146,8 +146,7 @@ export default function Home({
               justifyContent={'center'}
               height="calc(100vh - 88px)"
             >
-              <Spline scene="https://prod.spline.design/QMJDTScZ1nj6yrQl/scene.splinecode" />
-              {/* <Spline scene="https://prod.spline.design/FmUe4a9QxhWa4VjQ/scene.splinecode" /> */}
+              <Spline scene="https://prod.spline.design/Z9MpbnCCPiLWzE5w/scene.splinecode" />
             </GridItem>
           </Grid>
         </Container>

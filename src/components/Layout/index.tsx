@@ -25,8 +25,8 @@ export default function Layout({
 
   const pageTitle =
     pathname === '/' || pathname === '/address/[address]'
-      ? 'Biway'
-      : `Biway | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
+      ? 'Abtrail'
+      : `Abtrail | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
 
   useEffect(() => {
     setPathname(router.pathname);

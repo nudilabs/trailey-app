@@ -34,7 +34,7 @@ export default function AddToBundleBtn({
     const newProfilesData = [...profilesData];
     newProfilesData[currentProfile] = newProfile;
     setProfilesData(newProfilesData);
-    localStorage.setItem('biway.profiles', JSON.stringify(newProfilesData));
+    localStorage.setItem('abtrail.profiles', JSON.stringify(newProfilesData));
     toast({
       title: 'Wallet added to bundle',
       status: 'success',

@@ -113,7 +113,7 @@ export default function Profiles({
     const updatedProfiles = [...profilesData, formData];
     setProfilesData(updatedProfiles);
     window.localStorage.setItem(
-      'biway.profiles',
+      'abtrail.profiles',
       JSON.stringify(updatedProfiles)
     );
 
@@ -125,7 +125,7 @@ export default function Profiles({
     const updatedProfiles = profilesData.filter((_, i) => i !== index);
     setProfilesData(updatedProfiles);
     window.localStorage.setItem(
-      'biway.profiles',
+      'abtrail.profiles',
       JSON.stringify(updatedProfiles)
     );
     setCurrentProfile(0);

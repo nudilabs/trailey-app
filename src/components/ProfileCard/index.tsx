@@ -7,6 +7,8 @@ import {
   Flex,
   Heading,
   IconButton,
+  Skeleton,
+  SkeletonText,
   Stat,
   StatHelpText,
   StatLabel,
@@ -73,7 +75,7 @@ export default function ProfileCard({
       timestamp: currentDate
     };
     const localStorage = window.localStorage;
-    const lrsFromLocal = localStorage.getItem('biway.lrs');
+    const lrsFromLocal = localStorage.getItem('abtrail.lrs');
     // find the old lrs in storage
     if (lrsFromLocal) {
       let lrsFromLocalObj = JSON.parse(lrsFromLocal);
@@ -87,11 +89,11 @@ export default function ProfileCard({
       } else {
         lrsFromLocalObj.push(obj);
       }
-      localStorage.setItem('biway.lrs', JSON.stringify(lrsFromLocalObj));
+      localStorage.setItem('abtrail.lrs', JSON.stringify(lrsFromLocalObj));
       setLastResynced(currentLsrObj);
     } else {
       // if not found, create a new one
-      localStorage.setItem('biway.lrs', JSON.stringify([obj]));
+      localStorage.setItem('abtrail.lrs', JSON.stringify([obj]));
       setLastResynced(obj);
     }
 
@@ -111,7 +113,7 @@ export default function ProfileCard({
 
   useEffect(() => {
     const localStorage = window.localStorage;
-    const lastResyncedString = localStorage.getItem('biway.lrs');
+    const lastResyncedString = localStorage.getItem('abtrail.lrs');
     if (lastResyncedString) {
       const lastResynced = JSON.parse(lastResyncedString).find(
         (item: { chain: string; address: string }) =>
@@ -178,13 +180,17 @@ export default function ProfileCard({
             ensImage={account.avatarUrl}
           />
           <Flex direction="column" alignItems="center" gap={2}>
-            <Heading
-              size={account.ensName.length > 19 ? 'md' : 'lg'}
-              textAlign="center"
-              marginTop={2}
-            >
-              {account.ensName}
-            </Heading>
+            {account.ensName ? (
+              <Heading
+                size={account.ensName.length > 19 ? 'md' : 'lg'}
+                textAlign="center"
+                marginTop={2}
+              >
+                {account.ensName}
+              </Heading>
+            ) : (
+              <Skeleton height="20px" width="100px" />
+            )}
             <Flex direction="row" alignItems="center" gap={1}>
               <Button
                 color={subHeadingColor}
@@ -283,7 +289,7 @@ export default function ProfileCard({
           color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
           fontSize="xs"
         >
-          Powered by Biway Analytics
+          Powered by Abtrail Analytics
         </Text>
       </CardFooter>
     </Card>

@@ -79,7 +79,7 @@ export default function Profile({
       );
       setProfilesData(newProfilesData);
       window.localStorage.setItem(
-        'biway.profiles',
+        'abtrail.profiles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -95,7 +95,7 @@ export default function Profile({
       );
       setProfilesData(newProfilesData);
       window.localStorage.setItem(
-        'biway.profiles',
+        'abtrail.profiles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -110,7 +110,7 @@ export default function Profile({
       );
       setProfilesData(newProfilesData);
       window.localStorage.setItem(
-        'biway.profiles',
+        'abtrail.profiles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -118,7 +118,7 @@ export default function Profile({
 
   useEffect(() => {
     // Get item from local storage
-    const profiles = window.localStorage.getItem('biway.profiles');
+    const profiles = window.localStorage.getItem('abtrail.profiles');
     if (profiles) {
       const parsedProfiles = JSON.parse(profiles);
       setProfilesData(parsedProfiles);
