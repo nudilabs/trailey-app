@@ -31,13 +31,11 @@ import {
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { useRouter } from 'next/router';
-import SearchBar from './SearchBar';
-import ProfileButton from './ProfileButton';
+import SearchBar from '../SearchBar';
+import ProfileButton from '../ProfileButton';
 import { IProfile } from '@/types/IProfile';
 
-import { motion } from 'framer-motion';
-import { CustomConnectButton } from './ConnectButton';
-import { ConnectButton, AvatarComponent } from '@rainbow-me/rainbowkit';
+import CustomConnectButton from '../ConnectButton';
 
 interface LinkItemProps {
   name: string;

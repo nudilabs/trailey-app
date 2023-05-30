@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Progress } from '@chakra-ui/react';
-import SidebarWithHeader from './SidebarWithHeader';
+import SidebarWithHeader from '../SidebarWithHeader';
 import { IProfile } from '@/types/IProfile';
 
 interface LayoutProps {

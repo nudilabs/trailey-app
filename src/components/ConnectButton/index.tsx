@@ -10,8 +10,7 @@ import {
 } from '@chakra-ui/react';
 // import { FiLogIn } from 'react-icons/fi';
 import { BiWallet } from 'react-icons/bi';
-import Avatar from './Avatar';
-export const CustomConnectButton = ({ text }: { text?: string }) => {
+const CustomConnectButton = ({ text }: { text?: string }) => {
   const buttonColorScheme = useColorModeValue('primary', 'secondary');
   const defaultButtonText = useBreakpointValue(
     {
@@ -107,3 +106,5 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
     </ConnectButton.Custom>
   );
 };
+
+export default CustomConnectButton;

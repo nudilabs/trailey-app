@@ -25,8 +25,8 @@ import { FiArrowRight, FiRefreshCw } from 'react-icons/fi';
 
 import { getFormattedAddress } from '@/utils/format';
 import { useRouter } from 'next/router';
-import Avatar from './Avatar';
-import ChainSelector from './ChainSelector';
+import Avatar from '../Avatar';
+import ChainSelector from '../ChainSelector';
 import { Chain } from '@/types/Chains';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
