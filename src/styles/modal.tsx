@@ -11,7 +11,10 @@ const baseStyle = definePartsStyle({
   },
   dialog: {
     borderRadius: 'xl',
-    bg: `gray.800`
+    bg: `gray.50`,
+    _dark: {
+      bg: `gray.800`
+    }
   }
 });
 
