@@ -5,16 +5,18 @@ import {
   Flex,
   IconButton,
   Image,
-  useBreakpointValue
+  useBreakpointValue,
+  useColorModeValue
 } from '@chakra-ui/react';
 // import { FiLogIn } from 'react-icons/fi';
 import { BiWallet } from 'react-icons/bi';
 import { Avatar } from './Avatar';
 export const CustomConnectButton = ({ text }: { text?: string }) => {
+  const buttonColorScheme = useColorModeValue('primary', 'secondary');
   const defaultButtonText = useBreakpointValue(
     {
       base: 'Connect',
-      md: 'Connect Wallet'
+      md: 'Connect'
     },
     {
       // Breakpoint to use when mediaqueries cannot be used, such as in server-side rendering
@@ -59,7 +61,7 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
                   <>
                     <Button
                       size="sm"
-                      colorScheme="primary"
+                      colorScheme={'primary-gradient'}
                       onClick={openConnectModal}
                       rounded="xl"
                       display={{ base: 'none', md: 'flex' }}
@@ -68,10 +70,10 @@ export const CustomConnectButton = ({ text }: { text?: string }) => {
                     </Button>
                     <IconButton
                       size="md"
-                      colorScheme="primary"
+                      colorScheme={buttonColorScheme}
                       onClick={openConnectModal}
                       rounded="xl"
-                      aria-label="Connect Wallet"
+                      aria-label="Connect"
                       display={{ base: 'flex', md: 'none' }}
                     >
                       <BiWallet />

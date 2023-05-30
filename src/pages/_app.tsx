@@ -120,13 +120,13 @@ const App = ({
             theme={
               isDarkTheme
                 ? darkTheme({
-                    accentColor: '#68D36D',
+                    accentColor: '#FFA6A6',
                     accentColorForeground: 'black',
                     borderRadius: 'medium',
                     overlayBlur: 'small'
                   })
                 : lightTheme({
-                    accentColor: '#38A146',
+                    accentColor: '#FF5858',
                     accentColorForeground: 'white',
                     borderRadius: 'medium',
                     overlayBlur: 'small'

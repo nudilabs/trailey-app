@@ -31,16 +31,28 @@ const theme = extendTheme({
   },
   colors: {
     primary: {
-      50: '#F1FFF0',
-      100: '#C7F6C6',
-      200: '#9AE69B',
-      300: '#68D36D',
-      400: '#48BB52',
-      500: '#38A146',
-      600: '#2F853D',
-      700: '#276734',
-      800: '#22542C',
-      900: '#1C4524'
+      50: '#F8D3E5',
+      100: '#F8BAD8',
+      200: '#F8A1CC',
+      300: '#F888BF',
+      400: '#F870B3',
+      500: '#F857A6',
+      600: '#DE4E94',
+      700: '#C44583',
+      800: '#AB3C72',
+      900: '#913361'
+    },
+    'primary-gradient': {
+      50: 'linear-gradient(90deg, #F8D3E5 0%, #FFD9D9 100%)',
+      100: 'linear-gradient(90deg, #F8BAD8 0%, #FFBFBF 100%)',
+      200: 'linear-gradient(90deg, #F8A1CC 0%, #FFA6A6 100%)',
+      300: 'linear-gradient(90deg, #F888BF 0%, #FF8C8C 100%)',
+      400: 'linear-gradient(90deg, #F870B3 0%, #FF7373 100%)',
+      500: 'linear-gradient(90deg, #F857A6 0%, #FF5858 100%)',
+      600: 'linear-gradient(90deg, #DE4E94 0%, #E54F4F 100%)',
+      700: 'linear-gradient(90deg, #C44583 0%, #CC4646 100%)',
+      800: 'linear-gradient(90deg, #AB3C72 0%, #B23E3E 100%)',
+      900: 'linear-gradient(90deg, #913361 0%, #802C2C 100%)'
     },
     secondary: {
       200: '#CBD5E0',

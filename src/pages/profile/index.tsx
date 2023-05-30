@@ -79,6 +79,8 @@ export default function Profiles({
   setProfilesData
 }: ProfilesProps) {
   const [profileInput, setProfileInput] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [toBeDeletedProfileIndex, setToBeDeletedProfileIndex] = useState(0);
   const handleProfileInputChange = (e: any) => setProfileInput(e.target.value);
 
   const [addressInput, setAddressInput] = useState('');
@@ -88,6 +90,8 @@ export default function Profiles({
 
   const isError = !isAddress(addressInput);
   const [showModal, setShowModal] = useState(false);
+
+  const maxProfiles = 2;
 
   // const [profilesData, setProfilesData] = useState<
   //   { name: string; wallets: { address: string; type: string }[] }[]
@@ -132,15 +136,27 @@ export default function Profiles({
     <Flex direction="column" gap={4} alignItems="center">
       <Flex width={{ base: '100%', md: '70%' }} justifyContent="space-between">
         <Heading fontSize={{ base: 'lg', lg: '2xl' }}>Profiles</Heading>
-        <Button
-          size="sm"
-          leftIcon={<FiPlusCircle />}
-          onClick={() => {
-            setShowModal(true);
-          }}
-        >
-          Add Profile
-        </Button>
+        {profilesData.length < maxProfiles ? (
+          <Button
+            size="sm"
+            leftIcon={<FiPlusCircle />}
+            onClick={() => {
+              setShowModal(true);
+            }}
+          >
+            Add Profile
+          </Button>
+        ) : (
+          <Tooltip
+            label={`You can only have a maximum of ${maxProfiles} profiles.`}
+            hasArrow
+            placement="top"
+          >
+            <Button size="sm" leftIcon={<FiPlusCircle />} isDisabled>
+              Add Profile
+            </Button>
+          </Tooltip>
+        )}
       </Flex>
       {profilesData.length === 0 && (
         <Flex
@@ -195,7 +211,8 @@ export default function Profiles({
                     color="red.500"
                     gap={2}
                     onClick={() => {
-                      handleDeleteProfile(index);
+                      setToBeDeletedProfileIndex(index);
+                      setShowDeleteModal(true);
                     }}
                   >
                     <FiTrash />
@@ -294,6 +311,37 @@ export default function Profiles({
                 }}
               >
                 Add
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete profile</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>Are you sure you want to delete the profile?</ModalBody>
+          <ModalFooter>
+            <Flex gap={2}>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                }}
+                variant="ghost"
+              >
+                No
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  handleDeleteProfile(toBeDeletedProfileIndex);
+                  setShowDeleteModal(false);
+                }}
+                colorScheme="red"
+              >
+                Yes
               </Button>
             </Flex>
           </ModalFooter>

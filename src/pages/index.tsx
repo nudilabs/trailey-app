@@ -20,7 +20,8 @@ import {
   StatArrow,
   StatHelpText,
   IconButton,
-  CardHeader
+  CardHeader,
+  chakra
 } from '@chakra-ui/react';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { GetServerSideProps } from 'next';
@@ -62,6 +63,10 @@ export default function Home({
   const { data: session, status: sessionStatus } = useSession();
   const { openConnectModal } = useConnectModal();
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
+  const hightlightColor = useColorModeValue(
+    'primary-gradient.500',
+    'primary-gradient.200'
+  );
 
   const router = useRouter();
 
@@ -109,16 +114,15 @@ export default function Home({
               >
                 <Stack>
                   <Heading lineHeight="tall">
-                    <Highlight
-                      query="onchain"
-                      styles={{
-                        px: '2',
-                        rounded: 'xl',
-                        bg: 'primary.100'
-                      }}
+                    Keep track of your{' '}
+                    <chakra.span
+                      bg={hightlightColor}
+                      bgClip="text"
+                      fontWeight="extrabold"
                     >
-                      Keep track of your onchain journey
-                    </Highlight>
+                      onchain
+                    </chakra.span>{' '}
+                    journey
                   </Heading>
                   <Text fontSize="lg" color={subHeadingColor}>
                     Simplify your crypto experience with an easy-to-use
@@ -128,7 +132,7 @@ export default function Home({
                 <Box>
                   <Button
                     onClick={openConnectModal}
-                    colorScheme="primary"
+                    colorScheme={'primary-gradient'}
                     isLoading={sessionStatus === 'loading'}
                   >
                     Login to start
@@ -140,9 +144,10 @@ export default function Home({
               colSpan={{ base: 12, lg: 7 }}
               alignContent={'center'}
               justifyContent={'center'}
-              minHeight="512px"
+              height="calc(100vh - 88px)"
             >
               <Spline scene="https://prod.spline.design/QMJDTScZ1nj6yrQl/scene.splinecode" />
+              {/* <Spline scene="https://prod.spline.design/FmUe4a9QxhWa4VjQ/scene.splinecode" /> */}
             </GridItem>
           </Grid>
         </Container>

@@ -34,7 +34,7 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FiChevronLeft, FiEdit, FiPlusCircle } from 'react-icons/fi';
+import { FiChevronLeft, FiEdit, FiPlus, FiPlusCircle } from 'react-icons/fi';
 import { isAddress } from 'viem';
 
 interface ProfileProps {
@@ -61,6 +61,8 @@ export default function Profile({
   const [showModal, setShowModal] = useState(false);
   const [showEditNameModal, setShowEditNameModal] = useState(false);
   const toast = useToast();
+
+  const maxWallets = 10;
 
   const [profile, setProfile] = useState<{
     name: string;
@@ -151,9 +153,30 @@ export default function Profile({
       </Flex>
       <Card width={{ base: '100%', md: '70%' }}>
         <CardHeader>
-          <Heading
-            fontSize={{ base: 'md', lg: 'xl' }}
-          >{`Wallets (${profile?.wallets.length})`}</Heading>
+          <Flex justifyContent="space-between" alignItems="center">
+            <Heading
+              fontSize={{ base: 'md', lg: 'xl' }}
+            >{`Wallets (${profile?.wallets.length} of ${maxWallets})`}</Heading>
+            {profile && profile?.wallets.length < maxWallets ? (
+              <IconButton
+                onClick={() => setShowModal(true)}
+                aria-label="Add"
+                size="sm"
+              >
+                <FiPlus />
+              </IconButton>
+            ) : (
+              <Tooltip
+                label={`Max of ${maxWallets} wallets reached`}
+                placement="top"
+                hasArrow
+              >
+                <IconButton aria-label="Add" isDisabled>
+                  <FiPlusCircle />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Flex>
         </CardHeader>
         <CardBody>
           <Grid templateColumns="repeat(4, 1fr)" gap={2}>
@@ -183,22 +206,21 @@ export default function Profile({
                       )} ${getFormattedAddress(wallet.address)}`}
                     </TagLabel>
                   </Tooltip>
-                  <TagCloseButton onClick={() => handleRemoveAddress(index)} />
+                  <TagCloseButton
+                    onClick={() => {
+                      handleRemoveAddress(index);
+                      toast({
+                        title: 'Wallet removed',
+                        status: 'error',
+                        duration: 2000,
+                        isClosable: true,
+                        position: 'top-right'
+                      });
+                    }}
+                  />
                 </Tag>
               </GridItem>
             ))}
-            <GridItem colSpan={{ base: 4, md: 2, lg: 1 }}>
-              <Tag
-                colorScheme="green"
-                size={{ base: 'lg', md: 'md' }}
-                w={'100%'}
-                onClick={() => setShowModal(true)}
-                cursor="pointer"
-              >
-                <TagLeftIcon as={FiPlusCircle} />
-                <TagLabel>Add wallet</TagLabel>
-              </Tag>
-            </GridItem>
           </Grid>
         </CardBody>
       </Card>
@@ -244,6 +266,13 @@ export default function Profile({
                     handleAddAddress(input, type);
                     setShowModal(false);
                     setInput('');
+                    toast({
+                      title: 'Address added',
+                      status: 'success',
+                      duration: 2000,
+                      isClosable: true,
+                      position: 'top-right'
+                    });
                   }
                 }}
               >
@@ -281,6 +310,13 @@ export default function Profile({
                 onClick={() => {
                   handleRenameProfile(editInput);
                   setShowEditNameModal(false);
+                  toast({
+                    title: 'Profile renamed',
+                    status: 'success',
+                    duration: 2000,
+                    isClosable: true,
+                    position: 'top-right'
+                  });
                 }}
               >
                 Add
