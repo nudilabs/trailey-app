@@ -88,32 +88,32 @@ const getTxs = async (
     const { items, page } = tx;
     // console.log('items', items);
     for (let item of items) {
-      if (item.from_address.toLowerCase() !== walletAddr.toLowerCase()) {
-        continue;
-      } else {
-        const signDate = moment.utc(item.block_signed_at).toDate();
-        let tmpTx: Transaction = {
-          signedAt: signDate,
-          blockHeight: item.block_height,
-          txHash: item.tx_hash,
-          txOffset: item.tx_offset,
-          success: item.successful,
-          fromAddress: item.from_address,
-          fromAddressLabel: item.from_address_label,
-          toAddress: item.to_address,
-          toAddressLabel: item.to_address_label,
-          value: item.value,
-          valueQuote: item.value_quote,
-          feesPaid: item.fees_paid,
-          gasQuote: item.gas_quote,
-          page,
-          isInteract:
-            item.log_events && item.log_events.length > 0 ? true : false,
-          chainId
-        };
-        result.push(tmpTx);
-      }
+      // if (item.from_address.toLowerCase() !== walletAddr.toLowerCase()) {
+      //   continue;
+      // } else {
+      const signDate = moment.utc(item.block_signed_at).toDate();
+      let tmpTx: Transaction = {
+        signedAt: signDate,
+        blockHeight: item.block_height,
+        txHash: item.tx_hash,
+        txOffset: item.tx_offset,
+        success: item.successful,
+        fromAddress: item.from_address,
+        fromAddressLabel: item.from_address_label,
+        toAddress: item.to_address,
+        toAddressLabel: item.to_address_label,
+        value: item.value,
+        valueQuote: item.value_quote,
+        feesPaid: item.fees_paid,
+        gasQuote: item.gas_quote,
+        page,
+        isInteract:
+          item.log_events && item.log_events.length > 0 ? true : false,
+        chainId
+      };
+      result.push(tmpTx);
     }
+    // }
   }
 
   // console.log('txs len', result.length);
@@ -163,7 +163,9 @@ export default async function handler(
     );
 
     if (txs.length > 0) {
-      await db.insert(transactions).values(txs);
+      await db.insert(transactions).values(txs).onDuplicateKeyUpdate({
+        set: {}
+      });
     }
 
     const nextStartPage =

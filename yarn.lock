@@ -1819,7 +1819,11 @@
     lodash.debounce "^4.0.8"
     react-merge-refs "^2.0.1"
 
+<<<<<<< HEAD
 "@splinetool/runtime@^0.9.357":
+=======
+"@splinetool/runtime@^0.9.311":
+>>>>>>> 6b0e526 (🩹 (indexer): change insert to upsert)
   version "0.9.357"
   resolved "https://registry.yarnpkg.com/@splinetool/runtime/-/runtime-0.9.357.tgz#d68e977fcef12bc40ebdb3b7774ec0b1ef33ab7a"
   integrity sha512-NEG2p92yw7ERo329XrEH+ocPXi12iLRF9HC+wbzPgManoS2WhVL5e7D9jEMOTLAAhBhKVXjynPr0/1k2EjFImw==
@@ -3610,10 +3614,10 @@ drizzle-kit@^0.17.6:
     json-diff "0.9.0"
     zod "^3.20.2"
 
-drizzle-orm@^0.25.3:
-  version "0.25.4"
-  resolved "https://registry.yarnpkg.com/drizzle-orm/-/drizzle-orm-0.25.4.tgz#e6e34ce2492acb3390729a5aef71da8e94d731e4"
-  integrity sha512-vURs2SqDh5pk81WWE4hR8gFKDTRmCK4FbaUGsZoljKnjKvMrjlA5xFPGiCih4/1XKqnOgSuh+I6T9KGBjYcPAA==
+drizzle-orm@^0.26.5:
+  version "0.26.5"
+  resolved "https://registry.yarnpkg.com/drizzle-orm/-/drizzle-orm-0.26.5.tgz#cf0024e5a83134eb762b20c76f7c55b49bc6c73e"
+  integrity sha512-ajjbOIoXqldWoWBn0RbVQCCT732R4Ad+gUjUrlmMpzWYwgnbG/qqPy84NhHntQ/MR//z3xfvT1Z2fD8uCAPX3g==
 
 duplexify@^4.1.2:
   version "4.1.2"
