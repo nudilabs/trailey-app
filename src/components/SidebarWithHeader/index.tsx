@@ -65,7 +65,7 @@ export default function SidebarWithHeader({
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent
         onClose={() => onClose}
-        display={{ base: 'none', md: 'block' }}
+        display={{ base: 'none', lg: 'block' }}
         zIndex={999}
         currentProfile={currentProfile}
         setCurrentProfile={setCurrentProfile}
@@ -93,7 +93,7 @@ export default function SidebarWithHeader({
       </Drawer>
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: '68px' }} px={{ base: 4, lg: 8 }} pt={'85px'}>
+      <Box ml={{ base: 0, lg: '68px' }} px={{ base: 4, lg: 8 }} pt={'85px'}>
         {children}
       </Box>
     </Box>
@@ -135,7 +135,7 @@ const SidebarContent = ({
       boxShadow={useColorModeValue('xl', 'dark-xl')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', md: 'auto' }}
+      w={{ base: 'full', lg: 'auto' }}
       minW={0}
       pos="fixed"
       h="100vh"
@@ -152,16 +152,16 @@ const SidebarContent = ({
             }
             alt="Abtrail Logo"
             height={'40px'}
-            display={{ base: 'none', md: 'block' }}
+            display={{ base: 'none', lg: 'block' }}
           />
           <Image
             src={logo}
             alt="Abtrail Logo"
             height={'40px'}
-            display={{ base: 'block', md: 'none' }}
+            display={{ base: 'block', lg: 'none' }}
           />
           <CloseButton
-            display={{ base: 'flex', md: 'none' }}
+            display={{ base: 'flex', lg: 'none' }}
             onClick={onClose}
           />
         </Flex>
@@ -177,7 +177,7 @@ const SidebarContent = ({
         <Divider />
         {/* Navigation items */}
         <Stack spacing={2}>
-          <Box display={{ base: 'flex', md: 'none' }}>
+          <Box display={{ base: 'flex', lg: 'none' }}>
             <SearchBar onClose={onClose} />
           </Box>
           {LinkItems.map(link => (
@@ -192,8 +192,8 @@ const SidebarContent = ({
             </NavItem>
           ))}
         </Stack>
-        <Spacer display={{ base: 'none', md: 'block' }} />
-        <Divider display={{ base: 'block', md: 'none' }} />
+        <Spacer display={{ base: 'none', lg: 'block' }} />
+        <Divider display={{ base: 'block', lg: 'none' }} />
         <Stack spacing={2}>
           <NavItem
             onClose={onClose}
@@ -222,7 +222,7 @@ const SidebarContent = ({
               leftIcon={<FiSun fontSize="16" />}
               justifyContent="center"
               onClick={toggleColorMode}
-              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              display={{ base: 'flex', lg: isHover ? 'flex' : 'none' }}
               w="100%"
             >
               Light
@@ -234,7 +234,7 @@ const SidebarContent = ({
               leftIcon={<FiMoon fontSize="16" />}
               justifyContent="center"
               onClick={toggleColorMode}
-              display={{ base: 'flex', md: isHover ? 'flex' : 'none' }}
+              display={{ base: 'flex', lg: isHover ? 'flex' : 'none' }}
               w="100%"
             >
               Dark
@@ -246,7 +246,7 @@ const SidebarContent = ({
               icon={toggleIcon}
               onClick={toggleColorMode}
               cursor="pointer"
-              display={{ base: 'none', md: isHover ? 'none' : 'flex' }}
+              display={{ base: 'none', lg: isHover ? 'none' : 'flex' }}
             />
           </Flex>
           {/* </Box> */}
@@ -294,7 +294,7 @@ const NavItem = ({
           justifyContent="left"
           onClick={handleClick}
           cursor="pointer"
-          display={{ base: 'none', md: 'flex' }}
+          display={{ base: 'none', lg: 'flex' }}
         >
           {href ? (
             children
@@ -314,7 +314,7 @@ const NavItem = ({
           icon={<Icon fontSize="16" as={icon} />}
           onClick={handleClick}
           cursor="pointer"
-          display={{ base: 'none', md: 'flex' }}
+          display={{ base: 'none', lg: 'flex' }}
         />
       )}
       <Button
@@ -324,7 +324,7 @@ const NavItem = ({
         justifyContent="left"
         onClick={handleClick}
         cursor="pointer"
-        display={{ base: 'flex', md: 'none' }}
+        display={{ base: 'flex', lg: 'none' }}
       >
         {children}
       </Button>
@@ -339,17 +339,17 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const logo = useColorModeValue('/logos/logo.svg', '/logos/logo-dark.svg');
   return (
     <Flex
-      pl={{ base: 0, md: '68px' }}
-      p={{ base: 2, md: 2 }}
-      gap={{ base: 2, md: 4 }}
+      pl={{ base: 0, lg: '68px' }}
+      p={{ base: 2, lg: 2 }}
+      gap={{ base: 2, lg: 4 }}
       alignItems="center"
       bg={{
         base: useColorModeValue('gray.50', 'gray.900'),
-        md: useColorModeValue('gray.50', 'gray.900')
+        lg: useColorModeValue('gray.50', 'gray.900')
       }}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      justifyContent={{ base: 'space-between', lg: 'flex-end' }}
       position={'fixed'}
       direction="row"
       w="100%"
@@ -357,7 +357,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       {...rest}
     >
       <Flex alignItems="center" gap={2}>
-        <Box display={{ base: 'none', md: 'flex' }} width="440px">
+        <Box display={{ base: 'none', lg: 'flex' }} width="440px">
           <SearchBar kbd />
         </Box>
         <Box
@@ -365,16 +365,16 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           borderRight="1px solid"
           borderColor={useColorModeValue('gray.200', 'gray.700')}
           pr={2}
-          display={{ base: 'none', md: 'flex' }}
+          display={{ base: 'none', lg: 'flex' }}
         />
         <IconButton
-          display={{ base: 'flex', md: 'none' }}
+          display={{ base: 'flex', lg: 'none' }}
           onClick={onOpen}
           variant="outline"
           aria-label="open menu"
           icon={<FiMenu />}
         />
-        <Box display={{ base: 'flex', md: 'none' }}>
+        <Box display={{ base: 'flex', lg: 'none' }}>
           <Image src={logo} alt="Abtrail Logo" width="128px" />
         </Box>
       </Flex>
