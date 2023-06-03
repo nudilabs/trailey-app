@@ -70,8 +70,8 @@ export default function Account({
   setLocalChain: (chain: string) => void;
 }) {
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
-  const [achieved, setAchieved] = useState<Condition[]>([]);
   const [lastResynced, setLastResynced] = useState<LastResync>();
+  const [validateData, setValidateData] = useState<boolean>(false);
 
   const [balance, setBalance] = useState<{
     formatted: string;
@@ -88,29 +88,49 @@ export default function Account({
   // resync wallet
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
+    setValidateData(true);
     e.preventDefault();
     mutate({
       chainName: localChain,
       walletAddr: account.address
     });
+    // set 1 minute timer to stop validating data
+    setTimeout(() => {
+      setValidateData(false);
+    }, 60000);
   };
 
-  const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery({
-    chainName: currentChain.name,
-    walletAddr: account.address
-  }).data;
+  const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery(
+    {
+      chainName: currentChain.name,
+      walletAddr: account.address
+    },
+    {
+      refetchInterval: validateData ? 10000 : 0
+    }
+  ).data;
 
   const txsSummaryByContract: TxSummaryByContract | undefined =
-    trpc.txs.getSummaryByContract.useQuery({
-      chainName: currentChain.name,
-      walletAddr: account.address
-    }).data;
+    trpc.txs.getSummaryByContract.useQuery(
+      {
+        chainName: currentChain.name,
+        walletAddr: account.address
+      },
+      {
+        refetchInterval: validateData ? 10000 : 0
+      }
+    ).data;
 
   const txsSummaryByMonth: TxSummaryByMonth | undefined =
-    trpc.txs.getSummaryByMonth.useQuery({
-      chainName: currentChain.name,
-      walletAddr: account.address
-    }).data;
+    trpc.txs.getSummaryByMonth.useQuery(
+      {
+        chainName: currentChain.name,
+        walletAddr: account.address
+      },
+      {
+        refetchInterval: validateData ? 10000 : 0
+      }
+    ).data;
 
   const getLastSixMonths = () => {
     const lastThreeMonths = [];
@@ -234,6 +254,45 @@ export default function Account({
       }
     }
   }, [localChain, account.address, txSummary]);
+
+  useEffect(() => {
+    const localStorage = window.localStorage;
+    const currentDate = new Date();
+    const lrsFromLocal = localStorage.getItem('abtrail.lrs');
+    let lrsFromLocalObj = lrsFromLocal ? JSON.parse(lrsFromLocal) : [];
+
+    let currentLsrObj = lrsFromLocalObj.find(
+      (item: { chain: string; address: string }) =>
+        item.chain === localChain && item.address === account.address
+    );
+
+    if (!lastResynced || shouldResync(lastResynced.timestamp, currentDate)) {
+      handleSubmit({ preventDefault: () => {} });
+
+      if (currentLsrObj) {
+        // Update the timestamp if found
+        currentLsrObj.timestamp = currentDate;
+      } else {
+        // Create a new object if not found
+        currentLsrObj = {
+          chain: localChain,
+          address: account.address,
+          timestamp: currentDate
+        };
+        lrsFromLocalObj.push(currentLsrObj);
+      }
+
+      localStorage.setItem('abtrail.lrs', JSON.stringify(lrsFromLocalObj));
+      setLastResynced(currentLsrObj);
+    }
+  }, []);
+
+  function shouldResync(lastResyncedTimestamp: Date, currentDate: Date) {
+    const diff =
+      currentDate.getTime() - new Date(lastResyncedTimestamp).getTime();
+    const diffInDays = diff / (1000 * 3600 * 24);
+    return diffInDays > 1;
+  }
 
   return (
     <Flex direction="column">
