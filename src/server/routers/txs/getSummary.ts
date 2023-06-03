@@ -200,6 +200,7 @@ export const getSummaryByContract = publicProcedure
       txCount: number;
       valueQuoteSum: number;
       gasQuoteSum: number;
+      lastActive: string;
     }
     const chainId = supportedChain[0].id;
     const txsByContractAllTime = (await db
@@ -207,7 +208,8 @@ export const getSummaryByContract = publicProcedure
         address: sql`to_address`,
         txCount: sql`count(tx_hash)`,
         valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`, // CHECK THIS, does it include failed TXs?
+        signedAt: sql`max(block_signed_at)`
       })
       .from(transactions)
       .where(
@@ -220,12 +222,28 @@ export const getSummaryByContract = publicProcedure
       .groupBy(sql`to_address`)
       .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
 
+    const lastActiveDates = (await db
+      .select({
+        address: sql`to_address`,
+        lastActive: sql`MAX(block_signed_at)`
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.chainId, chainId),
+          eq(transactions.fromAddress, walletAddr),
+          eq(transactions.isInteract, true)
+        )
+      )
+      .groupBy(sql`to_address`)) as unknown as QueryResult[];
+
     const txsByContractLastWeek = (await db
       .select({
         address: sql`to_address`,
         txCount: sql`count(tx_hash)`,
         valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`, // CHECK THIS, does it include failed TXs?
+        signedAt: sql`max(block_signed_at)`
       })
       .from(transactions)
       .where(
@@ -244,7 +262,8 @@ export const getSummaryByContract = publicProcedure
         address: sql`to_address`,
         txCount: sql`count(tx_hash)`,
         valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
+        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`, // CHECK THIS, does it include failed TXs?
+        signedAt: sql`max(block_signed_at)`
       })
       .from(transactions)
       .where(
@@ -267,7 +286,6 @@ export const getSummaryByContract = publicProcedure
       );
 
       // Difference in change from 2 weeks ago to last week
-
       const txCountPercentChange =
         lastWeek && lastTwoWeeks
           ? ((lastWeek.txCount - lastTwoWeeks.txCount) / lastTwoWeeks.txCount) *
@@ -288,8 +306,14 @@ export const getSummaryByContract = publicProcedure
             100
           : 0;
 
+      const lastActiveDatesFormatted =
+        lastActiveDates?.find(
+          lastActiveDate => lastActiveDate.address === tx.address
+        ) || null;
+
       return {
         address: tx.address,
+        lastTx: lastActiveDatesFormatted && lastActiveDatesFormatted.lastActive,
         txCount: {
           allTime: tx.txCount,
           lastWeek: lastWeek ? lastWeek.txCount : 0,
@@ -307,6 +331,7 @@ export const getSummaryByContract = publicProcedure
         }
       };
     });
+
     return { contracts: txsByContractFormatted };
   });
 

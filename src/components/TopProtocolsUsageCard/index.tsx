@@ -26,6 +26,7 @@ import {
   TableContainer
 } from '@chakra-ui/react';
 import { FiExternalLink, FiInfo } from 'react-icons/fi';
+import moment from 'moment';
 
 type TopProtocolsUsageCardProps = {
   txsSummaryByContract: TxSummaryByContract | undefined;
@@ -40,13 +41,24 @@ export default function TopProtocolsUsageCard({
 }: TopProtocolsUsageCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const subCardColor = useColorModeValue('white', 'red');
+  const interactedContractCount = txsSummaryByContract?.contracts.filter(
+    contract => {
+      // Check if the contract address is included in protocols
+      return currentChain.protocols.some(
+        protocol => protocol.address === contract.address
+      );
+    }
+  );
+
+  const protocolsCount = currentChain.protocols.length;
+
   return (
     <Card size="lg" h="100%">
       <CardHeader>
         <Flex direction="row" justifyContent="space-between">
           <Flex direction="row" gap={2}>
             <Heading size="md">Top Protocols Usage</Heading>
-            <Text size="md">(0/10)</Text>
+            <Text size="md">{`${interactedContractCount} / ${protocolsCount}`}</Text>
           </Flex>
           <Tooltip
             label="The % change is the increase in usage since last week"
@@ -73,6 +85,10 @@ export default function TopProtocolsUsageCard({
             </Thead>
             <Tbody>
               {currentChain.protocols.map((protocol, index) => {
+                const contractInteractions =
+                  txsSummaryByContract?.contracts.find(
+                    contract => contract.address === protocol.address
+                  );
                 return (
                   <Tr key={index}>
                     <Td>
@@ -108,9 +124,13 @@ export default function TopProtocolsUsageCard({
                         </Flex>
                       </Flex>
                     </Td>
-                    <Td>0</Td>
-                    <Td>0</Td>
-                    <Td>0</Td>
+                    <Td>{contractInteractions?.txCount.allTime ?? 0}</Td>
+                    <Td>
+                      {contractInteractions?.lastTx
+                        ? moment(contractInteractions?.lastTx).fromNow()
+                        : 'N/A'}
+                    </Td>
+                    <Td>Coming soon</Td>
                   </Tr>
                 );
               })}

@@ -20,6 +20,7 @@ export type TxSummaryByContract = {
     txCount: TxSum;
     valueQuoteSum: TxSum;
     gasQuoteSum: TxSum;
+    lastTx: string | null;
   }[];
 };
 

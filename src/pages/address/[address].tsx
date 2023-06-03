@@ -33,7 +33,7 @@ import {
 } from 'recharts';
 
 import { get } from '@vercel/edge-config';
-import { Chain, Condition } from '@/types/Chains';
+import { Chain } from '@/types/Chains';
 import ProfileCard from '@/components/ProfileCard';
 import { IAccount } from '@/types/IAccount';
 import AchievementsCard from '@/components/AchievementsCard';
@@ -193,8 +193,6 @@ export default function Account({
       setLocalChain(chain);
       localStorage.setItem('abtrail.chain', chain);
     }
-    // clear query params
-    // router.push(`/address/${account.address}`, undefined, { shallow: true });
   }, [chain]);
 
   useEffect(() => {
@@ -561,10 +559,7 @@ export default function Account({
                         <GridItem colSpan={{ base: 6 }} alignSelf="center">
                           <Stat>
                             <StatNumber>
-                              <Heading>
-                                $
-                                {formatPrettyNumber(totalValueQuoteByMonthData)}
-                              </Heading>
+                              <Heading>${0}</Heading>
                             </StatNumber>
                             <StatHelpText>
                               <Text fontSize="sm" color={subHeadingColor}>
@@ -575,7 +570,7 @@ export default function Account({
                         </GridItem>
                         <GridItem colSpan={{ base: 6 }}>
                           <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={byMonthData}>
+                            <AreaChart>
                               <defs>
                                 <linearGradient
                                   id="colorUv"
