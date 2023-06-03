@@ -32,8 +32,8 @@ import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { useRouter } from 'next/router';
 import SearchBar from '../SearchBar';
-import ProfileButton from '../ProfileButton';
-import { IProfile } from '@/types/IProfile';
+import BundleButton from '../BundleButton';
+import { IBundle } from '@/types/IBundle';
 
 import CustomConnectButton from '../ConnectButton';
 
@@ -48,16 +48,16 @@ const LinkItems: Array<LinkItemProps> = [
 ];
 
 export default function SidebarWithHeader({
-  currentProfile,
-  setCurrentProfile,
-  profilesData,
-  setProfilesData,
+  currentBundle,
+  setCurrentBundle,
+  bundlesData,
+  setBundlesData,
   children
 }: {
-  currentProfile: number;
-  setCurrentProfile: (index: number) => void;
-  profilesData: IProfile[];
-  setProfilesData: (data: IProfile[]) => void;
+  currentBundle: number;
+  setCurrentBundle: (index: number) => void;
+  bundlesData: IBundle[];
+  setBundlesData: (data: IBundle[]) => void;
   children: ReactNode;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,12 +65,12 @@ export default function SidebarWithHeader({
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent
         onClose={() => onClose}
-        display={{ base: 'none', lg: 'block' }}
+        display={{ base: 'none', xl: 'block' }}
         zIndex={999}
-        currentProfile={currentProfile}
-        setCurrentProfile={setCurrentProfile}
-        profilesData={profilesData}
-        setProfilesData={setProfilesData}
+        currentBundle={currentBundle}
+        setCurrentBundle={setCurrentBundle}
+        bundlesData={bundlesData}
+        setBundlesData={setBundlesData}
       />
       <Drawer
         autoFocus={false}
@@ -84,16 +84,16 @@ export default function SidebarWithHeader({
         <DrawerContent>
           <SidebarContent
             onClose={onClose}
-            currentProfile={currentProfile}
-            setCurrentProfile={setCurrentProfile}
-            profilesData={profilesData}
-            setProfilesData={setProfilesData}
+            currentBundle={currentBundle}
+            setCurrentBundle={setCurrentBundle}
+            bundlesData={bundlesData}
+            setBundlesData={setBundlesData}
           />
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, lg: '68px' }} px={{ base: 4, lg: 8 }} pt={'85px'}>
+      <MobileNav onOpen={onOpen} bundlesData={bundlesData} />
+      <Box ml={{ base: 0, xl: '68px' }} px={{ base: 4, xl: 8 }} pt={'85px'}>
         {children}
       </Box>
     </Box>
@@ -102,18 +102,18 @@ export default function SidebarWithHeader({
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
-  currentProfile: number;
-  setCurrentProfile: (index: number) => void;
-  profilesData: IProfile[];
-  setProfilesData: (data: IProfile[]) => void;
+  currentBundle: number;
+  setCurrentBundle: (index: number) => void;
+  bundlesData: IBundle[];
+  setBundlesData: (data: IBundle[]) => void;
 }
 
 const SidebarContent = ({
   onClose,
-  currentProfile,
-  setCurrentProfile,
-  profilesData,
-  setProfilesData,
+  currentBundle,
+  setCurrentBundle,
+  bundlesData,
+  setBundlesData,
   ...rest
 }: SidebarProps) => {
   const { toggleColorMode } = useColorMode();
@@ -135,7 +135,7 @@ const SidebarContent = ({
       boxShadow={useColorModeValue('xl', 'dark-xl')}
       borderRight="1px"
       borderRightColor={useColorModeValue('gray.200', 'gray.700')}
-      w={{ base: 'full', lg: 'auto' }}
+      w={{ base: 'full', xl: 'auto' }}
       minW={0}
       pos="fixed"
       h="100vh"
@@ -152,32 +152,32 @@ const SidebarContent = ({
             }
             alt="Abtrail Logo"
             height={'40px'}
-            display={{ base: 'none', lg: 'block' }}
+            display={{ base: 'none', xl: 'block' }}
           />
           <Image
             src={logo}
             alt="Abtrail Logo"
             height={'40px'}
-            display={{ base: 'block', lg: 'none' }}
+            display={{ base: 'block', xl: 'none' }}
           />
           <CloseButton
-            display={{ base: 'flex', lg: 'none' }}
+            display={{ base: 'flex', xl: 'none' }}
             onClick={onClose}
           />
         </Flex>
         {/* Profile button */}
-        <ProfileButton
+        <BundleButton
           onClose={onClose}
           isHover={isHover}
-          currentProfile={currentProfile}
-          setCurrentProfile={setCurrentProfile}
-          profilesData={profilesData}
-          setProfilesData={setProfilesData}
+          currentBundle={currentBundle}
+          setCurrentBundle={setCurrentBundle}
+          bundlesData={bundlesData}
+          setBundlesData={setBundlesData}
         />
         <Divider />
         {/* Navigation items */}
         <Stack spacing={2}>
-          <Box display={{ base: 'flex', lg: 'none' }}>
+          <Box display={{ base: 'flex', xl: 'none' }}>
             <SearchBar onClose={onClose} />
           </Box>
           {LinkItems.map(link => (
@@ -192,8 +192,8 @@ const SidebarContent = ({
             </NavItem>
           ))}
         </Stack>
-        <Spacer display={{ base: 'none', lg: 'block' }} />
-        <Divider display={{ base: 'block', lg: 'none' }} />
+        <Spacer display={{ base: 'none', xl: 'block' }} />
+        <Divider display={{ base: 'block', xl: 'none' }} />
         <Stack spacing={2}>
           <NavItem
             onClose={onClose}
@@ -222,7 +222,7 @@ const SidebarContent = ({
               leftIcon={<FiSun fontSize="16" />}
               justifyContent="center"
               onClick={toggleColorMode}
-              display={{ base: 'flex', lg: isHover ? 'flex' : 'none' }}
+              display={{ base: 'flex', xl: isHover ? 'flex' : 'none' }}
               w="100%"
             >
               Light
@@ -234,7 +234,7 @@ const SidebarContent = ({
               leftIcon={<FiMoon fontSize="16" />}
               justifyContent="center"
               onClick={toggleColorMode}
-              display={{ base: 'flex', lg: isHover ? 'flex' : 'none' }}
+              display={{ base: 'flex', xl: isHover ? 'flex' : 'none' }}
               w="100%"
             >
               Dark
@@ -246,7 +246,7 @@ const SidebarContent = ({
               icon={toggleIcon}
               onClick={toggleColorMode}
               cursor="pointer"
-              display={{ base: 'none', lg: isHover ? 'none' : 'flex' }}
+              display={{ base: 'none', xl: isHover ? 'none' : 'flex' }}
             />
           </Flex>
           {/* </Box> */}
@@ -294,7 +294,7 @@ const NavItem = ({
           justifyContent="left"
           onClick={handleClick}
           cursor="pointer"
-          display={{ base: 'none', lg: 'flex' }}
+          display={{ base: 'none', xl: 'flex' }}
         >
           {href ? (
             children
@@ -314,7 +314,7 @@ const NavItem = ({
           icon={<Icon fontSize="16" as={icon} />}
           onClick={handleClick}
           cursor="pointer"
-          display={{ base: 'none', lg: 'flex' }}
+          display={{ base: 'none', xl: 'flex' }}
         />
       )}
       <Button
@@ -324,7 +324,7 @@ const NavItem = ({
         justifyContent="left"
         onClick={handleClick}
         cursor="pointer"
-        display={{ base: 'flex', lg: 'none' }}
+        display={{ base: 'flex', xl: 'none' }}
       >
         {children}
       </Button>
@@ -334,22 +334,27 @@ const NavItem = ({
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
+  bundlesData: IBundle[];
 }
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+const MobileNav = ({ onOpen, bundlesData, ...rest }: MobileProps) => {
   const logo = useColorModeValue('/logos/logo.svg', '/logos/logo-dark.svg');
+  const router = useRouter();
+  const path = router.pathname;
   return (
     <Flex
-      pl={{ base: 0, lg: '68px' }}
-      p={{ base: 2, lg: 2 }}
-      gap={{ base: 2, lg: 4 }}
+      pl={{ base: 0, xl: '68px' }}
+      py={{ base: 2, xl: 2 }}
+      px={{ base: 2, xl: 4 }}
+      gap={{ base: 2, xl: 4 }}
       alignItems="center"
+      minH="60px"
       bg={{
         base: useColorModeValue('gray.50', 'gray.900'),
-        lg: useColorModeValue('gray.50', 'gray.900')
+        xl: useColorModeValue('gray.50', 'gray.900')
       }}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', lg: 'flex-end' }}
+      justifyContent={{ base: 'space-between', xl: 'flex-end' }}
       position={'fixed'}
       direction="row"
       w="100%"
@@ -357,39 +362,31 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       {...rest}
     >
       <Flex alignItems="center" gap={2}>
-        <Box display={{ base: 'none', lg: 'flex' }} width="440px">
+        <Box
+          display={{
+            base: 'none',
+            xl:
+              (bundlesData && bundlesData.length > 0) || path !== '/'
+                ? 'flex'
+                : 'none'
+          }}
+          width="440px"
+        >
           <SearchBar kbd />
         </Box>
-        <Box
-          h="32px"
-          borderRight="1px solid"
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
-          pr={2}
-          display={{ base: 'none', lg: 'flex' }}
-        />
+
         <IconButton
-          display={{ base: 'flex', lg: 'none' }}
+          display={{ base: 'flex', xl: 'none' }}
           onClick={onOpen}
           variant="outline"
           aria-label="open menu"
           icon={<FiMenu />}
         />
-        <Box display={{ base: 'flex', lg: 'none' }}>
+        <Box display={{ base: 'flex', xl: 'none' }}>
           <Image src={logo} alt="Abtrail Logo" width="128px" />
         </Box>
       </Flex>
-      {/* <ConnectButton
-        showBalance={false}
-        chainStatus={{
-          smallScreen: 'none',
-          largeScreen: 'icon'
-        }}
-        accountStatus={{
-          smallScreen: 'avatar',
-          largeScreen: 'full'
-        }}
-      /> */}
-      <CustomConnectButton />
+      {/* <CustomConnectButton /> */}
     </Flex>
   );
 };

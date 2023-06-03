@@ -7,6 +7,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Container,
   Flex,
   Grid,
   GridItem,
@@ -38,7 +39,7 @@ import { IAccount } from '@/types/IAccount';
 import AchievementsCard from '@/components/AchievementsCard';
 import TopProtocolsUsageCard from '@/components/TopProtocolsUsageCard';
 import AddToBundleBtn from '@/components/AddToBundleButton';
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 import {
   TxSummary,
   TxSummaryByContract,
@@ -53,17 +54,17 @@ import { CHAINS } from '@/configs/chains';
 export default function Account({
   account,
   chainConfigs,
-  setProfilesData,
-  profilesData,
-  currentProfile,
+  setBundlesData,
+  bundlesData,
+  currentBundle,
   localChain,
   setLocalChain
 }: {
   account: IAccount;
   chainConfigs: Chain[];
-  setProfilesData: (newProfilesData: IProfile[]) => void;
-  profilesData: IProfile[];
-  currentProfile: number;
+  setBundlesData: (newProfilesData: IBundle[]) => void;
+  bundlesData: IBundle[];
+  currentBundle: number;
   localChain: string;
   setLocalChain: (chain: string) => void;
 }) {
@@ -203,251 +204,353 @@ export default function Account({
             : account.ensName}
         </title>
       </Head>
-      <Grid
-        templateColumns="repeat(12, 1fr)"
-        gap={4}
-        h={{ base: 'fit-content', lg: 'calc(100vh - 85px)' }}
-      >
-        <GridItem
-          colSpan={{ base: 12, lg: 6, xl: 4 }}
-          overflowY={{ base: 'auto', lg: 'scroll' }}
-          paddingBottom={{ base: 0 }}
+      <Container maxW="container.xl" paddingX={0}>
+        <Grid
+          templateColumns="repeat(12, 1fr)"
+          gap={4}
+          h={{ base: 'fit-content', lg: 'calc(100vh - 85px)' }}
         >
-          <Flex direction="column" gap={4}>
-            <ProfileCard
-              account={account}
-              chainConfigs={chainConfigs}
-              txSummary={txSummary}
-              handleSubmit={handleSubmit}
-              balance={balance}
-              localChain={localChain}
-              setLocalChain={setLocalChain}
-            />
-            <AddToBundleBtn
-              account={account}
-              currentProfile={currentProfile}
-              profilesData={profilesData}
-              setProfilesData={setProfilesData}
-            />
-            <Box>
-              <AchievementsCard
-                achievements={currentChain.achievements}
-                txSummary={txSummary}
-              />
-            </Box>
-          </Flex>
-        </GridItem>
-        <GridItem
-          colSpan={{ base: 12, lg: 6, xl: 8 }}
-          overflowY={{ base: 'auto', lg: 'scroll' }}
-          paddingBottom={{ base: 0, lg: 8 }}
-        >
-          <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Flex direction="column" gap={4}>
-                <ActivityIndexCard
-                  txSummary={txSummary}
-                  chainConfigs={chainConfigs}
-                  localChain={localChain}
-                />
-              </Flex>
-            </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <TopProtocolsUsageCard
-                txsSummaryByContract={txsSummaryByContract}
-                currentChain={currentChain}
+          <GridItem
+            colSpan={{ base: 12, lg: 6, xl: 4 }}
+            overflowY={{ base: 'auto', lg: 'scroll' }}
+            paddingBottom={{ base: 0 }}
+          >
+            <Flex direction="column" gap={4}>
+              <ProfileCard
                 account={account}
+                chainConfigs={chainConfigs}
+                txSummary={txSummary}
+                handleSubmit={handleSubmit}
+                balance={balance}
+                localChain={localChain}
+                setLocalChain={setLocalChain}
+                txsSummaryByMonth={txsSummaryByMonth}
               />
-            </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Card h="100%">
-                <CardHeader>
-                  <Flex
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Heading size="md">Transactions</Heading>
-                  </Flex>
-                </CardHeader>
-                <CardBody>
-                  <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                    <GridItem colSpan={{ base: 6 }} alignSelf="center">
-                      <Stat>
-                        <StatNumber>
-                          <Heading>{totalTxCountByMonthData}</Heading>
-                        </StatNumber>
-                        <StatHelpText>
-                          <Text fontSize="sm" color={subHeadingColor}>
-                            Last 6 months
-                          </Text>
-                        </StatHelpText>
-                      </Stat>
-                    </GridItem>
-                    <GridItem colSpan={{ base: 6 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={byMonthData}>
-                          <defs>
-                            <linearGradient
-                              id="colorUv"
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="5%"
-                                stopColor={getGraphColor(
-                                  byMonthData[0].txCount,
-                                  byMonthData[5].txCount,
-                                  0
-                                )}
-                                stopOpacity={0.8}
+              <AddToBundleBtn
+                account={account}
+                currentBundle={currentBundle}
+                bundlesData={bundlesData}
+                setBundlesData={setBundlesData}
+              />
+              <Box>
+                <AchievementsCard
+                  achievements={currentChain.achievements}
+                  txSummary={txSummary}
+                />
+              </Box>
+            </Flex>
+          </GridItem>
+          <GridItem
+            colSpan={{ base: 12, lg: 6, xl: 8 }}
+            overflowY={{ base: 'auto', lg: 'scroll' }}
+            paddingBottom={{ base: 0, lg: 8 }}
+          >
+            <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+              <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
+                <Flex direction="column" gap={4}>
+                  <ActivityIndexCard
+                    txSummary={txSummary}
+                    chainConfigs={chainConfigs}
+                    localChain={localChain}
+                  />
+                </Flex>
+              </GridItem>
+              <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
+                <Flex
+                  direction="column"
+                  gap={4}
+                  h="100%"
+                  justify="space-between"
+                >
+                  <Card height="100%">
+                    <CardHeader>
+                      <Flex
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Heading size="md">Transactions</Heading>
+                      </Flex>
+                    </CardHeader>
+                    <CardBody>
+                      <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                        <GridItem colSpan={{ base: 6 }} alignSelf="center">
+                          <Stat>
+                            <StatNumber>
+                              <Heading>{totalTxCountByMonthData}</Heading>
+                            </StatNumber>
+                            <StatHelpText>
+                              <Text fontSize="sm" color={subHeadingColor}>
+                                Last 6 months
+                              </Text>
+                            </StatHelpText>
+                          </Stat>
+                        </GridItem>
+                        <GridItem colSpan={{ base: 6 }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={byMonthData}>
+                              <defs>
+                                <linearGradient
+                                  id="colorUv"
+                                  x1="0"
+                                  y1="0"
+                                  x2="0"
+                                  y2="1"
+                                >
+                                  <stop
+                                    offset="5%"
+                                    stopColor={getGraphColor(
+                                      byMonthData[0].txCount,
+                                      byMonthData[5].txCount,
+                                      0
+                                    )}
+                                    stopOpacity={0.8}
+                                  />
+                                  <stop
+                                    offset="95%"
+                                    stopColor={getGraphColor(
+                                      byMonthData[0].txCount,
+                                      byMonthData[5].txCount,
+                                      1
+                                    )}
+                                    stopOpacity={0}
+                                  />
+                                </linearGradient>
+                              </defs>
+                              <XAxis dataKey="date" hide />
+                              <YAxis
+                                domain={[0, maxTxCount]}
+                                tickFormatter={value => {
+                                  return formatPrettyNumber(value as number, 0);
+                                }}
+                                hide
                               />
-                              <stop
-                                offset="95%"
-                                stopColor={getGraphColor(
-                                  byMonthData[0].txCount,
-                                  byMonthData[5].txCount,
-                                  1
-                                )}
-                                stopOpacity={0}
-                              />
-                            </linearGradient>
-                          </defs>
-                          <XAxis dataKey="date" hide />
-                          <YAxis
-                            domain={[0, maxTxCount]}
-                            tickFormatter={value => {
-                              return formatPrettyNumber(value as number, 0);
-                            }}
-                            hide
-                          />
 
-                          <Tooltip
-                            formatter={value => {
-                              return [
-                                formatPrettyNumber(value as number, 0),
-                                'Transactions'
-                              ];
-                            }}
-                            labelStyle={{ color: 'black' }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="txCount"
-                            stroke={getGraphColor(
-                              byMonthData[0].txCount,
-                              byMonthData[5].txCount,
-                              2
-                            )}
-                            fillOpacity={1}
-                            fill="url(#colorUv)"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </GridItem>
-                  </Grid>
-                </CardBody>
-              </Card>
-            </GridItem>
-            <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-              <Card h="100%">
-                <CardHeader>
-                  <Flex
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Heading size="md">Transaction Value</Heading>
-                  </Flex>
-                </CardHeader>
-                <CardBody>
-                  <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-                    <GridItem colSpan={{ base: 6 }} alignSelf="center">
-                      <Stat>
-                        <StatNumber>
-                          <Heading>
-                            ${formatPrettyNumber(totalValueQuoteByMonthData)}
-                          </Heading>
-                        </StatNumber>
-                        <StatHelpText>
-                          <Text fontSize="sm" color={subHeadingColor}>
-                            Last 6 months
-                          </Text>
-                        </StatHelpText>
-                      </Stat>
-                    </GridItem>
-                    <GridItem colSpan={{ base: 6 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={byMonthData}>
-                          <defs>
-                            <linearGradient
-                              id="colorUv"
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="5%"
-                                stopColor={getGraphColor(
+                              <Tooltip
+                                formatter={value => {
+                                  return [
+                                    formatPrettyNumber(value as number, 0),
+                                    'Transactions'
+                                  ];
+                                }}
+                                labelStyle={{ color: 'black' }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="txCount"
+                                stroke={getGraphColor(
                                   byMonthData[0].txCount,
                                   byMonthData[5].txCount,
-                                  0
+                                  2
                                 )}
-                                stopOpacity={0.8}
+                                fillOpacity={1}
+                                fill="url(#colorUv)"
                               />
-                              <stop
-                                offset="95%"
-                                stopColor={getGraphColor(
-                                  byMonthData[0].txCount,
-                                  byMonthData[5].txCount,
-                                  1
-                                )}
-                                stopOpacity={0}
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </GridItem>
+                      </Grid>
+                    </CardBody>
+                  </Card>
+                  <Card height="100%">
+                    <CardHeader>
+                      <Flex
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Heading size="md">Transaction Value</Heading>
+                      </Flex>
+                    </CardHeader>
+                    <CardBody>
+                      <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                        <GridItem colSpan={{ base: 6 }} alignSelf="center">
+                          <Stat>
+                            <StatNumber>
+                              <Heading>
+                                $
+                                {formatPrettyNumber(totalValueQuoteByMonthData)}
+                              </Heading>
+                            </StatNumber>
+                            <StatHelpText>
+                              <Text fontSize="sm" color={subHeadingColor}>
+                                Last 6 months
+                              </Text>
+                            </StatHelpText>
+                          </Stat>
+                        </GridItem>
+                        <GridItem colSpan={{ base: 6 }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={byMonthData}>
+                              <defs>
+                                <linearGradient
+                                  id="colorUv"
+                                  x1="0"
+                                  y1="0"
+                                  x2="0"
+                                  y2="1"
+                                >
+                                  <stop
+                                    offset="5%"
+                                    stopColor={getGraphColor(
+                                      byMonthData[0].txCount,
+                                      byMonthData[5].txCount,
+                                      0
+                                    )}
+                                    stopOpacity={0.8}
+                                  />
+                                  <stop
+                                    offset="95%"
+                                    stopColor={getGraphColor(
+                                      byMonthData[0].txCount,
+                                      byMonthData[5].txCount,
+                                      1
+                                    )}
+                                    stopOpacity={0}
+                                  />
+                                </linearGradient>
+                              </defs>
+                              <XAxis dataKey="date" hide />
+                              <YAxis
+                                domain={[0, maxvalueQuoteSum]}
+                                tickFormatter={value => {
+                                  return formatPrettyNumber(value as number, 0);
+                                }}
+                                hide
                               />
-                            </linearGradient>
-                          </defs>
-                          <XAxis dataKey="date" hide />
-                          <YAxis
-                            domain={[0, maxvalueQuoteSum]}
-                            tickFormatter={value => {
-                              return formatPrettyNumber(value as number, 0);
-                            }}
-                            hide
-                          />
 
-                          <Tooltip
-                            formatter={value => {
-                              return [
-                                formatPrettyNumber(value as number, 0),
-                                'Tx Value'
-                              ];
-                            }}
-                            labelStyle={{ color: 'black' }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="valueQuoteSum"
-                            stroke={getGraphColor(
-                              byMonthData[0].txCount,
-                              byMonthData[5].txCount,
-                              2
-                            )}
-                            fillOpacity={1}
-                            fill="url(#colorUv)"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </GridItem>
-                  </Grid>
-                </CardBody>
-              </Card>
-            </GridItem>
-          </Grid>
-        </GridItem>
-      </Grid>
+                              <Tooltip
+                                formatter={value => {
+                                  return [
+                                    formatPrettyNumber(value as number, 0),
+                                    'Tx Value'
+                                  ];
+                                }}
+                                labelStyle={{ color: 'black' }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="valueQuoteSum"
+                                stroke={getGraphColor(
+                                  byMonthData[0].txCount,
+                                  byMonthData[5].txCount,
+                                  2
+                                )}
+                                fillOpacity={1}
+                                fill="url(#colorUv)"
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </GridItem>
+                      </Grid>
+                    </CardBody>
+                  </Card>
+                  <Card height="100%">
+                    <CardHeader>
+                      <Flex
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
+                        <Heading size="md">Bridged Value</Heading>
+                      </Flex>
+                    </CardHeader>
+                    <CardBody>
+                      <Grid templateColumns="repeat(12, 1fr)" gap={4}>
+                        <GridItem colSpan={{ base: 6 }} alignSelf="center">
+                          <Stat>
+                            <StatNumber>
+                              <Heading>
+                                $
+                                {formatPrettyNumber(totalValueQuoteByMonthData)}
+                              </Heading>
+                            </StatNumber>
+                            <StatHelpText>
+                              <Text fontSize="sm" color={subHeadingColor}>
+                                Last 6 months
+                              </Text>
+                            </StatHelpText>
+                          </Stat>
+                        </GridItem>
+                        <GridItem colSpan={{ base: 6 }}>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={byMonthData}>
+                              <defs>
+                                <linearGradient
+                                  id="colorUv"
+                                  x1="0"
+                                  y1="0"
+                                  x2="0"
+                                  y2="1"
+                                >
+                                  <stop
+                                    offset="5%"
+                                    stopColor={getGraphColor(
+                                      byMonthData[0].txCount,
+                                      byMonthData[5].txCount,
+                                      0
+                                    )}
+                                    stopOpacity={0.8}
+                                  />
+                                  <stop
+                                    offset="95%"
+                                    stopColor={getGraphColor(
+                                      byMonthData[0].txCount,
+                                      byMonthData[5].txCount,
+                                      1
+                                    )}
+                                    stopOpacity={0}
+                                  />
+                                </linearGradient>
+                              </defs>
+                              <XAxis dataKey="date" hide />
+                              <YAxis
+                                domain={[0, maxvalueQuoteSum]}
+                                tickFormatter={value => {
+                                  return formatPrettyNumber(value as number, 0);
+                                }}
+                                hide
+                              />
+
+                              <Tooltip
+                                formatter={value => {
+                                  return [
+                                    formatPrettyNumber(value as number, 0),
+                                    'Tx Value'
+                                  ];
+                                }}
+                                labelStyle={{ color: 'black' }}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="valueQuoteSum"
+                                stroke={getGraphColor(
+                                  byMonthData[0].txCount,
+                                  byMonthData[5].txCount,
+                                  2
+                                )}
+                                fillOpacity={1}
+                                fill="url(#colorUv)"
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </GridItem>
+                      </Grid>
+                    </CardBody>
+                  </Card>
+                </Flex>
+              </GridItem>
+              <GridItem colSpan={{ base: 12 }}>
+                <TopProtocolsUsageCard
+                  txsSummaryByContract={txsSummaryByContract}
+                  currentChain={currentChain}
+                  account={account}
+                />
+              </GridItem>
+            </Grid>
+          </GridItem>
+        </Grid>
+      </Container>
     </Flex>
   );
 }

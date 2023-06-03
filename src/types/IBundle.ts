@@ -1,4 +1,4 @@
-export interface IProfile {
+export interface IBundle {
   name: string;
   wallets: Wallet[];
 }

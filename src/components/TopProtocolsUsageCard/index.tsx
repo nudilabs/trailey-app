@@ -14,7 +14,16 @@ import {
   Text,
   Badge,
   useColorModeValue,
-  Box
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer
 } from '@chakra-ui/react';
 import { FiExternalLink, FiInfo } from 'react-icons/fi';
 
@@ -35,7 +44,10 @@ export default function TopProtocolsUsageCard({
     <Card size="lg" h="100%">
       <CardHeader>
         <Flex direction="row" justifyContent="space-between">
-          <Heading size="md">Top Protocols Usage</Heading>
+          <Flex direction="row" gap={2}>
+            <Heading size="md">Top Protocols Usage</Heading>
+            <Text size="md">(0/10)</Text>
+          </Flex>
           <Tooltip
             label="The % change is the increase in usage since last week"
             hasArrow
@@ -49,93 +61,62 @@ export default function TopProtocolsUsageCard({
         </Flex>
       </CardHeader>
       <CardBody>
-        <Flex direction="column" gap={4} overflow="scroll">
-          {txsSummaryByContract &&
-            txsSummaryByContract.contracts.map(
-              (contract: any, index: number) => {
-                const protocol = currentChain.protocols.find(protocol => {
-                  if (contract.address && protocol.address) {
-                    return (
-                      contract.address.toLowerCase() ===
-                      protocol.address.toLowerCase()
-                    );
-                  }
-                  return false;
-                });
-
-                if (!protocol) return null;
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Protocol</Th>
+                <Th>Interactions</Th>
+                <Th>Last Active</Th>
+                <Th>Volume ($)</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {currentChain.protocols.map((protocol, index) => {
                 return (
-                  <Card
-                    key={index}
-                    size="md"
-                    minWidth="240px"
-                    variant={'protocol'}
-                  >
-                    <CardBody>
-                      <Flex direction="column">
-                        <Flex
-                          direction="row"
-                          alignItems="center"
-                          gap={2}
-                          py={1}
-                        >
-                          {protocol?.logo_url && (
-                            <Image
-                              src={protocol?.logo_url}
-                              boxSize="18px"
-                              alt={protocol?.label}
-                              rounded="lg"
-                            />
-                          )}
-                          <Text
+                  <Tr key={index}>
+                    <Td>
+                      <Flex direction="row" alignItems="center">
+                        <Image
+                          src={protocol.logo_url}
+                          alt={protocol.label}
+                          boxSize="24px"
+                          mr="2"
+                          rounded="lg"
+                        />
+                        <Flex direction="column">
+                          <Flex
+                            direction="row"
+                            alignItems="center"
+                            gap={1}
                             fontSize="xs"
                             fontWeight="bold"
-                            color={subHeadingColor}
-                            as="a"
-                            href={`${currentChain.block_explorer_url}address/${protocol.address}`}
-                            target="_blank"
-                            textDecor="underline"
                           >
-                            {protocol?.label}
-                          </Text>
-                          <Box fontSize="xs" color={subHeadingColor}>
+                            <Text
+                              as="a"
+                              href={`${currentChain.block_explorer_url}address/${protocol.address}`}
+                              target="_blank"
+                              textDecor="underline"
+                            >
+                              {protocol?.label}
+                            </Text>
                             <FiExternalLink />
-                          </Box>
-                        </Flex>
-                        <Flex direction="row" alignItems="center">
-                          <Heading fontSize="xl" fontWeight="bold">
-                            {contract?.txCount.allTime ?? 0}
-                          </Heading>
-                          <Badge
-                            ml={2}
-                            colorScheme={getColorScheme(
-                              contract?.txCount.percentChange ?? 0
-                            )}
-                            rounded="md"
-                          >
-                            {contract?.txCount.percentChange.toFixed(2)}%
-                          </Badge>
-                        </Flex>
-                        <Flex direction="row" alignItems="center">
-                          <Text
-                            fontSize="xs"
-                            fontWeight="bold"
-                            color={subHeadingColor}
-                          >
-                            $
-                            {formatPrettyNumber(
-                              contract?.valueQuoteSum.allTime ?? 0
-                            )}{' '}
-                            (value)
+                          </Flex>
+                          <Text color={subHeadingColor} fontSize="xs">
+                            0 days active
                           </Text>
                         </Flex>
                       </Flex>
-                    </CardBody>
-                  </Card>
+                    </Td>
+                    <Td>0</Td>
+                    <Td>0</Td>
+                    <Td>0</Td>
+                  </Tr>
                 );
-              }
-            )}
-        </Flex>
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
       </CardBody>
     </Card>
   );

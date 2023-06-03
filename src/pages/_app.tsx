@@ -6,7 +6,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import Layout from '@/components/Layout';
 import theme from '@/styles/theme';
 import { useEffect, useState } from 'react';
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 // Rainbowkit
 import '@rainbow-me/rainbowkit/styles.css';
 import {
@@ -73,14 +73,14 @@ const App = ({
 }: AppProps<{
   session: Session;
 }>) => {
-  const [currentProfile, setCurrentProfile] = useState(0);
-  const [profilesData, setProfilesData] = useState<IProfile[]>([]);
+  const [currentBundle, setCurrentBundle] = useState(0);
+  const [bundlesData, setBundlesData] = useState<IBundle[]>([]);
   const [localChain, setLocalChain] = useState('eth-mainnet'); // default to mainnet
   const profileProps = {
-    currentProfile,
-    setCurrentProfile,
-    profilesData,
-    setProfilesData,
+    currentBundle,
+    setCurrentBundle,
+    bundlesData,
+    setBundlesData,
     localChain,
     setLocalChain
   };
@@ -94,10 +94,10 @@ const App = ({
   useEffect(() => {
     const localStorage = window.localStorage;
     // Get item from local storage
-    const profiles = localStorage.getItem('abtrail.profiles');
-    if (profiles) setProfilesData(JSON.parse(profiles));
-    const currentProfileId = localStorage.getItem('profileId');
-    if (currentProfileId) setCurrentProfile(parseInt(currentProfileId));
+    const profiles = localStorage.getItem('abtrail.bundles');
+    if (profiles) setBundlesData(JSON.parse(profiles));
+    const currentBundleId = localStorage.getItem('profileId');
+    if (currentBundleId) setCurrentBundle(parseInt(currentBundleId));
     const localChain = localStorage.getItem('abtrail.chain');
     if (localChain) setLocalChain(localChain);
   }, []);

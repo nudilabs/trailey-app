@@ -1,4 +1,4 @@
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
   Box,
@@ -65,23 +65,23 @@ import {
 } from 'react-icons/fi';
 import { isAddress } from 'viem';
 
-interface ProfilesProps {
-  setCurrentProfile: React.Dispatch<React.SetStateAction<number>>;
-  currentProfile: number;
-  profilesData: IProfile[];
-  setProfilesData: React.Dispatch<React.SetStateAction<IProfile[]>>;
+interface BundlesProps {
+  setCurrentBundle: React.Dispatch<React.SetStateAction<number>>;
+  currentBundle: number;
+  bundlesData: IBundle[];
+  setBundlesData: React.Dispatch<React.SetStateAction<IBundle[]>>;
 }
 
-export default function Profiles({
-  setCurrentProfile,
-  currentProfile,
-  profilesData,
-  setProfilesData
-}: ProfilesProps) {
-  const [profileInput, setProfileInput] = useState('');
+export default function Bundles({
+  setCurrentBundle,
+  currentBundle,
+  bundlesData,
+  setBundlesData
+}: BundlesProps) {
+  const [profileInput, setBundleInput] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [toBeDeletedProfileIndex, setToBeDeletedProfileIndex] = useState(0);
-  const handleProfileInputChange = (e: any) => setProfileInput(e.target.value);
+  const [toBeDeletedBundleIndex, setToBeDeletedBundleIndex] = useState(0);
+  const handleBundleInputChange = (e: any) => setBundleInput(e.target.value);
 
   const [addressInput, setAddressInput] = useState('');
   const handleAddressInputChange = (e: any) => setAddressInput(e.target.value);
@@ -91,52 +91,52 @@ export default function Profiles({
   const isError = !isAddress(addressInput);
   const [showModal, setShowModal] = useState(false);
 
-  const maxProfiles = 2;
+  const maxBundles = 2;
 
-  // const [profilesData, setProfilesData] = useState<
+  // const [bundlesData, setBundlesData] = useState<
   //   { name: string; wallets: { address: string; type: string }[] }[]
   // >([]);
   const router = useRouter();
   const toast = useToast();
 
-  const handleSelectProfileClick = (index: number) => {
-    setCurrentProfile(index);
+  const handleSelectBundleClick = (index: number) => {
+    setCurrentBundle(index);
     window.localStorage.setItem('profileId', index.toString());
     router.push(`/`);
   };
 
-  const handleAddProfileSubmit = (formData: {
+  const handleAddBundleSubmit = (formData: {
     name: string;
     wallets: { address: string; type: string }[];
   }) => {
     // Add the new profile data to the existing profiles array
-    const updatedProfiles = [...profilesData, formData];
-    setProfilesData(updatedProfiles);
+    const updatedBundles = [...bundlesData, formData];
+    setBundlesData(updatedBundles);
     window.localStorage.setItem(
-      'abtrail.profiles',
-      JSON.stringify(updatedProfiles)
+      'abtrail.bundles',
+      JSON.stringify(updatedBundles)
     );
 
     // Navigate back to the main page
-    router.push(`/profile/${updatedProfiles.length - 1}`);
+    router.push(`/bundle/${updatedBundles.length - 1}`);
   };
 
-  const handleDeleteProfile = (index: number) => {
-    const updatedProfiles = profilesData.filter((_, i) => i !== index);
-    setProfilesData(updatedProfiles);
+  const handleDeleteBundle = (index: number) => {
+    const updatedBundles = bundlesData.filter((_, i) => i !== index);
+    setBundlesData(updatedBundles);
     window.localStorage.setItem(
-      'abtrail.profiles',
-      JSON.stringify(updatedProfiles)
+      'abtrail.bundles',
+      JSON.stringify(updatedBundles)
     );
-    setCurrentProfile(0);
+    setCurrentBundle(0);
     window.localStorage.setItem('profileId', '0');
   };
 
   return (
     <Flex direction="column" gap={4} alignItems="center">
       <Flex width={{ base: '100%', md: '70%' }} justifyContent="space-between">
-        <Heading fontSize={{ base: 'lg', lg: '2xl' }}>Profiles</Heading>
-        {profilesData.length < maxProfiles ? (
+        <Heading fontSize={{ base: 'lg', lg: '2xl' }}>Bundles</Heading>
+        {bundlesData.length < maxBundles ? (
           <Button
             size="sm"
             leftIcon={<FiPlusCircle />}
@@ -144,21 +144,21 @@ export default function Profiles({
               setShowModal(true);
             }}
           >
-            Add Profile
+            Add Bundle
           </Button>
         ) : (
           <Tooltip
-            label={`You can only have a maximum of ${maxProfiles} profiles.`}
+            label={`You can only have a maximum of ${maxBundles} profiles.`}
             hasArrow
             placement="top"
           >
             <Button size="sm" leftIcon={<FiPlusCircle />} isDisabled>
-              Add Profile
+              Add Bundle
             </Button>
           </Tooltip>
         )}
       </Flex>
-      {profilesData.length === 0 && (
+      {bundlesData.length === 0 && (
         <Flex
           direction="column"
           alignItems="center"
@@ -170,11 +170,11 @@ export default function Profiles({
           borderRadius="md"
         >
           <Heading fontSize="xl" textAlign="center">
-            {`You don't have any profiles yet.`}
+            {`You don't have any bundles yet.`}
           </Heading>
         </Flex>
       )}
-      {profilesData.map((profile, index) => (
+      {bundlesData.map((profile, index) => (
         <Card width={{ base: '100%', md: '70%' }} key={index}>
           <CardHeader display="flex" justifyContent="space-between">
             <Heading fontSize={{ base: 'md', lg: 'xl' }}>
@@ -184,7 +184,7 @@ export default function Profiles({
               <Button
                 size="sm"
                 onClick={() => {
-                  router.push(`/profile/${index}`);
+                  router.push(`/bundle/${index}`);
                 }}
               >
                 Edit
@@ -201,7 +201,7 @@ export default function Profiles({
                   <MenuItem
                     gap={2}
                     onClick={() => {
-                      handleSelectProfileClick(index);
+                      handleSelectBundleClick(index);
                     }}
                   >
                     <FiEye />
@@ -211,7 +211,7 @@ export default function Profiles({
                     color="red.500"
                     gap={2}
                     onClick={() => {
-                      setToBeDeletedProfileIndex(index);
+                      setToBeDeletedBundleIndex(index);
                       setShowDeleteModal(true);
                     }}
                   >
@@ -262,11 +262,11 @@ export default function Profiles({
           <ModalBody>
             <Flex direction="column" gap={4}>
               <FormControl>
-                <FormLabel>Profile Name</FormLabel>
+                <FormLabel>Bundle Name</FormLabel>
                 <Input
                   type="text"
                   value={profileInput}
-                  onChange={handleProfileInputChange}
+                  onChange={handleBundleInputChange}
                   autoFocus
                 />
               </FormControl>
@@ -302,7 +302,7 @@ export default function Profiles({
                 size="sm"
                 onClick={() => {
                   if (!isError) {
-                    handleAddProfileSubmit({
+                    handleAddBundleSubmit({
                       name: profileInput,
                       wallets: [{ address: addressInput, type: type }]
                     });
@@ -336,7 +336,7 @@ export default function Profiles({
               <Button
                 size="sm"
                 onClick={() => {
-                  handleDeleteProfile(toBeDeletedProfileIndex);
+                  handleDeleteBundle(toBeDeletedBundleIndex);
                   setShowDeleteModal(false);
                 }}
                 colorScheme="red"

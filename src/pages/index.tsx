@@ -1,5 +1,5 @@
 import OverviewCard from '@/components/OverviewCard';
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 import {
   Box,
   Button,
@@ -21,7 +21,9 @@ import {
   StatHelpText,
   IconButton,
   CardHeader,
-  chakra
+  chakra,
+  Divider,
+  AbsoluteCenter
 } from '@chakra-ui/react';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { GetServerSideProps } from 'next';
@@ -35,44 +37,35 @@ import { FiPlus } from 'react-icons/fi';
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
 import { CHAINS } from '@/configs/chains';
-
-interface Session {
-  user: {
-    name: string;
-    image: string;
-  };
-  address: string;
-  expires: string;
-}
+import SearchBar from '@/components/SearchBar';
 
 export default function Home({
-  currentProfile,
-  profilesData,
+  currentBundle,
+  bundlesData,
   chainConfigs,
   localChain,
   setLocalChain
 }: {
-  currentProfile: number;
-  profilesData: IProfile[];
+  currentBundle: number;
+  bundlesData: IBundle[];
   chainConfigs: Chain[];
   localChain: string;
   setLocalChain: (chain: string) => void;
 }) {
   const [address, setAddress] = useState<string | null>(null);
 
-  const { data: session, status: sessionStatus } = useSession();
-  const { openConnectModal } = useConnectModal();
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
   const hightlightColor = useColorModeValue(
     'primary-gradient.500',
     'primary-gradient.200'
   );
+  const dividerColor = useColorModeValue('gray.300', 'gray.700');
 
   const router = useRouter();
 
   const txSummaries = trpc.useQueries(
     t =>
-      profilesData[currentProfile]?.wallets?.map(addr =>
+      bundlesData[currentBundle]?.wallets?.map(addr =>
         t.txs.getSummary({
           chainName: localChain,
           walletAddr: addr.address
@@ -82,7 +75,7 @@ export default function Home({
 
   const txSummariesWithAddress = txSummaries.map((txSummary, index) => ({
     ...txSummary,
-    address: profilesData[currentProfile]?.wallets[index]?.address
+    address: bundlesData[currentBundle]?.wallets[index]?.address
   }));
 
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
@@ -96,16 +89,15 @@ export default function Home({
     });
   };
 
-  useEffect(() => {
-    setAddress((session as Session)?.address ?? null);
-  }, [sessionStatus]);
-
-  if (!session || !address) {
+  if (bundlesData.length === 0) {
     return (
       <Flex minH="calc(100vh - 88px)" alignItems="center">
         <Container maxW="container.lg" py={{ base: 12, md: 0 }}>
-          <Grid templateColumns="repeat(12, 1fr)" gap={8}>
-            <GridItem colSpan={{ base: 12, lg: 5 }}>
+          <Grid templateColumns="repeat(12, 1fr)">
+            <GridItem
+              colSpan={{ base: 12, lg: 7 }}
+              paddingRight={{ base: 0, lg: 24 }}
+            >
               <Flex
                 direction="column"
                 gap={8}
@@ -113,7 +105,10 @@ export default function Home({
                 height="100%"
               >
                 <Stack>
-                  <Heading lineHeight="tall">
+                  <Heading
+                    lineHeight="tall"
+                    fontSize={{ base: '3xl', md: '5xl' }}
+                  >
                     Keep track of your{' '}
                     <chakra.span
                       bg={hightlightColor}
@@ -129,22 +124,38 @@ export default function Home({
                     dashboard
                   </Text>
                 </Stack>
-                <Box>
-                  <Button
-                    onClick={openConnectModal}
-                    colorScheme={'primary-gradient'}
-                    isLoading={sessionStatus === 'loading'}
+                <Flex direction="column">
+                  <SearchBar btn />
+                  <Flex
+                    direction="row"
+                    gap={2}
+                    px={12}
+                    py={7}
+                    alignItems="center"
                   >
-                    Login to start
+                    <Box bg={dividerColor} w="100%" h="1px" />
+                    <Text color="gray.500">or</Text>
+                    <Box bg={dividerColor} w="100%" h="1px" />
+                  </Flex>
+                  <Button
+                    onClick={() => {
+                      router.push('/bundle');
+                    }}
+                    colorScheme={'secondary'}
+                    size="sm"
+                    rounded="lg"
+                  >
+                    Create bundle
                   </Button>
-                </Box>
+                </Flex>
               </Flex>
             </GridItem>
             <GridItem
-              colSpan={{ base: 12, lg: 7 }}
+              colSpan={{ base: 12, lg: 5 }}
               alignContent={'center'}
               justifyContent={'center'}
-              height="calc(100vh - 88px)"
+              height={{ lg: 'calc(100vh - 88px)' }}
+              display={{ base: 'none', lg: 'block' }}
             >
               <Spline scene="https://prod.spline.design/Z9MpbnCCPiLWzE5w/scene.splinecode" />
             </GridItem>
@@ -152,11 +163,6 @@ export default function Home({
         </Container>
       </Flex>
     );
-  }
-
-  if (profilesData.length === 0) {
-    router.push(`/address/${address}`);
-    return null;
   }
 
   return (
@@ -177,7 +183,7 @@ export default function Home({
                       aria-label="Profile"
                       icon={<FiPlus />}
                       onClick={() => {
-                        router.push(`/profile/${currentProfile}`);
+                        router.push(`/bundle/${currentBundle}`);
                       }}
                     />
                   </Flex>
@@ -185,14 +191,14 @@ export default function Home({
                 <CardBody>
                   <Flex direction="column" gap={4}>
                     <AvatarGroup
-                      wallets={profilesData[currentProfile].wallets}
+                      wallets={bundlesData[currentBundle].wallets}
                       max={5}
                     />
-                    {profilesData[currentProfile] && (
+                    {bundlesData[currentBundle] && (
                       <Flex direction="column">
-                        <Heading>{profilesData[currentProfile].name}</Heading>
+                        <Heading>{bundlesData[currentBundle].name}</Heading>
                         <Text color={subHeadingColor}>
-                          {profilesData[currentProfile].wallets.length} Wallets
+                          {bundlesData[currentBundle].wallets.length} Wallets
                         </Text>
                       </Flex>
                     )}

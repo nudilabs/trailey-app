@@ -10,7 +10,9 @@ import {
   MenuList,
   Button,
   Flex,
-  ButtonSpinner
+  ButtonSpinner,
+  InputRightAddon,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
@@ -18,9 +20,11 @@ import { FiSearch } from 'react-icons/fi';
 
 export default function SearchBar({
   kbd,
+  btn,
   onClose
 }: {
   kbd?: boolean;
+  btn?: boolean;
   onClose?: () => void;
 }) {
   const router = useRouter();
@@ -104,13 +108,17 @@ export default function SearchBar({
       handleSearch();
     }
   }
+  const searchBtnBgColor = useColorModeValue('gray.200', 'gray.600');
+  const searchBtnColor = useColorModeValue('gray.500', 'gray.400');
 
   return (
     <Box position="relative" w="100%">
       <InputGroup>
-        <InputLeftElement>
-          {isLoading ? <ButtonSpinner /> : <FiSearch />}
-        </InputLeftElement>
+        {!btn && (
+          <InputLeftElement>
+            {isLoading ? <ButtonSpinner /> : <FiSearch />}
+          </InputLeftElement>
+        )}
         <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
           <Kbd>⌘K</Kbd>
         </InputRightElement>
@@ -122,7 +130,22 @@ export default function SearchBar({
           onKeyDown={handleKeyDown}
           onFocus={() => setShowRecentSearches(true)}
           variant="search"
+          bgColor={btn ? 'gray.50' : 'transparent'}
         />
+        {btn && (
+          <InputRightElement mr="1">
+            <Button
+              onClick={handleSearch}
+              isLoading={isLoading}
+              size="xs"
+              rounded="md"
+              bgColor={searchBtnBgColor}
+              color={searchBtnColor}
+            >
+              {isLoading ? <ButtonSpinner /> : <FiSearch />}
+            </Button>
+          </InputRightElement>
+        )}
       </InputGroup>
       {recentSearches.length > 0 && (
         <Flex position="absolute" w="100%" top="100%" zIndex="1" marginTop={1}>

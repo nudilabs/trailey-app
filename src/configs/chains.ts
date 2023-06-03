@@ -303,11 +303,11 @@ export const CHAINS = [
     label: 'Polygon',
     category_label: 'Ethereum',
     logo_url:
-      'https://pbs.twimg.com/profile_images/1624229555333373952/JXGKFcO__400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1624229555333373952/JXGKFcO__400x400.jpg',
     black_logo_url:
-      'https://pbs.twimg.com/profile_images/1624229555333373952/JXGKFcO__400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1624229555333373952/JXGKFcO__400x400.jpg',
     white_logo_url:
-      'https://pbs.twimg.com/profile_images/1624229555333373952/JXGKFcO__400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1624229555333373952/JXGKFcO__400x400.jpg',
     is_appchain: false,
     appchain_of: null,
     protocols: [
@@ -486,11 +486,11 @@ export const CHAINS = [
     label: 'Scroll Alpha Testnet',
     category_label: 'Ethereum',
     logo_url:
-      'https://pbs.twimg.com/profile_images/1523593944386326528/rVjsezsD_400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1523593944386326528/rVjsezsD_400x400.jpg',
     black_logo_url:
-      'https://pbs.twimg.com/profile_images/1523593944386326528/rVjsezsD_400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1523593944386326528/rVjsezsD_400x400.jpg',
     white_logo_url:
-      'https://pbs.twimg.com/profile_images/1523593944386326528/rVjsezsD_400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1523593944386326528/rVjsezsD_400x400.jpg',
     is_appchain: false,
     appchain_of: null,
     protocols: [
@@ -549,11 +549,11 @@ export const CHAINS = [
     label: 'Linea Testnet',
     category_label: 'Ethereum',
     logo_url:
-      'https://pbs.twimg.com/profile_images/1639402103486521344/erDLnbwE_400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1639402103486521344/erDLnbwE_400x400.jpg',
     black_logo_url:
-      'https://pbs.twimg.com/profile_images/1639402103486521344/erDLnbwE_400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1639402103486521344/erDLnbwE_400x400.jpg',
     white_logo_url:
-      'https://pbs.twimg.com/profile_images/1639402103486521344/erDLnbwE_400x400.jpg',
+      'https://pbs.twimg.com/bundle_images/1639402103486521344/erDLnbwE_400x400.jpg',
     is_appchain: false,
     appchain_of: null,
     protocols: [

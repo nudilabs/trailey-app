@@ -21,33 +21,32 @@ import {
 } from '@chakra-ui/react';
 import { FiUser, FiChevronDown, FiSettings, FiPlus } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 import { useSession } from 'next-auth/react';
 
-export default function ProfileButton({
+export default function BundleButton({
   onClose,
   isHover,
-  currentProfile,
-  setCurrentProfile,
-  profilesData,
-  setProfilesData,
+  currentBundle,
+  setCurrentBundle,
+  bundlesData,
+  setBundlesData,
   ...rest
 }: {
   onClose: () => void;
   isHover: boolean;
-  currentProfile: number;
-  setCurrentProfile: (index: number) => void;
-  profilesData: IProfile[];
-  setProfilesData: (data: IProfile[]) => void;
+  currentBundle: number;
+  setCurrentBundle: (index: number) => void;
+  bundlesData: IBundle[];
+  setBundlesData: (data: IBundle[]) => void;
 }) {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
-  const hasBundle = profilesData.length > 0;
-  const { data: session, status: sessionStatus } = useSession();
+  const hasBundle = bundlesData.length > 0;
 
   const handleProfileClick = () => {
     if (!hasBundle) {
-      router.push(`/profile`);
+      router.push(`/bundle`);
       onClose();
       return;
     }
@@ -55,7 +54,7 @@ export default function ProfileButton({
   };
 
   const handleSelectProfileClick = (index: number) => {
-    setCurrentProfile(index);
+    setCurrentBundle(index);
     setShowModal(false);
     window.localStorage.setItem('profileId', index.toString());
     router.push(`/`);
@@ -63,14 +62,14 @@ export default function ProfileButton({
   };
 
   function getCurrentProfileName(): string {
-    if (hasBundle && currentProfile < profilesData.length) {
-      return profilesData[currentProfile].name;
+    if (hasBundle && currentBundle < bundlesData.length) {
+      return bundlesData[currentBundle].name;
     }
     return 'Create Bundle';
   }
 
   return (
-    <Flex direction="column" {...rest} display={session ? 'flex' : 'none'}>
+    <Flex direction="column" {...rest}>
       {isHover ? (
         hasBundle ? (
           <Button
@@ -161,11 +160,11 @@ export default function ProfileButton({
                   fontSize={{ base: 'xs', md: 'sm' }}
                   color={useColorModeValue('gray.500', 'gray.400')}
                 >{`My Profiles (${
-                  profilesData.length > 0 ? profilesData.length : 0
+                  bundlesData.length > 0 ? bundlesData.length : 0
                 })`}</Text>
                 <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                  {profilesData.length > 0 &&
-                    profilesData.map((profile, index) => (
+                  {bundlesData.length > 0 &&
+                    bundlesData.map((profile, index) => (
                       <GridItem colSpan={{ base: 2, md: 1 }} key={profile.name}>
                         <Button
                           variant={'outline'}
@@ -190,7 +189,7 @@ export default function ProfileButton({
                 leftIcon={<Icon fontSize="16" as={FiSettings} />}
                 onClick={() => {
                   setShowModal(false);
-                  router.push('/profile');
+                  router.push('/bundle');
                   onClose();
                 }}
               >

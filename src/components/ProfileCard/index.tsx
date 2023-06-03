@@ -29,7 +29,7 @@ import {
 } from '@/utils/format';
 import { IAccount } from '@/types/IAccount';
 import { Chain } from '@/types/Chains';
-import { TxSummary } from '@/types/TxSummary';
+import { TxSummary, TxSummaryByMonth } from '@/types/TxSummary';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { useBalance } from 'wagmi';
@@ -48,6 +48,7 @@ type ProfileCardProps = {
         symbol: string;
       }
     | undefined;
+  txsSummaryByMonth: TxSummaryByMonth | undefined;
 };
 
 export default function ProfileCard({
@@ -57,7 +58,8 @@ export default function ProfileCard({
   handleSubmit,
   balance,
   localChain,
-  setLocalChain
+  setLocalChain,
+  txsSummaryByMonth
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
@@ -262,24 +264,9 @@ export default function ProfileCard({
             </Stat>
             <Stat textAlign="center">
               <StatNumber>
-                ${formatPrettyNumber(txSummary?.gasQuoteSum.allTime ?? 0)}
+                {txsSummaryByMonth?.txsByMonth.length ?? 0}
               </StatNumber>
-              <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
-              {txSummary && txSummary.gasQuoteSum.lastWeek !== 0 && (
-                <Tooltip
-                  label={`${formatDecimals(
-                    txSummary?.gasQuoteSum.percentChange ?? 0
-                  )}% ${toolTipLabel}`}
-                  hasArrow
-                >
-                  <StatHelpText>
-                    {`$${formatPrettyNumber(
-                      txSummary?.gasQuoteSum.lastWeek,
-                      1
-                    )} past week`}
-                  </StatHelpText>
-                </Tooltip>
-              )}
+              <StatLabel color={subHeadingColor}>Active Months</StatLabel>
             </Stat>
           </Flex>
         </Flex>

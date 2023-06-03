@@ -1,5 +1,5 @@
 import { IAccount } from '@/types/IAccount';
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 import { Button } from '@chakra-ui/button';
 import { useColorModeValue } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/toast';
@@ -8,16 +8,16 @@ import { FiPlusCircle } from 'react-icons/fi';
 import { useSession } from 'next-auth/react';
 
 type AddToBundleBtnProps = {
-  setProfilesData: (newProfilesData: IProfile[]) => void;
-  profilesData: IProfile[];
-  currentProfile: number;
+  setBundlesData: (newProfilesData: IBundle[]) => void;
+  bundlesData: IBundle[];
+  currentBundle: number;
   account: IAccount;
 };
 
 export default function AddToBundleBtn({
-  setProfilesData,
-  profilesData,
-  currentProfile,
+  setBundlesData,
+  bundlesData,
+  currentBundle,
   account
 }: AddToBundleBtnProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,15 +26,15 @@ export default function AddToBundleBtn({
 
   const handleAddToBundle = () => {
     setIsLoading(true);
-    const profile = profilesData[currentProfile];
+    const profile = bundlesData[currentBundle];
     const newProfile = {
       ...profile,
       wallets: [...profile.wallets, { address: account.address, type: 'hot' }]
     };
-    const newProfilesData = [...profilesData];
-    newProfilesData[currentProfile] = newProfile;
-    setProfilesData(newProfilesData);
-    localStorage.setItem('abtrail.profiles', JSON.stringify(newProfilesData));
+    const newProfilesData = [...bundlesData];
+    newProfilesData[currentBundle] = newProfile;
+    setBundlesData(newProfilesData);
+    localStorage.setItem('abtrail.bundles', JSON.stringify(newProfilesData));
     toast({
       title: 'Wallet added to bundle',
       status: 'success',
@@ -48,10 +48,10 @@ export default function AddToBundleBtn({
   };
 
   // Check if the address already exists in the profile's wallets
-  const addressExists = profilesData[currentProfile]?.wallets.some(
+  const addressExists = bundlesData[currentBundle]?.wallets.some(
     wallet => wallet.address === account.address
   );
-  const hasBundle = profilesData.length > 0 && profilesData[currentProfile];
+  const hasBundle = bundlesData.length > 0 && bundlesData[currentBundle];
 
   return (
     <Button

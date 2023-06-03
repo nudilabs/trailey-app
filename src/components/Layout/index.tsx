@@ -3,21 +3,21 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Progress } from '@chakra-ui/react';
 import SidebarWithHeader from '../SidebarWithHeader';
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 
 interface LayoutProps {
-  currentProfile: number;
-  setCurrentProfile: React.Dispatch<React.SetStateAction<number>>;
-  profilesData: IProfile[];
-  setProfilesData: React.Dispatch<React.SetStateAction<IProfile[]>>;
+  currentBundle: number;
+  setCurrentBundle: React.Dispatch<React.SetStateAction<number>>;
+  bundlesData: IBundle[];
+  setBundlesData: React.Dispatch<React.SetStateAction<IBundle[]>>;
   children: React.ReactNode;
 }
 
 export default function Layout({
-  currentProfile,
-  setCurrentProfile,
-  profilesData,
-  setProfilesData,
+  currentBundle,
+  setCurrentBundle,
+  bundlesData,
+  setBundlesData,
   children
 }: LayoutProps) {
   const router = useRouter();
@@ -67,10 +67,10 @@ export default function Layout({
         />
       )}
       <SidebarWithHeader
-        currentProfile={currentProfile}
-        setCurrentProfile={setCurrentProfile}
-        profilesData={profilesData}
-        setProfilesData={setProfilesData}
+        currentBundle={currentBundle}
+        setCurrentBundle={setCurrentBundle}
+        bundlesData={bundlesData}
+        setBundlesData={setBundlesData}
       >
         <main>{children}</main>
       </SidebarWithHeader>

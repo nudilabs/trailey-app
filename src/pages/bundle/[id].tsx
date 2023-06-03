@@ -1,4 +1,4 @@
-import { IProfile } from '@/types/IProfile';
+import { IBundle } from '@/types/IBundle';
 import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
 import {
   Button,
@@ -39,14 +39,14 @@ import { isAddress } from 'viem';
 
 interface ProfileProps {
   id: string;
-  profilesData: IProfile[];
-  setProfilesData: React.Dispatch<React.SetStateAction<IProfile[]>>;
+  bundlesData: IBundle[];
+  setBundlesData: React.Dispatch<React.SetStateAction<IBundle[]>>;
 }
 
 export default function Profile({
   id,
-  profilesData,
-  setProfilesData
+  bundlesData,
+  setBundlesData
 }: ProfileProps) {
   const router = useRouter();
   const [input, setInput] = useState('');
@@ -74,12 +74,12 @@ export default function Profile({
       const newWallets = profile.wallets.filter((_, i) => i !== index);
       const newProfile = { ...profile, wallets: newWallets };
       setProfile(newProfile);
-      const newProfilesData = profilesData.map((p, i) =>
+      const newProfilesData = bundlesData.map((p, i) =>
         i === parseInt(id) ? newProfile : p
       );
-      setProfilesData(newProfilesData);
+      setBundlesData(newProfilesData);
       window.localStorage.setItem(
-        'abtrail.profiles',
+        'abtrail.bundles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -90,12 +90,12 @@ export default function Profile({
       const newWallets = [...profile.wallets, { address, type }];
       const newProfile = { ...profile, wallets: newWallets };
       setProfile(newProfile);
-      const newProfilesData = profilesData.map((p, i) =>
+      const newProfilesData = bundlesData.map((p, i) =>
         i === parseInt(id) ? newProfile : p
       );
-      setProfilesData(newProfilesData);
+      setBundlesData(newProfilesData);
       window.localStorage.setItem(
-        'abtrail.profiles',
+        'abtrail.bundles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -105,12 +105,12 @@ export default function Profile({
     if (profile) {
       const newProfile = { ...profile, name };
       setProfile(newProfile);
-      const newProfilesData = profilesData.map((p, i) =>
+      const newProfilesData = bundlesData.map((p, i) =>
         i === parseInt(id) ? newProfile : p
       );
-      setProfilesData(newProfilesData);
+      setBundlesData(newProfilesData);
       window.localStorage.setItem(
-        'abtrail.profiles',
+        'abtrail.bundles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -118,10 +118,10 @@ export default function Profile({
 
   useEffect(() => {
     // Get item from local storage
-    const profiles = window.localStorage.getItem('abtrail.profiles');
+    const profiles = window.localStorage.getItem('abtrail.bundles');
     if (profiles) {
       const parsedProfiles = JSON.parse(profiles);
-      setProfilesData(parsedProfiles);
+      setBundlesData(parsedProfiles);
       const selectedProfile = parsedProfiles[parseInt(id)];
       if (selectedProfile) setProfile(selectedProfile);
     }
