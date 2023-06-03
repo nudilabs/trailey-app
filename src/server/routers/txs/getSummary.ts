@@ -146,6 +146,7 @@ export const getSummary = publicProcedure
       ((dataLastWeek[0].gasQuoteSum - dataLastTwoWeeks[0].gasQuoteSum) /
         dataLastTwoWeeks[0].gasQuoteSum) *
       100;
+    console.log('dataAllTime: ', dataAllTime);
     return {
       txCount: {
         allTime: dataAllTime[0].txCount,

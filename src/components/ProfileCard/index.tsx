@@ -49,6 +49,8 @@ type ProfileCardProps = {
       }
     | undefined;
   txsSummaryByMonth: TxSummaryByMonth | undefined;
+  lastResynced: LastResync | undefined;
+  setLastResynced: (lastResynced: LastResync | undefined) => void;
 };
 
 export default function ProfileCard({
@@ -59,12 +61,14 @@ export default function ProfileCard({
   balance,
   localChain,
   setLocalChain,
-  txsSummaryByMonth
+  txsSummaryByMonth,
+  lastResynced,
+  setLastResynced
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
-  const [lastResynced, setLastResynced] = useState<LastResync>();
+
   const [isSyncing, setIsSyncing] = useState(false);
   const [currentChain, setCurrentChain] = useState<Chain>();
 

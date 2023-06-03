@@ -50,6 +50,7 @@ import ActivityIndexCard from '@/components/ActivityIndexCard';
 import { formatPrettyNumber } from '@/utils/format';
 import { fetchBalance } from '@wagmi/core';
 import { CHAINS } from '@/configs/chains';
+import { LastResync } from '@/types/LastResync';
 
 export default function Account({
   account,
@@ -70,6 +71,7 @@ export default function Account({
 }) {
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
   const [achieved, setAchieved] = useState<Condition[]>([]);
+  const [lastResynced, setLastResynced] = useState<LastResync>();
 
   const [balance, setBalance] = useState<{
     formatted: string;
@@ -169,7 +171,7 @@ export default function Account({
     // check if type is string
     if (typeof chain === 'string') {
       setLocalChain(chain);
-      localStorage.setItem('biway.chain', chain);
+      localStorage.setItem('abtrail.chain', chain);
     }
     // clear query params
     // router.push(`/address/${account.address}`, undefined, { shallow: true });
@@ -194,6 +196,44 @@ export default function Account({
     };
     getBalance();
   }, [currentChain]);
+
+  useEffect(() => {
+    if (
+      txSummary &&
+      typeof txSummary.txCount.allTime === 'string' &&
+      parseInt(txSummary.txCount.allTime) === 0
+    ) {
+      handleSubmit({ preventDefault: () => {} });
+      const currentDate = new Date();
+      const obj = {
+        chain: localChain,
+        address: account.address,
+        timestamp: currentDate
+      };
+      const localStorage = window.localStorage;
+      const lrsFromLocal = localStorage.getItem('abtrail.lrs');
+      // find the old lrs in storage
+      if (lrsFromLocal) {
+        let lrsFromLocalObj = JSON.parse(lrsFromLocal);
+        let currentLsrObj = lrsFromLocalObj.find(
+          (item: { chain: string; address: string }) =>
+            item.chain === localChain && item.address === account.address
+        );
+        if (currentLsrObj) {
+          // if found, update the timestamp
+          currentLsrObj.timestamp = currentDate;
+        } else {
+          lrsFromLocalObj.push(obj);
+        }
+        localStorage.setItem('abtrail.lrs', JSON.stringify(lrsFromLocalObj));
+        setLastResynced(currentLsrObj);
+      } else {
+        // if not found, create a new one
+        localStorage.setItem('abtrail.lrs', JSON.stringify([obj]));
+        setLastResynced(obj);
+      }
+    }
+  }, [localChain, account.address, txSummary]);
 
   return (
     <Flex direction="column">
@@ -225,6 +265,8 @@ export default function Account({
                 localChain={localChain}
                 setLocalChain={setLocalChain}
                 txsSummaryByMonth={txsSummaryByMonth}
+                lastResynced={lastResynced}
+                setLastResynced={setLastResynced}
               />
               <AddToBundleBtn
                 account={account}
