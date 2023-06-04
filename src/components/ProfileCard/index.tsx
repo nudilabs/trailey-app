@@ -186,7 +186,9 @@ export default function ProfileCard({
                 {account.ensName}
               </Heading>
             ) : (
-              <Skeleton height="20px" width="100px" />
+              <Heading size={'lg'} textAlign="center" marginTop={2}>
+                Unidentified
+              </Heading>
             )}
             <Flex direction="row" alignItems="center" gap={1}>
               <Button
