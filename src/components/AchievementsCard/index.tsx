@@ -16,7 +16,8 @@ import {
   ModalBody,
   ModalFooter,
   Text,
-  useColorModeValue
+  useColorModeValue,
+  Skeleton
 } from '@chakra-ui/react';
 import { FiInfo } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -84,34 +85,38 @@ export default function AchievementsCard({
         </Flex>
       </CardHeader>
       <CardBody paddingTop={4} paddingBottom={6}>
-        <Flex direction="row" overflowX="scroll" paddingTop={2} pl={2}>
-          {filteredAchievements && filteredAchievements.length > 0 ? (
-            filteredAchievements.map((achievement, index) => (
-              <motion.div
-                whileHover={{ scale: 1.1, y: -5 }}
-                whileTap={{ scale: 0.9 }}
-                key={index}
-              >
-                <Tooltip label={achievement.name} hasArrow placement="top">
-                  <Flex
-                    boxSize="64px"
-                    mr={-6}
-                    onClick={() => handleAchievementClick(achievement)}
-                    cursor="pointer"
-                  >
-                    <Image
-                      src={achievement.image_url}
-                      alt={achievement.name}
-                      objectFit="cover"
-                    />
-                  </Flex>
-                </Tooltip>
-              </motion.div>
-            ))
-          ) : (
-            <Text>No achievements found</Text>
-          )}
-        </Flex>
+        {txSummary ? (
+          <Flex direction="row" overflowX="scroll" paddingTop={2} pl={2}>
+            {filteredAchievements && filteredAchievements.length > 0 ? (
+              filteredAchievements.map((achievement, index) => (
+                <motion.div
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  key={index}
+                >
+                  <Tooltip label={achievement.name} hasArrow placement="top">
+                    <Flex
+                      boxSize="64px"
+                      mr={-6}
+                      onClick={() => handleAchievementClick(achievement)}
+                      cursor="pointer"
+                    >
+                      <Image
+                        src={achievement.image_url}
+                        alt={achievement.name}
+                        objectFit="cover"
+                      />
+                    </Flex>
+                  </Tooltip>
+                </motion.div>
+              ))
+            ) : (
+              <Text>No achievements found</Text>
+            )}
+          </Flex>
+        ) : (
+          <Skeleton height="64px" />
+        )}
       </CardBody>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
@@ -129,14 +134,7 @@ export default function AchievementsCard({
               <Text>{selectedAchievement?.description}</Text>
             </Flex>
           </ModalBody>
-          <ModalFooter>
-            {/* <Text
-              fontSize="xs"
-              color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
-            >
-              1% of users have this achievement
-            </Text> */}
-          </ModalFooter>
+          <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
     </Card>

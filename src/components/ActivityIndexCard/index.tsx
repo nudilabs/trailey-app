@@ -18,7 +18,9 @@ import {
   TableContainer,
   Circle,
   Tooltip,
-  CardHeader
+  CardHeader,
+  Skeleton,
+  SkeletonCircle
 } from '@chakra-ui/react';
 import { TxSummary } from '@/types/TxSummary';
 import { FiInfo } from 'react-icons/fi';
@@ -73,6 +75,8 @@ export default function ActivityIndexCard({
   const yellow = useColorModeValue('yellow.500', 'yellow.400');
   const average = useColorModeValue('gray.700', 'gray.400');
   const green = useColorModeValue('green.500', 'green.400');
+
+  const trackColor = useColorModeValue('gray.100', 'gray.700');
 
   const getScoreColor = (score: number): string => {
     if (score <= 45) {
@@ -161,22 +165,23 @@ export default function ActivityIndexCard({
       <CardBody>
         <Flex direction="column" gap={4}>
           <Flex justifyContent="center">
-            <CircularProgress
-              value={isDisabled ? 51 : score}
-              color={getScoreColor(isDisabled ? 51 : score)}
-              size={32}
-              thickness={12}
-              capIsRound
-              trackColor={useColorModeValue('gray.100', 'gray.700')}
-            >
-              <CircularProgressLabel fontSize={24} fontWeight="bold">
-                {isDisabled ? 51 : formatDecimals(score, 1)}
-              </CircularProgressLabel>
-            </CircularProgress>
+            {txSummary ? (
+              <CircularProgress
+                value={isDisabled ? 51 : score}
+                color={getScoreColor(isDisabled ? 51 : score)}
+                size={32}
+                thickness={12}
+                capIsRound
+                trackColor={trackColor}
+              >
+                <CircularProgressLabel fontSize={24} fontWeight="bold">
+                  {isDisabled ? 51 : formatDecimals(score, 1)}
+                </CircularProgressLabel>
+              </CircularProgress>
+            ) : (
+              <SkeletonCircle size="32" />
+            )}
           </Flex>
-          {/* <Flex justifyContent="center">
-            <Heading size="md">Performance</Heading>
-          </Flex> */}
           <TableContainer>
             <Table variant="simple">
               <Thead>
@@ -184,13 +189,13 @@ export default function ActivityIndexCard({
                   <Th>Metrics</Th>
                 </Tr>
               </Thead>
-              {txSummary && (
-                <Tbody>
-                  <Tr
-                    onMouseEnter={() => setScore(normalizedTxCount)}
-                    onMouseLeave={() => setScore(overallScore)}
-                  >
-                    <Td>
+              <Tbody>
+                <Tr
+                  onMouseEnter={() => setScore(normalizedTxCount)}
+                  onMouseLeave={() => setScore(overallScore)}
+                >
+                  <Td>
+                    {txSummary ? (
                       <Flex
                         alignItems="center"
                         gap={2}
@@ -213,13 +218,17 @@ export default function ActivityIndexCard({
                           {formatDecimals(isDisabled ? 51 : normalizedTxCount)}
                         </Text>
                       </Flex>
-                    </Td>
-                  </Tr>
-                  <Tr
-                    onMouseEnter={() => setScore(normalizedContractCount)}
-                    onMouseLeave={() => setScore(overallScore)}
-                  >
-                    <Td>
+                    ) : (
+                      <Skeleton height="20px" />
+                    )}
+                  </Td>
+                </Tr>
+                <Tr
+                  onMouseEnter={() => setScore(normalizedContractCount)}
+                  onMouseLeave={() => setScore(overallScore)}
+                >
+                  <Td>
+                    {txSummary ? (
                       <Flex
                         alignItems="center"
                         gap={2}
@@ -244,13 +253,17 @@ export default function ActivityIndexCard({
                           )}
                         </Text>
                       </Flex>
-                    </Td>
-                  </Tr>
-                  <Tr
-                    onMouseEnter={() => setScore(normalizedValueQuoteSum)}
-                    onMouseLeave={() => setScore(overallScore)}
-                  >
-                    <Td>
+                    ) : (
+                      <Skeleton height="20px" />
+                    )}
+                  </Td>
+                </Tr>
+                <Tr
+                  onMouseEnter={() => setScore(normalizedValueQuoteSum)}
+                  onMouseLeave={() => setScore(overallScore)}
+                >
+                  <Td>
+                    {txSummary ? (
                       <Flex
                         alignItems="center"
                         gap={2}
@@ -275,13 +288,17 @@ export default function ActivityIndexCard({
                           )}
                         </Text>
                       </Flex>
-                    </Td>
-                  </Tr>
-                  <Tr
-                    onMouseEnter={() => setScore(normalizedGasQuoteSum)}
-                    onMouseLeave={() => setScore(overallScore)}
-                  >
-                    <Td>
+                    ) : (
+                      <Skeleton height="20px" />
+                    )}
+                  </Td>
+                </Tr>
+                <Tr
+                  onMouseEnter={() => setScore(normalizedGasQuoteSum)}
+                  onMouseLeave={() => setScore(overallScore)}
+                >
+                  <Td>
+                    {txSummary ? (
                       <Flex
                         alignItems="center"
                         gap={2}
@@ -306,10 +323,12 @@ export default function ActivityIndexCard({
                           )}
                         </Text>
                       </Flex>
-                    </Td>
-                  </Tr>
-                </Tbody>
-              )}
+                    ) : (
+                      <Skeleton height="20px" />
+                    )}
+                  </Td>
+                </Tr>
+              </Tbody>
             </Table>
           </TableContainer>
           <Flex justifyContent="center">

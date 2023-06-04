@@ -8,7 +8,6 @@ import {
   Heading,
   IconButton,
   Skeleton,
-  SkeletonText,
   Stat,
   StatHelpText,
   StatLabel,
@@ -24,7 +23,6 @@ import Avatar from '../Avatar';
 import {
   formatDecimals,
   formatPrettyNumber,
-  getEthFromWei,
   getFormattedAddress
 } from '@/utils/format';
 import { IAccount } from '@/types/IAccount';
@@ -51,6 +49,7 @@ type ProfileCardProps = {
   txsSummaryByMonth: TxSummaryByMonth | undefined;
   lastResynced: LastResync | undefined;
   setLastResynced: (lastResynced: LastResync | undefined) => void;
+  isRefetching: boolean;
 };
 
 export default function ProfileCard({
@@ -63,14 +62,12 @@ export default function ProfileCard({
   setLocalChain,
   txsSummaryByMonth,
   lastResynced,
-  setLastResynced
+  setLastResynced,
+  isRefetching
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
-
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [currentChain, setCurrentChain] = useState<Chain>();
 
   const handleResync = () => {
     handleSubmit({ preventDefault: () => {} });
@@ -110,11 +107,6 @@ export default function ProfileCard({
       isClosable: true,
       position: 'top-right'
     });
-    // set timer to 10 seconds
-    setIsSyncing(true);
-    setTimeout(() => {
-      setIsSyncing(false);
-    }, 2000);
   };
 
   useEffect(() => {
@@ -128,7 +120,6 @@ export default function ProfileCard({
       setLastResynced(lastResynced);
     }
     const chain = chainConfigs.find(chain => chain.name === localChain);
-    if (chain) setCurrentChain(chain);
   }, [localChain]);
   return (
     <Card size="lg">
@@ -166,7 +157,7 @@ export default function ProfileCard({
                 aria-label="refresh"
                 icon={<FiRefreshCw />}
                 onClick={handleResync}
-                isLoading={isSyncing}
+                isLoading={isRefetching}
                 isDisabled={
                   lastResynced &&
                   moment(lastResynced.timestamp)
@@ -214,64 +205,78 @@ export default function ProfileCard({
               >
                 {getFormattedAddress(account.address)}
               </Button>
-              {balance && (
+              {balance ? (
                 <Text color={subHeadingColor} fontSize="xs">
                   {`${formatPrettyNumber(balance.formatted)} ${balance.symbol}`}
                 </Text>
+              ) : (
+                <Skeleton height="20px" width="60px" />
               )}
             </Flex>
           </Flex>
           <Flex direction="row" width="100%" justifyContent="space-between">
-            <Stat textAlign="center">
-              <StatNumber>
-                {formatPrettyNumber(txSummary?.txCount.allTime ?? 0, 0)}
-              </StatNumber>
-              <StatLabel color={subHeadingColor}>Transactions</StatLabel>
-              {txSummary && txSummary.txCount.lastWeek !== 0 && (
-                <Tooltip
-                  label={`${formatDecimals(
-                    txSummary?.txCount.percentChange ?? 0
-                  )}% ${toolTipLabel}`}
-                  hasArrow
-                >
-                  <StatHelpText>
-                    {`${formatPrettyNumber(
-                      txSummary?.txCount.lastWeek,
-                      0
-                    )} past week`}
-                  </StatHelpText>
-                </Tooltip>
-              )}
-            </Stat>
-            <Stat textAlign="center">
-              <StatNumber>
-                <Text>
-                  ${formatPrettyNumber(txSummary?.valueQuoteSum.allTime ?? 0)}
-                </Text>
-              </StatNumber>
-              <StatLabel color={subHeadingColor}>Tx Value</StatLabel>
-              {txSummary && txSummary.valueQuoteSum.lastWeek !== 0 && (
-                <Tooltip
-                  label={`${formatDecimals(
-                    txSummary?.valueQuoteSum.percentChange ?? 0
-                  )}% ${toolTipLabel}`}
-                  hasArrow
-                >
-                  <StatHelpText>
-                    {`$${formatPrettyNumber(
-                      txSummary?.valueQuoteSum.lastWeek,
-                      1
-                    )} past week`}
-                  </StatHelpText>
-                </Tooltip>
-              )}
-            </Stat>
-            <Stat textAlign="center">
-              <StatNumber>
-                {txsSummaryByMonth?.txsByMonth.length ?? 0}
-              </StatNumber>
-              <StatLabel color={subHeadingColor}>Active Months</StatLabel>
-            </Stat>
+            {txSummary ? (
+              <Stat textAlign="center">
+                <StatNumber>
+                  {formatPrettyNumber(txSummary?.txCount.allTime ?? 0, 0)}
+                </StatNumber>
+                <StatLabel color={subHeadingColor}>Transactions</StatLabel>
+                {txSummary && txSummary.txCount.lastWeek !== 0 && (
+                  <Tooltip
+                    label={`${formatDecimals(
+                      txSummary?.txCount.percentChange ?? 0
+                    )}% ${toolTipLabel}`}
+                    hasArrow
+                  >
+                    <StatHelpText>
+                      {`${formatPrettyNumber(
+                        txSummary?.txCount.lastWeek,
+                        0
+                      )} past week`}
+                    </StatHelpText>
+                  </Tooltip>
+                )}
+              </Stat>
+            ) : (
+              <Skeleton height="50px" width="100px" />
+            )}
+            {txSummary ? (
+              <Stat textAlign="center">
+                <StatNumber>
+                  <Text>
+                    ${formatPrettyNumber(txSummary?.valueQuoteSum.allTime ?? 0)}
+                  </Text>
+                </StatNumber>
+                <StatLabel color={subHeadingColor}>Tx Value</StatLabel>
+                {txSummary && txSummary.valueQuoteSum.lastWeek !== 0 && (
+                  <Tooltip
+                    label={`${formatDecimals(
+                      txSummary?.valueQuoteSum.percentChange ?? 0
+                    )}% ${toolTipLabel}`}
+                    hasArrow
+                  >
+                    <StatHelpText>
+                      {`$${formatPrettyNumber(
+                        txSummary?.valueQuoteSum.lastWeek,
+                        1
+                      )} past week`}
+                    </StatHelpText>
+                  </Tooltip>
+                )}
+              </Stat>
+            ) : (
+              <Skeleton height="50px" width="100px" />
+            )}
+            {txSummary ? (
+              <Stat textAlign="center">
+                <StatNumber>
+                  {txsSummaryByMonth?.txsByMonth.length ?? 0}
+                </StatNumber>
+                <StatLabel color={subHeadingColor}>Active Months</StatLabel>
+              </Stat>
+            ) : (
+              <Skeleton height="50px" width="100px" />
+            )}
           </Flex>
         </Flex>
       </CardBody>

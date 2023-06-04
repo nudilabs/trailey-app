@@ -23,7 +23,8 @@ import {
   Th,
   Td,
   TableCaption,
-  TableContainer
+  TableContainer,
+  Skeleton
 } from '@chakra-ui/react';
 import { FiExternalLink, FiInfo } from 'react-icons/fi';
 import moment from 'moment';
@@ -122,19 +123,37 @@ export default function TopProtocolsUsageCard({
                             </Text>
                             <FiExternalLink />
                           </Flex>
-                          <Text color={subHeadingColor} fontSize="xs">
+                          {/* <Text color={subHeadingColor} fontSize="xs">
                             0 days active
-                          </Text>
+                          </Text> */}
                         </Flex>
                       </Flex>
                     </Td>
-                    <Td>{contractInteractions?.txCount.allTime ?? 0}</Td>
                     <Td>
-                      {contractInteractions?.lastTx
-                        ? moment(contractInteractions?.lastTx).fromNow()
-                        : 'N/A'}
+                      {txsSummaryByContract ? (
+                        contractInteractions?.txCount.allTime ?? 0
+                      ) : (
+                        <Skeleton height="20px" />
+                      )}
                     </Td>
-                    <Td>Coming soon</Td>
+                    <Td>
+                      {txsSummaryByContract ? (
+                        contractInteractions?.lastTx ? (
+                          moment(contractInteractions?.lastTx).fromNow()
+                        ) : (
+                          'N/A'
+                        )
+                      ) : (
+                        <Skeleton height="20px" />
+                      )}
+                    </Td>
+                    <Td>
+                      {txsSummaryByContract ? (
+                        `Coming soon`
+                      ) : (
+                        <Skeleton height="20px" />
+                      )}
+                    </Td>
                   </Tr>
                 );
               })}

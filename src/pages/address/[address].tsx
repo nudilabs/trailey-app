@@ -12,6 +12,7 @@ import {
   Grid,
   GridItem,
   Heading,
+  Skeleton,
   Stat,
   StatHelpText,
   StatNumber,
@@ -100,7 +101,7 @@ export default function Account({
     }, 60000);
   };
 
-  const txSummary: TxSummary | undefined = trpc.txs.getSummary.useQuery(
+  const txSummary = trpc.txs.getSummary.useQuery(
     {
       chainName: currentChain.name,
       walletAddr: account.address
@@ -108,7 +109,7 @@ export default function Account({
     {
       refetchInterval: validateData ? 10000 : 0
     }
-  ).data;
+  );
 
   const txsSummaryByContract: TxSummaryByContract | undefined =
     trpc.txs.getSummaryByContract.useQuery(
@@ -217,9 +218,9 @@ export default function Account({
 
   useEffect(() => {
     if (
-      txSummary &&
-      typeof txSummary.txCount.allTime === 'string' &&
-      parseInt(txSummary.txCount.allTime) === 0
+      txSummary.data &&
+      typeof txSummary.data.txCount.allTime === 'string' &&
+      parseInt(txSummary.data.txCount.allTime) === 0
     ) {
       handleSubmit({ preventDefault: () => {} });
       const currentDate = new Date();
@@ -251,7 +252,7 @@ export default function Account({
         setLastResynced(obj);
       }
     }
-  }, [txSummary]);
+  }, [txSummary.data]);
 
   // handle auto resync
   useEffect(() => {
@@ -335,7 +336,7 @@ export default function Account({
               <ProfileCard
                 account={account}
                 chainConfigs={chainConfigs}
-                txSummary={txSummary}
+                txSummary={txSummary.data}
                 handleSubmit={handleSubmit}
                 balance={balance}
                 localChain={localChain}
@@ -343,6 +344,7 @@ export default function Account({
                 txsSummaryByMonth={txsSummaryByMonth}
                 lastResynced={lastResynced}
                 setLastResynced={setLastResynced}
+                isRefetching={txSummary.isRefetching}
               />
               <AddToBundleBtn
                 account={account}
@@ -353,7 +355,7 @@ export default function Account({
               <Box>
                 <AchievementsCard
                   achievements={currentChain.achievements}
-                  txSummary={txSummary}
+                  txSummary={txSummary.data}
                 />
               </Box>
             </Flex>
@@ -367,7 +369,7 @@ export default function Account({
               <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
                 <Flex direction="column" gap={4}>
                   <ActivityIndexCard
-                    txSummary={txSummary}
+                    txSummary={txSummary.data}
                     chainConfigs={chainConfigs}
                     localChain={localChain}
                   />
@@ -395,7 +397,13 @@ export default function Account({
                         <GridItem colSpan={{ base: 6 }} alignSelf="center">
                           <Stat>
                             <StatNumber>
-                              <Heading>{totalTxCountByMonthData}</Heading>
+                              <Heading>
+                                {txSummary.data ? (
+                                  totalTxCountByMonthData
+                                ) : (
+                                  <Skeleton height="42px" />
+                                )}
+                              </Heading>
                             </StatNumber>
                             <StatHelpText>
                               <Text fontSize="sm" color={subHeadingColor}>
@@ -487,7 +495,11 @@ export default function Account({
                             <StatNumber>
                               <Heading>
                                 $
-                                {formatPrettyNumber(totalValueQuoteByMonthData)}
+                                {txSummary.data ? (
+                                  formatPrettyNumber(totalValueQuoteByMonthData)
+                                ) : (
+                                  <Skeleton height="42px" />
+                                )}
                               </Heading>
                             </StatNumber>
                             <StatHelpText>
@@ -578,7 +590,14 @@ export default function Account({
                         <GridItem colSpan={{ base: 6 }} alignSelf="center">
                           <Stat>
                             <StatNumber>
-                              <Heading>${0}</Heading>
+                              <Heading>
+                                $
+                                {txSummary.data ? (
+                                  0
+                                ) : (
+                                  <Skeleton height="42px" />
+                                )}
+                              </Heading>
                             </StatNumber>
                             <StatHelpText>
                               <Text fontSize="sm" color={subHeadingColor}>
