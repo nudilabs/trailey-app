@@ -195,32 +195,22 @@ export default function ActivityIndexCard({
                   onMouseLeave={() => setScore(overallScore)}
                 >
                   <Td>
-                    {txSummary ? (
-                      <Flex
-                        alignItems="center"
-                        gap={2}
-                        justifyContent="space-between"
-                      >
-                        <Flex alignItems="center" gap={2}>
-                          <Circle
-                            size={3}
-                            bg={getScoreColor(
-                              isDisabled ? 51 : normalizedTxCount
-                            )}
-                          />
-                          <Text>Transactions</Text>
-                        </Flex>
-                        <Text
-                          color={getScoreColor(
-                            isDisabled ? 51 : normalizedTxCount
-                          )}
-                        >
-                          {formatDecimals(isDisabled ? 51 : normalizedTxCount)}
-                        </Text>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      justifyContent="space-between"
+                    >
+                      <Flex alignItems="center" gap={2}>
+                        <Circle
+                          size={3}
+                          bg={getScoreColor(normalizedTxCount)}
+                        />
+                        <Text>Transactions</Text>
                       </Flex>
-                    ) : (
-                      <Skeleton height="20px" />
-                    )}
+                      <Text color={getScoreColor(normalizedTxCount)}>
+                        {formatDecimals(normalizedTxCount)}
+                      </Text>
+                    </Flex>
                   </Td>
                 </Tr>
                 <Tr
@@ -228,34 +218,22 @@ export default function ActivityIndexCard({
                   onMouseLeave={() => setScore(overallScore)}
                 >
                   <Td>
-                    {txSummary ? (
-                      <Flex
-                        alignItems="center"
-                        gap={2}
-                        justifyContent="space-between"
-                      >
-                        <Flex alignItems="center" gap={2}>
-                          <Circle
-                            size={3}
-                            bg={getScoreColor(
-                              isDisabled ? 51 : normalizedContractCount
-                            )}
-                          />
-                          <Text>Contract Interactions</Text>
-                        </Flex>
-                        <Text
-                          color={getScoreColor(
-                            isDisabled ? 51 : normalizedContractCount
-                          )}
-                        >
-                          {formatDecimals(
-                            isDisabled ? 51 : normalizedContractCount
-                          )}
-                        </Text>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      justifyContent="space-between"
+                    >
+                      <Flex alignItems="center" gap={2}>
+                        <Circle
+                          size={3}
+                          bg={getScoreColor(normalizedContractCount)}
+                        />
+                        <Text>Contract Interactions</Text>
                       </Flex>
-                    ) : (
-                      <Skeleton height="20px" />
-                    )}
+                      <Text color={getScoreColor(normalizedContractCount)}>
+                        {formatDecimals(normalizedContractCount)}
+                      </Text>
+                    </Flex>
                   </Td>
                 </Tr>
                 <Tr
@@ -263,34 +241,22 @@ export default function ActivityIndexCard({
                   onMouseLeave={() => setScore(overallScore)}
                 >
                   <Td>
-                    {txSummary ? (
-                      <Flex
-                        alignItems="center"
-                        gap={2}
-                        justifyContent="space-between"
-                      >
-                        <Flex alignItems="center" gap={2}>
-                          <Circle
-                            size={3}
-                            bg={getScoreColor(
-                              isDisabled ? 51 : normalizedValueQuoteSum
-                            )}
-                          />
-                          <Text>Transaction Value</Text>
-                        </Flex>
-                        <Text
-                          color={getScoreColor(
-                            isDisabled ? 51 : normalizedValueQuoteSum
-                          )}
-                        >
-                          {formatDecimals(
-                            isDisabled ? 51 : normalizedValueQuoteSum
-                          )}
-                        </Text>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      justifyContent="space-between"
+                    >
+                      <Flex alignItems="center" gap={2}>
+                        <Circle
+                          size={3}
+                          bg={getScoreColor(normalizedValueQuoteSum)}
+                        />
+                        <Text>Transaction Value</Text>
                       </Flex>
-                    ) : (
-                      <Skeleton height="20px" />
-                    )}
+                      <Text color={getScoreColor(normalizedValueQuoteSum)}>
+                        {formatDecimals(normalizedValueQuoteSum)}
+                      </Text>
+                    </Flex>
                   </Td>
                 </Tr>
                 <Tr
@@ -298,34 +264,22 @@ export default function ActivityIndexCard({
                   onMouseLeave={() => setScore(overallScore)}
                 >
                   <Td>
-                    {txSummary ? (
-                      <Flex
-                        alignItems="center"
-                        gap={2}
-                        justifyContent="space-between"
-                      >
-                        <Flex alignItems="center" gap={2}>
-                          <Circle
-                            size={3}
-                            bg={getScoreColor(
-                              isDisabled ? 51 : normalizedGasQuoteSum
-                            )}
-                          />
-                          <Text>Fees Paid</Text>
-                        </Flex>
-                        <Text
-                          color={getScoreColor(
-                            isDisabled ? 51 : normalizedGasQuoteSum
-                          )}
-                        >
-                          {formatDecimals(
-                            isDisabled ? 51 : normalizedGasQuoteSum
-                          )}
-                        </Text>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      justifyContent="space-between"
+                    >
+                      <Flex alignItems="center" gap={2}>
+                        <Circle
+                          size={3}
+                          bg={getScoreColor(normalizedGasQuoteSum)}
+                        />
+                        <Text>Fees Paid</Text>
                       </Flex>
-                    ) : (
-                      <Skeleton height="20px" />
-                    )}
+                      <Text color={getScoreColor(normalizedGasQuoteSum)}>
+                        {formatDecimals(normalizedGasQuoteSum)}
+                      </Text>
+                    </Flex>
                   </Td>
                 </Tr>
               </Tbody>

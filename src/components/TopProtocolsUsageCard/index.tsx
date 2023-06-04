@@ -48,7 +48,7 @@ export default function TopProtocolsUsageCard({
 
       return currentChain.protocols.some(
         protocol =>
-          protocol?.address?.toLowerCase() === contract?.address?.toLowerCase()
+          protocol.address.toLowerCase() === contract.address.toLowerCase()
       );
     }
   ).length;
@@ -87,76 +87,64 @@ export default function TopProtocolsUsageCard({
               </Tr>
             </Thead>
             <Tbody>
-              {currentChain.protocols.map((protocol, index) => {
-                const contractInteractions =
-                  txsSummaryByContract?.contracts.find(
-                    contract =>
-                      contract.address.toLowerCase() ===
-                      protocol.address.toLowerCase()
-                  );
-                return (
-                  <Tr key={index}>
-                    <Td>
-                      <Flex direction="row" alignItems="center">
-                        <Image
-                          src={protocol.logo_url}
-                          alt={protocol.label}
-                          boxSize="24px"
-                          mr="2"
-                          rounded="lg"
-                        />
-                        <Flex direction="column">
-                          <Flex
-                            direction="row"
-                            alignItems="center"
-                            gap={1}
-                            fontSize="xs"
-                            fontWeight="bold"
-                          >
-                            <Text
-                              as="a"
-                              href={`${currentChain.block_explorer_url}address/${protocol.address}`}
-                              target="_blank"
-                              textDecor="underline"
+              {currentChain.protocols.length > 0 ? (
+                currentChain.protocols.map((protocol, index) => {
+                  const contractInteractions =
+                    txsSummaryByContract?.contracts.find(
+                      contract =>
+                        contract.address.toLowerCase() ===
+                        protocol.address.toLowerCase()
+                    );
+                  return (
+                    <Tr key={index}>
+                      <Td>
+                        <Flex direction="row" alignItems="center">
+                          <Image
+                            src={protocol.logo_url}
+                            alt={protocol.label}
+                            boxSize="24px"
+                            mr="2"
+                            rounded="lg"
+                          />
+                          <Flex direction="column">
+                            <Flex
+                              direction="row"
+                              alignItems="center"
+                              gap={1}
+                              fontSize="xs"
+                              fontWeight="bold"
                             >
-                              {protocol?.label}
+                              <Text
+                                as="a"
+                                href={`${currentChain.block_explorer_url}address/${protocol.address}`}
+                                target="_blank"
+                                textDecor="underline"
+                              >
+                                {protocol?.label}
+                              </Text>
+                              <FiExternalLink />
+                            </Flex>
+                            <Text color={subHeadingColor} fontSize="xs">
+                              0 days active
                             </Text>
-                            <FiExternalLink />
                           </Flex>
-                          {/* <Text color={subHeadingColor} fontSize="xs">
-                            0 days active
-                          </Text> */}
                         </Flex>
-                      </Flex>
-                    </Td>
-                    <Td>
-                      {txsSummaryByContract ? (
-                        contractInteractions?.txCount.allTime ?? 0
-                      ) : (
-                        <Skeleton height="20px" />
-                      )}
-                    </Td>
-                    <Td>
-                      {txsSummaryByContract ? (
-                        contractInteractions?.lastTx ? (
-                          moment(contractInteractions?.lastTx).fromNow()
-                        ) : (
-                          'N/A'
-                        )
-                      ) : (
-                        <Skeleton height="20px" />
-                      )}
-                    </Td>
-                    <Td>
-                      {txsSummaryByContract ? (
-                        `Coming soon`
-                      ) : (
-                        <Skeleton height="20px" />
-                      )}
-                    </Td>
-                  </Tr>
-                );
-              })}
+                      </Td>
+                      <Td>{contractInteractions?.txCount.allTime ?? 0}</Td>
+                      <Td>
+                        {contractInteractions?.lastTx
+                          ? moment(contractInteractions?.lastTx).fromNow()
+                          : 'N/A'}
+                      </Td>
+                      <Td>Coming soon</Td>
+                    </Tr>
+                  );
+                })
+              ) : (
+                <Tr>
+                  <Td>No protocols have been added</Td>
+                </Tr>
+              )}
             </Tbody>
           </Table>
         </TableContainer>
