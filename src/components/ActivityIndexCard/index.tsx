@@ -61,6 +61,8 @@ export default function ActivityIndexCard({
 }: ActivityIndexCardProps) {
   const [scores, setScores] = useState<any>();
   const [score, setScore] = useState<number>(0);
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [chainLabel, setChainLabel] = useState<string>('');
   let normalizedTxCount = 0;
   let normalizedContractCount = 0;
   let normalizedValueQuoteSum = 0;
@@ -85,7 +87,7 @@ export default function ActivityIndexCard({
   };
 
   // Calculate normalized value for the minimum to average range
-  if (txSummary && scores) {
+  if (txSummary && scores && !isDisabled) {
     normalizedTxCount = calculateNormalizedValue(
       txSummary.txCount.allTime,
       scores.txCount.min,
@@ -131,10 +133,12 @@ export default function ActivityIndexCard({
 
   useEffect(() => {
     if (chainConfigs) {
-      const scores = chainConfigs?.find(
+      const chain = chainConfigs?.find(
         (chain: Chain) => chain.name === localChain
-      )?.scores;
-      setScores(scores);
+      );
+      setScores(chain?.scores ?? 0);
+      setIsDisabled(chain?.scores?.txCount?.min === 0);
+      setChainLabel(chain?.label ?? '');
     }
   }, [localChain]);
 
@@ -158,15 +162,15 @@ export default function ActivityIndexCard({
         <Flex direction="column" gap={4}>
           <Flex justifyContent="center">
             <CircularProgress
-              value={score}
-              color={getScoreColor(score)}
+              value={isDisabled ? 51 : score}
+              color={getScoreColor(isDisabled ? 51 : score)}
               size={32}
               thickness={12}
               capIsRound
               trackColor={useColorModeValue('gray.100', 'gray.700')}
             >
               <CircularProgressLabel fontSize={24} fontWeight="bold">
-                {formatDecimals(score, 1)}
+                {isDisabled ? 51 : formatDecimals(score, 1)}
               </CircularProgressLabel>
             </CircularProgress>
           </Flex>
@@ -195,12 +199,18 @@ export default function ActivityIndexCard({
                         <Flex alignItems="center" gap={2}>
                           <Circle
                             size={3}
-                            bg={getScoreColor(normalizedTxCount)}
+                            bg={getScoreColor(
+                              isDisabled ? 51 : normalizedTxCount
+                            )}
                           />
                           <Text>Transactions</Text>
                         </Flex>
-                        <Text color={getScoreColor(normalizedTxCount)}>
-                          {formatDecimals(normalizedTxCount)}
+                        <Text
+                          color={getScoreColor(
+                            isDisabled ? 51 : normalizedTxCount
+                          )}
+                        >
+                          {formatDecimals(isDisabled ? 51 : normalizedTxCount)}
                         </Text>
                       </Flex>
                     </Td>
@@ -218,12 +228,20 @@ export default function ActivityIndexCard({
                         <Flex alignItems="center" gap={2}>
                           <Circle
                             size={3}
-                            bg={getScoreColor(normalizedContractCount)}
+                            bg={getScoreColor(
+                              isDisabled ? 51 : normalizedContractCount
+                            )}
                           />
                           <Text>Contract Interactions</Text>
                         </Flex>
-                        <Text color={getScoreColor(normalizedContractCount)}>
-                          {formatDecimals(normalizedContractCount)}
+                        <Text
+                          color={getScoreColor(
+                            isDisabled ? 51 : normalizedContractCount
+                          )}
+                        >
+                          {formatDecimals(
+                            isDisabled ? 51 : normalizedContractCount
+                          )}
                         </Text>
                       </Flex>
                     </Td>
@@ -241,12 +259,20 @@ export default function ActivityIndexCard({
                         <Flex alignItems="center" gap={2}>
                           <Circle
                             size={3}
-                            bg={getScoreColor(normalizedValueQuoteSum)}
+                            bg={getScoreColor(
+                              isDisabled ? 51 : normalizedValueQuoteSum
+                            )}
                           />
                           <Text>Transaction Value</Text>
                         </Flex>
-                        <Text color={getScoreColor(normalizedValueQuoteSum)}>
-                          {formatDecimals(normalizedValueQuoteSum)}
+                        <Text
+                          color={getScoreColor(
+                            isDisabled ? 51 : normalizedValueQuoteSum
+                          )}
+                        >
+                          {formatDecimals(
+                            isDisabled ? 51 : normalizedValueQuoteSum
+                          )}
                         </Text>
                       </Flex>
                     </Td>
@@ -264,12 +290,20 @@ export default function ActivityIndexCard({
                         <Flex alignItems="center" gap={2}>
                           <Circle
                             size={3}
-                            bg={getScoreColor(normalizedGasQuoteSum)}
+                            bg={getScoreColor(
+                              isDisabled ? 51 : normalizedGasQuoteSum
+                            )}
                           />
                           <Text>Fees Paid</Text>
                         </Flex>
-                        <Text color={getScoreColor(normalizedGasQuoteSum)}>
-                          {formatDecimals(normalizedGasQuoteSum)}
+                        <Text
+                          color={getScoreColor(
+                            isDisabled ? 51 : normalizedGasQuoteSum
+                          )}
+                        >
+                          {formatDecimals(
+                            isDisabled ? 51 : normalizedGasQuoteSum
+                          )}
                         </Text>
                       </Flex>
                     </Td>
@@ -339,6 +373,26 @@ export default function ActivityIndexCard({
           </Flex>
         </Flex>
       </CardBody>
+      <Flex
+        position="absolute"
+        direction="column"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        zIndex={1}
+        alignItems="center"
+        justifyContent="center"
+        rounded="3xl"
+        bgGradient={useColorModeValue(
+          'linear(to-b, whiteAlpha.700, white)',
+          'linear(to-b, blackAlpha.700, gray.900)'
+        )}
+        display={isDisabled ? 'flex' : 'none'}
+      >
+        <Heading>Coming Soon</Heading>
+        <Text>For {chainLabel}</Text>
+      </Flex>
     </Card>
   );
 }

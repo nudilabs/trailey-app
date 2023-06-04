@@ -1,83 +1,5 @@
 export const CHAINS = [
   {
-    name: 'eth-mainnet',
-    chain_id: '1',
-    is_testnet: false,
-    label: 'Ethereum',
-    category_label: 'Ethereum',
-    logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    black_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    white_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [
-      {
-        address: '0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B',
-        label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
-        label: 'Stargate Finance',
-        logo_url:
-          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png'
-      },
-      {
-        address: '0xb8901acB165ed027E32754E0FFe830802919727f',
-        label: 'Hop',
-        logo_url: 'https://app.hop.exchange/images/hop_logo.png'
-      },
-      {
-        address: '0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C',
-        label: 'Bepop',
-        logo_url:
-          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0'
-      },
-      {
-        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
-        label: 'Holograph',
-        logo_url:
-          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
-      }
-    ],
-    achievements: [
-      {
-        name: 'Welcome to Ethereum',
-        description: 'Have at least one transaction on Ethereum',
-        image_url: '/badges/ethereum/welcome.png',
-        conditions: [
-          {
-            type: 'txCount',
-            value: 1
-          }
-        ]
-      }
-    ],
-    block_explorer_url: 'https://etherscan.io/',
-    scores: {
-      txCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
-      },
-      gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
-      }
-    }
-  },
-  {
     name: 'arbitrum-mainnet',
     chain_id: '42161',
     is_testnet: false,
@@ -224,210 +146,6 @@ export const CHAINS = [
     }
   },
   {
-    name: 'bsc-mainnet',
-    chain_id: '56',
-    is_testnet: false,
-    label: 'BNB Chain',
-    category_label: 'Ethereum',
-    logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
-    black_logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
-    white_logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [
-      {
-        address: '0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8',
-        label: 'Stargate Finance',
-        logo_url:
-          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png'
-      },
-      {
-        address: '0x5Dc88340E1c5c6366864Ee415d6034cadd1A9897',
-        label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
-        label: 'Holograph',
-        logo_url:
-          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
-      },
-      {
-        address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
-        label: 'PancakeSwap',
-        logo_url:
-          'https://www.gitbook.com/cdn-cgi/image/width=40,dpr=2,height=40,fit=contain,format=auto/https%3A%2F%2F1397868517-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-legacy-files%2Fo%2Fspaces%252F-MHREX7DHcljbY5IkjgJ%252Favatar-1602750187173.png%3Fgeneration%3D1602750187468978%26alt%3Dmedia'
-      }
-    ],
-    achievements: [
-      {
-        name: 'Welcome to BNB Chain',
-        description: 'Have at least one transaction on BNB Chain',
-        image_url: '/badges/bnb-chain/welcome.png',
-        conditions: [
-          {
-            type: 'txCount',
-            value: 1
-          }
-        ]
-      }
-    ],
-    block_explorer_url: 'https://bscscan.com/',
-    scores: {
-      txCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
-      },
-      gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
-      }
-    }
-  },
-  {
-    name: 'matic-mainnet',
-    chain_id: '137',
-    is_testnet: false,
-    label: 'Polygon',
-    category_label: 'Ethereum',
-    logo_url:
-      'https://pbs.twimg.com/bundle_images/1624229555333373952/JXGKFcO__400x400.jpg',
-    black_logo_url:
-      'https://pbs.twimg.com/bundle_images/1624229555333373952/JXGKFcO__400x400.jpg',
-    white_logo_url:
-      'https://pbs.twimg.com/bundle_images/1624229555333373952/JXGKFcO__400x400.jpg',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [
-      {
-        address: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
-        label: 'Stargate Finance',
-        logo_url:
-          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png'
-      },
-      {
-        address: '0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5',
-        label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
-      },
-      {
-        address: '0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C',
-        label: 'Bepop',
-        logo_url:
-          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0'
-      },
-      {
-        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
-        label: 'Holograph',
-        logo_url:
-          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
-      }
-    ],
-    achievements: [
-      {
-        name: 'Welcome to Polygon',
-        description: 'Have at least one transaction on Polygon',
-        image_url: '/badges/polygon/welcome.png',
-        conditions: [
-          {
-            type: 'txCount',
-            value: 1
-          }
-        ]
-      }
-    ],
-    block_explorer_url: 'https://polygonscan.com/',
-    scores: {
-      txCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
-      },
-      gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
-      }
-    }
-  },
-  {
-    name: 'eth-goerli',
-    chain_id: '5',
-    is_testnet: true,
-    label: 'Ethereum Goerli Testnet',
-    category_label: 'Ethereum',
-    logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    black_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    white_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    is_appchain: false,
-    appchain_of: null,
-    protocols: [
-      {
-        address: '0x4648a43B2C14Da09FdF82B161150d3F634f40491',
-        label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
-      }
-    ],
-    achievements: [
-      {
-        name: 'Welcome to Ethereum Goerli Testnet',
-        description: 'Have at least one transaction on Ethereum Goerli Testnet',
-        image_url: '/badges/ethereum/welcome.png',
-        conditions: [
-          {
-            type: 'txCount',
-            value: 1
-          }
-        ]
-      }
-    ],
-    block_explorer_url: 'https://goerli.etherscan.io/',
-    scores: {
-      txCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
-      },
-      valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
-      },
-      gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
-      }
-    }
-  },
-  {
     name: 'base-testnet',
     chain_id: '84531',
     is_testnet: true,
@@ -486,11 +204,11 @@ export const CHAINS = [
     label: 'Scroll Alpha Testnet',
     category_label: 'Ethereum',
     logo_url:
-      'https://pbs.twimg.com/bundle_images/1523593944386326528/rVjsezsD_400x400.jpg',
+      'data:image/png;base64,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',
     black_logo_url:
-      'https://pbs.twimg.com/bundle_images/1523593944386326528/rVjsezsD_400x400.jpg',
+      'data:image/png;base64,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',
     white_logo_url:
-      'https://pbs.twimg.com/bundle_images/1523593944386326528/rVjsezsD_400x400.jpg',
+      'data:image/png;base64,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',
     is_appchain: false,
     appchain_of: null,
     protocols: [
@@ -521,24 +239,24 @@ export const CHAINS = [
     block_explorer_url: 'https://blockscout.scroll.io/',
     scores: {
       txCount: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       },
       contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       },
       valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
+        min: 0,
+        average: 0,
+        max: 0
       },
       gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       }
     }
   },
@@ -549,11 +267,11 @@ export const CHAINS = [
     label: 'Linea Testnet',
     category_label: 'Ethereum',
     logo_url:
-      'https://pbs.twimg.com/bundle_images/1639402103486521344/erDLnbwE_400x400.jpg',
+      'https://pbs.twimg.com/profile_images/1639402103486521344/erDLnbwE_400x400.jpg',
     black_logo_url:
-      'https://pbs.twimg.com/bundle_images/1639402103486521344/erDLnbwE_400x400.jpg',
+      'https://pbs.twimg.com/profile_images/1639402103486521344/erDLnbwE_400x400.jpg',
     white_logo_url:
-      'https://pbs.twimg.com/bundle_images/1639402103486521344/erDLnbwE_400x400.jpg',
+      'https://pbs.twimg.com/profile_images/1639402103486521344/erDLnbwE_400x400.jpg',
     is_appchain: false,
     appchain_of: null,
     protocols: [
@@ -582,6 +300,58 @@ export const CHAINS = [
       }
     ],
     block_explorer_url: 'https://explorer.goerli.linea.build/',
+    scores: {
+      txCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      contractCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      valueQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      gasQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      }
+    }
+  },
+  {
+    name: 'polygon-zkevm-mainnet',
+    chain_id: '1101',
+    is_testnet: false,
+    label: 'Polygon zkEVM',
+    category_label: 'Ethereum',
+    logo_url:
+      'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
+    black_logo_url:
+      'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
+    white_logo_url:
+      'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [
+      {
+        name: 'Welcome to Polygon zkEVM Mainnet',
+        description: 'Have at least one transaction on Polygon zkEVM Mainnet',
+        image_url: '/badges/polygon-zkevm-mainnet/welcome.png',
+        conditions: [
+          {
+            type: 'txCount',
+            value: 1
+          }
+        ]
+      }
+    ],
+    block_explorer_url: 'https://zkevm.polygonscan.com/',
     scores: {
       txCount: {
         min: 1,

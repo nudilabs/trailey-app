@@ -44,11 +44,13 @@ export default function TopProtocolsUsageCard({
   const interactedContractCount = txsSummaryByContract?.contracts.filter(
     contract => {
       // Check if the contract address is included in protocols
+
       return currentChain.protocols.some(
-        protocol => protocol.address === contract.address
+        protocol =>
+          protocol?.address?.toLowerCase() === contract?.address?.toLowerCase()
       );
     }
-  );
+  ).length;
 
   const protocolsCount = currentChain.protocols.length;
 
@@ -87,7 +89,9 @@ export default function TopProtocolsUsageCard({
               {currentChain.protocols.map((protocol, index) => {
                 const contractInteractions =
                   txsSummaryByContract?.contracts.find(
-                    contract => contract.address === protocol.address
+                    contract =>
+                      contract.address.toLowerCase() ===
+                      protocol.address.toLowerCase()
                   );
                 return (
                   <Tr key={index}>

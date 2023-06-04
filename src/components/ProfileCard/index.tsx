@@ -146,7 +146,7 @@ export default function ProfileCard({
           <Flex direction="row" alignItems="center" gap={1}>
             {lastResynced && (
               <Text color={subHeadingColor} fontSize="xs">
-                {`Last resynced ${moment(lastResynced.timestamp).fromNow()}`}
+                {`Synced ${moment(lastResynced.timestamp).fromNow()}`}
               </Text>
             )}
             <Tooltip
