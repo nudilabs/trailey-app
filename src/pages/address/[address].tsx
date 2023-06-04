@@ -394,7 +394,7 @@ export default function Account({
                 <ProfileCard
                   account={account}
                   chainConfigs={chainConfigs}
-                  txSummary={txSummary}
+                  txSummary={txSummary.data}
                   handleSubmit={handleSubmit}
                   balance={balance}
                   localChain={localChain}
@@ -417,7 +417,7 @@ export default function Account({
                 {account_.address && account_.ensName ? (
                   <AchievementsCard
                     achievements={currentChain.achievements}
-                    txSummary={txSummary}
+                    txSummary={txSummary.data}
                   />
                 ) : (
                   <Skeleton height="120px" rounded="3xl" />
@@ -435,7 +435,7 @@ export default function Account({
                 <Flex direction="column" gap={4}>
                   {account_.address && account_.ensName ? (
                     <ActivityIndexCard
-                      txSummary={txSummary}
+                      txSummary={txSummary.data}
                       chainConfigs={chainConfigs}
                       localChain={localChain}
                     />
