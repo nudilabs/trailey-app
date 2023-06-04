@@ -7,7 +7,8 @@ import {
   MenuItem,
   useColorModeValue,
   Box,
-  Badge
+  Badge,
+  Button
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
@@ -40,9 +41,12 @@ const ChainSelector = ({
   return (
     <Menu>
       <MenuButton
-        _hover={{ bg: useColorModeValue('blackAlpha.50', 'whiteAlpha.50') }}
+        _hover={{ bg: useColorModeValue('gray.100', 'gray.800') }}
         p={2}
-        rounded="lg"
+        rounded="xl"
+        // bgColor={useColorModeValue('blackAlpha.100', 'whiteAlpha.100')}
+        borderWidth={1}
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
       >
         <Flex align="center" gap={1}>
           <Image

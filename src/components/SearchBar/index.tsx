@@ -83,6 +83,7 @@ export default function SearchBar({
   }
 
   function handleSearch() {
+    // if searchTerm is not valid then show error message
     if (!isAddressValid(searchTerm)) {
       setIsError(true);
       toast({
@@ -95,7 +96,6 @@ export default function SearchBar({
       });
       return;
     }
-    onClose && onClose();
     if (searchTerm.trim()) {
       // Add the search term to the recent searches
       const updatedRecentSearches = [

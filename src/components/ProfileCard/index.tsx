@@ -30,7 +30,7 @@ import { Chain } from '@/types/Chains';
 import { TxSummary, TxSummaryByMonth } from '@/types/TxSummary';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useBalance } from 'wagmi';
+
 import { LastResync } from '@/types/LastResync';
 
 type ProfileCardProps = {
@@ -49,7 +49,7 @@ type ProfileCardProps = {
   txsSummaryByMonth: TxSummaryByMonth | undefined;
   lastResynced: LastResync | undefined;
   setLastResynced: (lastResynced: LastResync | undefined) => void;
-  isRefetching: boolean;
+  validateData: boolean;
 };
 
 export default function ProfileCard({
@@ -63,11 +63,12 @@ export default function ProfileCard({
   txsSummaryByMonth,
   lastResynced,
   setLastResynced,
-  isRefetching
+  validateData
 }: ProfileCardProps) {
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
+  const [currentChain, setCurrentChain] = useState<Chain>();
 
   const handleResync = () => {
     handleSubmit({ preventDefault: () => {} });
@@ -107,6 +108,7 @@ export default function ProfileCard({
       isClosable: true,
       position: 'top-right'
     });
+    // set timer to 10 seconds
   };
 
   useEffect(() => {
@@ -121,6 +123,7 @@ export default function ProfileCard({
     }
     const chain = chainConfigs.find(chain => chain.name === localChain);
   }, [localChain]);
+
   return (
     <Card size="lg">
       <CardHeader paddingBottom={0}>
@@ -135,7 +138,12 @@ export default function ProfileCard({
             setLocalChain={setLocalChain}
           />
           <Flex direction="row" alignItems="center" gap={1}>
-            {lastResynced && (
+            {validateData && (
+              <Text color={subHeadingColor} fontSize="xs">
+                Syncing...
+              </Text>
+            )}
+            {!validateData && lastResynced && (
               <Text color={subHeadingColor} fontSize="xs">
                 {`Synced ${moment(lastResynced.timestamp).fromNow()}`}
               </Text>
@@ -157,7 +165,7 @@ export default function ProfileCard({
                 aria-label="refresh"
                 icon={<FiRefreshCw />}
                 onClick={handleResync}
-                isLoading={isRefetching}
+                isLoading={validateData}
                 isDisabled={
                   lastResynced &&
                   moment(lastResynced.timestamp)
@@ -186,7 +194,9 @@ export default function ProfileCard({
                 {account.ensName}
               </Heading>
             ) : (
-              <Skeleton height="20px" width="100px" />
+              <Heading size={'lg'} textAlign="center" marginTop={2}>
+                Unidentified
+              </Heading>
             )}
             <Flex direction="row" alignItems="center" gap={1}>
               <Button
@@ -205,13 +215,11 @@ export default function ProfileCard({
               >
                 {getFormattedAddress(account.address)}
               </Button>
-              {balance ? (
-                <Text color={subHeadingColor} fontSize="xs">
-                  {`${formatPrettyNumber(balance.formatted)} ${balance.symbol}`}
-                </Text>
-              ) : (
-                <Skeleton height="20px" width="60px" />
-              )}
+              <Text color={subHeadingColor} fontSize="xs">
+                {`${formatPrettyNumber(balance?.formatted ?? 0)} ${
+                  balance?.symbol ?? ''
+                }`}
+              </Text>
             </Flex>
           </Flex>
           <Flex direction="row" width="100%" justifyContent="space-between">

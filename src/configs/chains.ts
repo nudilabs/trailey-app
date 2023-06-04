@@ -374,5 +374,57 @@ export const CHAINS = [
         max: 500
       }
     }
+  },
+  {
+    name: 'polygon-zkevm-mainnet',
+    chain_id: '1101',
+    is_testnet: false,
+    label: 'Polygon zkEVM',
+    category_label: 'Ethereum',
+    logo_url:
+      'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
+    black_logo_url:
+      'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
+    white_logo_url:
+      'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [
+      {
+        name: 'Welcome to Polygon zkEVM Mainnet',
+        description: 'Have at least one transaction on Polygon zkEVM Mainnet',
+        image_url: '/badges/polygon-zkevm-mainnet/welcome.png',
+        conditions: [
+          {
+            type: 'txCount',
+            value: 1
+          }
+        ]
+      }
+    ],
+    block_explorer_url: 'https://zkevm.polygonscan.com/',
+    scores: {
+      txCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      contractCount: {
+        min: 1,
+        average: 35,
+        max: 500
+      },
+      valueQuoteSum: {
+        min: 1,
+        average: 1000,
+        max: 1000000
+      },
+      gasQuoteSum: {
+        min: 1,
+        average: 35,
+        max: 500
+      }
+    }
   }
 ];
