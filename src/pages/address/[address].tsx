@@ -1,4 +1,4 @@
-import { isAddress } from 'viem';
+import { getAddress, isAddress } from 'viem';
 import { normalize } from 'viem/ens';
 import { publicClient } from '@/utils/client';
 
@@ -54,7 +54,7 @@ import { CHAINS } from '@/configs/chains';
 import { LastResync } from '@/types/LastResync';
 
 export default function Account({
-  account,
+  account_,
   chainConfigs,
   setBundlesData,
   bundlesData,
@@ -62,7 +62,7 @@ export default function Account({
   localChain,
   setLocalChain
 }: {
-  account: IAccount;
+  account_: IAccount;
   chainConfigs: Chain[];
   setBundlesData: (newProfilesData: IBundle[]) => void;
   bundlesData: IBundle[];
@@ -73,6 +73,7 @@ export default function Account({
   const [currentChain, setCurrentChain] = useState<Chain>(chainConfigs[0]);
   const [lastResynced, setLastResynced] = useState<LastResync>();
   const [validateData, setValidateData] = useState<boolean>(false);
+  const [account, setAccount] = useState<IAccount>(account_);
 
   const [balance, setBalance] = useState<{
     formatted: string;
@@ -311,6 +312,29 @@ export default function Account({
       }
     }
   }, [account, localChain]);
+
+  useEffect(() => {
+    const getAccount = async () => {
+      let account: IAccount = {
+        address: account_.address,
+        ensName: 'Unidentified',
+        avatarUrl: null
+      };
+      const ensName = await publicClient.getEnsName({
+        address: getAddress(account_.address)
+      });
+      account.ensName = ensName as string;
+
+      if (ensName) {
+        const avatarURL = await publicClient.getEnsAvatar({
+          name: normalize(ensName)
+        });
+        if (avatarURL) account.avatarUrl = avatarURL as string;
+      }
+      setAccount(account);
+    };
+    getAccount();
+  }, [account_]);
 
   return (
     <Flex direction="column">
@@ -748,7 +772,6 @@ const fetchEnsProps = async (ensName: string) => {
 };
 
 export const getServerSideProps = async (context: {
-  query: { chain: string };
   params: { address: string };
   res: { setHeader: (arg0: string, arg1: string) => void };
 }) => {
@@ -760,36 +783,21 @@ export const getServerSideProps = async (context: {
   const p = context.params;
   const addressType = getAddressType(p.address);
   const chainConfigs = process.env.VERCEL_URL ? await get('chains') : CHAINS;
-
-  if (!addressType) {
+  if (!addressType || addressType === 'ens') {
     return {
       notFound: true
     };
   }
-
-  try {
-    if (addressType === 'address') {
-      const account = await fetchAddressProps(p.address);
-      return {
-        props: {
-          chainConfigs,
-          account
-        }
-      };
-    } else if (addressType === 'ens') {
-      const account = await fetchEnsProps(p.address);
-
-      return {
-        props: {
-          chainConfigs,
-          account
-        }
-      };
-    }
-  } catch (error) {
-    console.error(error);
+  if (addressType === 'address') {
     return {
-      notFound: true
+      props: {
+        chainConfigs,
+        account_: {
+          address: p.address,
+          ensName: null,
+          avatarUrl: null
+        }
+      }
     };
   }
 };

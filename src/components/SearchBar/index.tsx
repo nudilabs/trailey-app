@@ -99,8 +99,6 @@ export default function SearchBar({
     }
     onClose && onClose();
     if (searchTerm.trim()) {
-      router.push(`/address/${searchTerm.trim()}`);
-
       // Add the search term to the recent searches
       const updatedRecentSearches = [
         searchTerm.trim(),
@@ -114,8 +112,8 @@ export default function SearchBar({
         JSON.stringify(updatedRecentSearches)
       );
       setSearchTerm('');
-
       setShowRecentSearches(false);
+      router.push(`/address/${searchTerm.trim()}`);
     }
   }
 
@@ -145,7 +143,7 @@ export default function SearchBar({
             <Kbd>⌘K</Kbd>
           </InputRightElement>
           <Input
-            placeholder="Search address or ENS"
+            placeholder="Search address"
             value={searchTerm}
             onChange={handleChange}
             ref={inputRef}
@@ -180,7 +178,7 @@ export default function SearchBar({
           !isAddressValid(searchTerm) &&
           searchTerm.length > 0 && (
             <FormErrorMessage>
-              {`Invalid input. Please enter a valid address or ENS.`}
+              {`Invalid input. Please enter a valid address`}
             </FormErrorMessage>
           )}
       </FormControl>
@@ -227,8 +225,6 @@ export default function SearchBar({
 
 const isAddressValid = (address: string): boolean => {
   if (isAddress(address)) {
-    return true;
-  } else if (address.endsWith('.eth')) {
     return true;
   }
   return false;
