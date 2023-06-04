@@ -27,7 +27,7 @@ import {
 } from '@chakra-ui/react';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { GetServerSideProps } from 'next';
-import { useSession } from 'next-auth/react';
+// import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
