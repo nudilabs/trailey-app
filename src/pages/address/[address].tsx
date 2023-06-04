@@ -494,9 +494,10 @@ export default function Account({
                           <Stat>
                             <StatNumber>
                               <Heading>
-                                $
                                 {txSummary.data ? (
-                                  formatPrettyNumber(totalValueQuoteByMonthData)
+                                  `$${formatPrettyNumber(
+                                    totalValueQuoteByMonthData
+                                  )}`
                                 ) : (
                                   <Skeleton height="42px" />
                                 )}
@@ -591,9 +592,8 @@ export default function Account({
                           <Stat>
                             <StatNumber>
                               <Heading>
-                                $
                                 {txSummary.data ? (
-                                  0
+                                  `$${0}`
                                 ) : (
                                   <Skeleton height="42px" />
                                 )}
