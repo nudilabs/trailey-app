@@ -78,9 +78,7 @@ export default function SearchBar({
     setIsLoading(true);
     router.push(`/address/${searchTerm}`);
     setSearchTerm(searchTerm);
-    if (onClose) {
-      onClose();
-    }
+    onClose && onClose();
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -99,6 +97,7 @@ export default function SearchBar({
       });
       return;
     }
+    onClose && onClose();
     if (searchTerm.trim()) {
       router.push(`/address/${searchTerm.trim()}`);
 

@@ -43,8 +43,7 @@ interface LinkItemProps {
   href?: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome, href: '/' },
-  { name: 'Trending', icon: FiTrendingUp }
+  { name: 'Home', icon: FiHome, href: '/' }
 ];
 
 export default function SidebarWithHeader({
@@ -192,8 +191,8 @@ const SidebarContent = ({
             </NavItem>
           ))}
         </Stack>
-        <Spacer display={{ base: 'none', xl: 'block' }} />
-        <Divider display={{ base: 'block', xl: 'none' }} />
+        <Spacer display={{ base: 'none', md: 'block' }} />
+        <Divider display={{ base: 'block', md: 'none' }} />
         <Stack spacing={2}>
           <NavItem
             onClose={onClose}

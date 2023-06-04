@@ -86,7 +86,7 @@ export default function BundleButton({
             rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
             w="full"
             onClick={handleProfileClick}
-            display={{ base: 'none', md: 'flex' }}
+            display={{ base: 'none', xl: 'flex' }}
           >
             {getCurrentProfileName()}
           </Button>
@@ -104,7 +104,7 @@ export default function BundleButton({
             }
             w="full"
             onClick={handleProfileClick}
-            display={{ base: 'none', md: 'flex' }}
+            display={{ base: 'none', xl: 'flex' }}
           >
             {getCurrentProfileName()}
           </Button>
@@ -124,19 +124,47 @@ export default function BundleButton({
           }
           onClick={handleProfileClick}
           cursor="pointer"
-          display={{ base: 'none', md: 'flex' }}
+          display={{ base: 'none', xl: 'flex' }}
         />
       )}
-      <Button
-        variant={'outline'}
-        leftIcon={<Icon fontSize="16" as={FiUser} />}
-        rightIcon={<Icon fontSize="16" as={FiChevronDown} />}
-        onClick={handleProfileClick}
-        cursor="pointer"
-        display={{ base: 'flex', md: 'none' }}
-      >
-        {getCurrentProfileName()}
-      </Button>
+      {hasBundle ? (
+        <Button
+          variant={hasBundle ? 'outline' : 'solid'}
+          colorScheme={hasBundle ? 'gray' : 'primary'}
+          rounded="lg"
+          leftIcon={
+            hasBundle ? (
+              <Icon fontSize="16" as={FiUser} />
+            ) : (
+              <Icon fontSize="16" as={FiPlus} />
+            )
+          }
+          rightIcon={<Icon fontSize="16" as={FiChevronDown} ml="auto" />}
+          w="full"
+          onClick={handleProfileClick}
+          display={{ base: 'flex', xl: 'none' }}
+        >
+          {getCurrentProfileName()}
+        </Button>
+      ) : (
+        <Button
+          variant={hasBundle ? 'outline' : 'solid'}
+          colorScheme={hasBundle ? 'gray' : 'primary'}
+          rounded="lg"
+          leftIcon={
+            hasBundle ? (
+              <Icon fontSize="16" as={FiUser} />
+            ) : (
+              <Icon fontSize="16" as={FiPlus} />
+            )
+          }
+          w="full"
+          onClick={handleProfileClick}
+          display={{ base: 'flex', xl: 'none' }}
+        >
+          {getCurrentProfileName()}
+        </Button>
+      )}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <ModalOverlay />
         <ModalContent>
