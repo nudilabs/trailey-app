@@ -75,7 +75,7 @@ const App = ({
 }>) => {
   const [currentBundle, setCurrentBundle] = useState(0);
   const [bundlesData, setBundlesData] = useState<IBundle[]>([]);
-  const [localChain, setLocalChain] = useState('eth-mainnet'); // default to mainnet
+  const [localChain, setLocalChain] = useState('arbitrum-mainnet'); // default to mainnet
   const profileProps = {
     currentBundle,
     setCurrentBundle,

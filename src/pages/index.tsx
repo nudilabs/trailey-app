@@ -91,7 +91,7 @@ export default function Home({
 
   if (bundlesData.length === 0) {
     return (
-      <Flex minH="calc(100vh - 88px)" alignItems="center">
+      <Flex minH="calc(100vh - 88px)" alignItems="center" overflowY="hidden">
         <Container maxW="container.lg" py={{ base: 12, md: 0 }}>
           <Grid templateColumns="repeat(12, 1fr)">
             <GridItem
@@ -125,7 +125,7 @@ export default function Home({
                   </Text>
                 </Stack>
                 <Flex direction="column">
-                  <SearchBar btn />
+                  <SearchBar btn showError />
                   <Flex
                     direction="row"
                     gap={2}

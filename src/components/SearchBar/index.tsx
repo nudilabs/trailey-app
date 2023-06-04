@@ -12,19 +12,26 @@ import {
   Flex,
   ButtonSpinner,
   InputRightAddon,
-  useColorModeValue
+  useColorModeValue,
+  FormControl,
+  FormHelperText,
+  FormErrorMessage,
+  useToast
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 import { FiSearch } from 'react-icons/fi';
+import { isAddress } from 'viem';
 
 export default function SearchBar({
   kbd,
   btn,
+  showError,
   onClose
 }: {
   kbd?: boolean;
   btn?: boolean;
+  showError?: boolean;
   onClose?: () => void;
 }) {
   const router = useRouter();
@@ -34,6 +41,9 @@ export default function SearchBar({
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const toast = useToast();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -77,6 +87,18 @@ export default function SearchBar({
   }
 
   function handleSearch() {
+    if (!isAddressValid(searchTerm)) {
+      setIsError(true);
+      toast({
+        title: 'Invalid address',
+        description: 'Please enter a valid address',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      });
+      return;
+    }
     if (searchTerm.trim()) {
       router.push(`/address/${searchTerm.trim()}`);
 
@@ -113,40 +135,56 @@ export default function SearchBar({
 
   return (
     <Box position="relative" w="100%">
-      <InputGroup>
-        {!btn && (
-          <InputLeftElement>
-            {isLoading ? <ButtonSpinner /> : <FiSearch />}
-          </InputLeftElement>
-        )}
-        <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
-          <Kbd>⌘K</Kbd>
-        </InputRightElement>
-        <Input
-          placeholder="Search address or ENS"
-          value={searchTerm}
-          onChange={handleChange}
-          ref={inputRef}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setShowRecentSearches(true)}
-          variant="search"
-          bgColor={btn ? 'gray.50' : 'transparent'}
-        />
-        {btn && (
-          <InputRightElement mr="1">
-            <Button
-              onClick={handleSearch}
-              isLoading={isLoading}
-              size="xs"
-              rounded="md"
-              bgColor={searchBtnBgColor}
-              color={searchBtnColor}
-            >
+      <FormControl isInvalid={!isAddressValid(searchTerm)}>
+        <InputGroup>
+          {!btn && (
+            <InputLeftElement>
               {isLoading ? <ButtonSpinner /> : <FiSearch />}
-            </Button>
+            </InputLeftElement>
+          )}
+          <InputRightElement mr="1" display={kbd ? 'flex' : 'none'}>
+            <Kbd>⌘K</Kbd>
           </InputRightElement>
-        )}
-      </InputGroup>
+          <Input
+            placeholder="Search address or ENS"
+            value={searchTerm}
+            onChange={handleChange}
+            ref={inputRef}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setShowRecentSearches(true)}
+            variant="search"
+            bgColor={btn ? 'gray.50' : 'transparent'}
+            isInvalid={!isAddressValid(searchTerm)}
+          />
+          {btn && (
+            <InputRightElement mr="1">
+              {' '}
+              {isLoading ? (
+                <ButtonSpinner />
+              ) : (
+                <Button
+                  onClick={handleSearch}
+                  isLoading={isLoading}
+                  size="xs"
+                  rounded="md"
+                  bgColor={searchBtnBgColor}
+                  color={searchBtnColor}
+                >
+                  {isLoading ? <ButtonSpinner /> : <FiSearch />}
+                </Button>
+              )}
+            </InputRightElement>
+          )}
+        </InputGroup>
+        {showError &&
+          isError &&
+          !isAddressValid(searchTerm) &&
+          searchTerm.length > 0 && (
+            <FormErrorMessage>
+              {`Invalid input. Please enter a valid address or ENS.`}
+            </FormErrorMessage>
+          )}
+      </FormControl>
       {recentSearches.length > 0 && (
         <Flex position="absolute" w="100%" top="100%" zIndex="1" marginTop={1}>
           <Menu
@@ -187,3 +225,12 @@ export default function SearchBar({
     </Box>
   );
 }
+
+const isAddressValid = (address: string): boolean => {
+  if (isAddress(address)) {
+    return true;
+  } else if (address.endsWith('.eth')) {
+    return true;
+  }
+  return false;
+};
