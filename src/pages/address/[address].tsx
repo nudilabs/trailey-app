@@ -213,7 +213,7 @@ export default function Account({
       });
     };
     getBalance();
-  }, [currentChain]);
+  }, [currentChain, account]);
 
   useEffect(() => {
     if (
@@ -251,8 +251,9 @@ export default function Account({
         setLastResynced(obj);
       }
     }
-  }, [localChain, account.address, txSummary]);
+  }, [txSummary]);
 
+  // handle auto resync
   useEffect(() => {
     const localStorage = window.localStorage;
     const currentDate = new Date();
@@ -264,7 +265,10 @@ export default function Account({
         item.chain === localChain && item.address === account.address
     );
 
-    if (!lastResynced || shouldResync(lastResynced.timestamp, currentDate)) {
+    if (
+      !currentLsrObj?.timestamp ||
+      shouldResync(currentLsrObj.timestamp, currentDate)
+    ) {
       handleSubmit({ preventDefault: () => {} });
 
       if (currentLsrObj) {
@@ -283,7 +287,7 @@ export default function Account({
       localStorage.setItem('abtrail.lrs', JSON.stringify(lrsFromLocalObj));
       setLastResynced(currentLsrObj);
     }
-  }, []);
+  }, [localChain, account.address]);
 
   function shouldResync(lastResyncedTimestamp: Date, currentDate: Date) {
     const diff =
@@ -291,6 +295,21 @@ export default function Account({
     const diffInDays = diff / (1000 * 3600 * 24);
     return diffInDays > 1;
   }
+
+  useEffect(() => {
+    const localStorage = window.localStorage;
+    const lrsFromLocal = localStorage.getItem('abtrail.lrs');
+    if (lrsFromLocal) {
+      let lrsFromLocalObj = JSON.parse(lrsFromLocal);
+      let currentLsrObj = lrsFromLocalObj.find(
+        (item: { chain: string; address: string }) =>
+          item.chain === localChain && item.address === account.address
+      );
+      if (currentLsrObj) {
+        setLastResynced(currentLsrObj);
+      }
+    }
+  }, [account, localChain]);
 
   return (
     <Flex direction="column">
