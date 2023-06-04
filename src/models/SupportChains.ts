@@ -8,6 +8,5 @@ export const getChain = async (chainName: string) => {
     .select()
     .from(supportChains)
     .where(eq(supportChains.name, chainName));
-
   return supportedChain;
 };

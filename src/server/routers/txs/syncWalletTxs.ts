@@ -6,6 +6,8 @@ import { Transaction } from '@/types/DB';
 import { config as serverConfig } from '@/configs/server';
 import { Covalent } from '@/connectors/Covalent';
 import { QStash } from '@/connectors/Qstash';
+import * as rpcClient from '@/server/utils/client';
+import { getAddress } from 'viem';
 import * as TxModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
 
@@ -20,8 +22,8 @@ const preData = async (
   const txsToInsert = txs.filter((tx: any) => {
     if (
       tx.block_height >= Number(latestTx.blockHeight) &&
-      tx.tx_hash !== latestTx.txHash &&
-      tx.from_address === walletAddr
+      tx.tx_hash !== latestTx.txHash
+      // tx.from_address === walletAddr
     ) {
       const signDate = moment.utc(tx.block_signed_at).toDate();
       let tmp: Transaction = {
@@ -62,6 +64,7 @@ export const syncWalletTxs = publicProcedure
 
     console.log('chainName', chainName);
     console.log('walletAddr', walletAddr);
+
     const supportChain = await SupportChainsModel.getChain(chainName);
 
     if (supportChain.length === 0)
@@ -70,6 +73,18 @@ export const syncWalletTxs = publicProcedure
       };
 
     const chainId = supportChain[0].id;
+
+    const txCount = await rpcClient.getTxCount(chainName, walletAddr);
+
+    if (txCount === 0) {
+      return {
+        message: `No transactions found for wallet ${walletAddr} on chain ${chainName}`
+      };
+    } else if (txCount > serverConfig.txLimit) {
+      return {
+        message: `Too many transactions found for wallet ${walletAddr} on chain ${chainName}`
+      };
+    }
 
     // select latest block height from wallet from transactions table
     const latestTx = await TxModel.getLatest(chainId, walletAddr);

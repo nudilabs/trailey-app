@@ -1,8 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { eq } from 'drizzle-orm';
-import { db } from '@/db/drizzle-db';
+// import { db } from '@/db/drizzle-db';
 import { Transaction } from '@/types/DB';
-import { supportChains, transactions } from '@/db/schema';
+import * as TxModel from '@/models/Transactions';
+import * as SupportChainsModel from '@/models/SupportChains';
+
 import { config as serverConfig } from '@/configs/server';
 import { QStash } from '@/connectors/Qstash';
 // import { Covalent } from '@/connectors/Covalent';
@@ -144,10 +146,7 @@ export default async function handler(
     const json = req.body;
     const { chainName, walletAddr, totalPage, startPage } = schema.parse(json);
 
-    const supportedChain = await db
-      .select()
-      .from(supportChains)
-      .where(eq(supportChains.name, chainName));
+    const supportedChain = await SupportChainsModel.getChain(chainName);
 
     if (supportedChain.length === 0)
       return res.status(404).json({ status: 404, statusText: 'Not Found' });
@@ -163,9 +162,7 @@ export default async function handler(
     );
 
     if (txs.length > 0) {
-      await db.insert(transactions).values(txs).onDuplicateKeyUpdate({
-        set: {}
-      });
+      await TxModel.insertTxs(txs);
     }
 
     const nextStartPage =
@@ -185,7 +182,7 @@ export default async function handler(
         // endPage: nextEndPage,
         totalPage
       };
-      //create hash for deduplication id from nextStore
+
       await qstash.publishMsg('store-txs', nextStore);
 
       return res.status(200).json(nextStore);

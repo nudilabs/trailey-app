@@ -19,5 +19,7 @@ export const getLatest = async (chainId: number, walletAddr: string) => {
 };
 
 export const insertTxs = async (txs: Transaction[]) => {
-  await db.insert(transactions).values(txs);
+  await db.insert(transactions).values(txs).onDuplicateKeyUpdate({
+    set: {}
+  });
 };
