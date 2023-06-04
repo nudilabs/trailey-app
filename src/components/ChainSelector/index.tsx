@@ -9,7 +9,6 @@ import {
   Box,
   Badge
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import { Chain } from '@/types/Chains';

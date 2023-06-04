@@ -1,14 +1,11 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import {
-  Box,
   Button,
   Flex,
   IconButton,
-  Image,
   useBreakpointValue,
   useColorModeValue
 } from '@chakra-ui/react';
-// import { FiLogIn } from 'react-icons/fi';
 import { BiWallet } from 'react-icons/bi';
 const CustomConnectButton = ({ text }: { text?: string }) => {
   const buttonColorScheme = useColorModeValue('primary', 'secondary');

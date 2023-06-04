@@ -1,4 +1,4 @@
-import { Achievement, Condition } from '@/types/Chains';
+import { Achievement } from '@/types/Chains';
 import {
   Flex,
   Heading,
@@ -16,7 +16,6 @@ import {
   ModalBody,
   ModalFooter,
   Text,
-  useColorModeValue,
   Skeleton
 } from '@chakra-ui/react';
 import { FiInfo } from 'react-icons/fi';

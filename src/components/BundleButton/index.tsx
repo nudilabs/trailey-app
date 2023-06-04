@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import {
   Flex,
   Button,
@@ -11,8 +11,6 @@ import {
   ModalBody,
   ModalFooter,
   ModalCloseButton,
-  ListItem,
-  UnorderedList,
   Grid,
   GridItem,
   Text,
