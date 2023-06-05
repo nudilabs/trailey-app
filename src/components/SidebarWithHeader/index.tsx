@@ -199,7 +199,7 @@ const SidebarContent = ({
             isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
-            href={'https://twitter.com/TraileyAnalytics'}
+            href={'https://twitter.com/traileyxyz'}
           >
             Twitter
           </NavItem>
