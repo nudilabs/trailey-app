@@ -133,7 +133,7 @@ export default function Account({
       walletAddr: account.address
     },
     {
-      refetchInterval: validateData ? 10000 : 0
+      refetchInterval: validateData ? ENV.NEXT_PUBLIC_REVALIDATE_TIME : 0
     }
   );
 
@@ -144,7 +144,7 @@ export default function Account({
         walletAddr: account.address
       },
       {
-        refetchInterval: validateData ? 10000 : 0
+        refetchInterval: validateData ? ENV.NEXT_PUBLIC_REVALIDATE_TIME : 0
       }
     ).data;
 
@@ -155,7 +155,7 @@ export default function Account({
         walletAddr: account.address
       },
       {
-        refetchInterval: validateData ? 10000 : 0
+        refetchInterval: validateData ? ENV.NEXT_PUBLIC_REVALIDATE_TIME : 0
       }
     ).data;
 
