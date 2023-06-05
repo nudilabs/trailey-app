@@ -38,12 +38,21 @@ export default function TopProtocolsUsageCard({
   txsSummaryByContract,
   currentChain
 }: TopProtocolsUsageCardProps) {
-  const interactedContractCount = txsSummaryByContract?.contracts.filter(
-    contract =>
+  const interactedContractCount = txsSummaryByContract?.contracts
+    .filter(contract =>
       currentChain.protocols.some(protocol =>
-        protocol.addresses.includes(contract?.address?.toLowerCase())
+        protocol.addresses.some(
+          address =>
+            address.toLowerCase() === (contract?.address?.toLowerCase() || '')
+        )
       )
-  ).length;
+    )
+    .reduce((count, contract) => {
+      const hasInteraction =
+        parseInt(contract.txCount.allTime as unknown as string) > 0;
+      count += hasInteraction ? 1 : 0;
+      return count;
+    }, 0);
 
   const protocolsCount = currentChain.protocols.length;
 
@@ -53,7 +62,11 @@ export default function TopProtocolsUsageCard({
         <Flex direction="row" justifyContent="space-between">
           <Flex direction="row" gap={2}>
             <Heading size="md">Top Protocols Usage</Heading>
-            <Text size="md">{`${interactedContractCount} / ${protocolsCount}`}</Text>
+            {interactedContractCount ? (
+              <Text size="md">{`${interactedContractCount} / ${protocolsCount}`}</Text>
+            ) : (
+              <Skeleton height="20px" width="40px" />
+            )}
           </Flex>
           <Tooltip
             label="Your engagement with a curated list of protocols on a chosen blockchain. It represents your activity and interactions with the protocols deemed most prominent or influential within that particular ecosystem."

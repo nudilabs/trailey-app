@@ -60,7 +60,7 @@ const ChainSelector = ({
       </MenuButton>
       <MenuList>
         {chainConfigs.map((chain, index) => (
-          <>
+          <Box key={index}>
             {!chain.name ? (
               <Tooltip
                 label={'coming soon'}
@@ -103,7 +103,7 @@ const ChainSelector = ({
                 {chain.label}
               </MenuItem>
             )}
-          </>
+          </Box>
         ))}
       </MenuList>
     </Menu>
