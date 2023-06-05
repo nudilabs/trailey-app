@@ -1,6 +1,6 @@
-import { getAddress, isAddress } from 'viem';
+import { Address, getAddress, isAddress } from 'viem';
 import { normalize } from 'viem/ens';
-import { publicClient } from '@/utils/client';
+import { customPublicClient, publicClient } from '@/utils/client';
 
 import {
   Box,
@@ -18,7 +18,8 @@ import {
   StatNumber,
   Text,
   useColorModeValue,
-  chakra
+  chakra,
+  useToast
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
@@ -56,6 +57,7 @@ import { formatPrettyNumber } from '@/utils/format';
 import { fetchBalance } from '@wagmi/core';
 import { CHAINS } from '@/configs/chains';
 import { LastResync } from '@/types/LastResync';
+import ENV from '@/utils/Env';
 
 export default function Account({
   account_,
@@ -78,6 +80,7 @@ export default function Account({
   const [lastResynced, setLastResynced] = useState<LastResync>();
   const [validateData, setValidateData] = useState<boolean>(false);
   const [account, setAccount] = useState<IAccount>(account_);
+  const toast = useToast();
 
   const [balance, setBalance] = useState<{
     formatted: string;
@@ -94,8 +97,26 @@ export default function Account({
   // resync wallet
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    setValidateData(true);
     e.preventDefault();
+    const nonce = await customPublicClient(localChain).getTransactionCount({
+      address: account.address
+    });
+    if (nonce > Number(ENV.NEXT_PUBLIC_TX_LIMIT)) {
+      toast({
+        title: 'Error',
+        description: `We do not support addresses with more than ${formatPrettyNumber(
+          ENV.NEXT_PUBLIC_TX_LIMIT,
+          0
+        )} transactions during beta`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right'
+      });
+
+      return;
+    }
+    setValidateData(true);
     mutate({
       chainName: localChain,
       walletAddr: account.address
@@ -325,7 +346,7 @@ export default function Account({
         avatarUrl: null
       };
       const ensName = await publicClient.getEnsName({
-        address: getAddress(account_.address)
+        address: account_.address
       });
       account.ensName = ensName as string;
 
@@ -379,6 +400,7 @@ export default function Account({
                 currentBundle={currentBundle}
                 bundlesData={bundlesData}
                 setBundlesData={setBundlesData}
+                localChain={localChain}
               />
               <Box>
                 <AchievementsCard

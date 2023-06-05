@@ -1,5 +1,8 @@
 import { IAccount } from '@/types/IAccount';
 import { IBundle } from '@/types/IBundle';
+import ENV from '@/utils/Env';
+import { customPublicClient } from '@/utils/client';
+import { formatPrettyNumber } from '@/utils/format';
 import { Button } from '@chakra-ui/button';
 import { useColorModeValue } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/toast';
@@ -11,18 +14,36 @@ type AddToBundleBtnProps = {
   bundlesData: IBundle[];
   currentBundle: number;
   account: IAccount;
+  localChain: string;
 };
 
 export default function AddToBundleBtn({
   setBundlesData,
   bundlesData,
   currentBundle,
-  account
+  account,
+  localChain
 }: AddToBundleBtnProps) {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const handleAddToBundle = () => {
+  const handleAddToBundle = async () => {
+    const nonce = await customPublicClient(localChain).getTransactionCount({
+      address: account.address
+    });
+    if (nonce > Number(ENV.NEXT_PUBLIC_TX_LIMIT)) {
+      toast({
+        title: 'Error',
+        description: `We do not support addresses with more than ${formatPrettyNumber(
+          ENV.NEXT_PUBLIC_TX_LIMIT,
+          0
+        )} transactions during beta`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+      return;
+    }
     setIsLoading(true);
     const profile = bundlesData[currentBundle];
     const newProfile = {

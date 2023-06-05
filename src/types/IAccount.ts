@@ -1,5 +1,7 @@
+import { Address } from 'viem';
+
 export interface IAccount {
-  address: string;
+  address: Address;
   ensName: string;
   avatarUrl: string | null;
 }

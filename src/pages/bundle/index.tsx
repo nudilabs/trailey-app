@@ -1,5 +1,11 @@
 import { IBundle } from '@/types/IBundle';
-import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
+import ENV from '@/utils/Env';
+import { customPublicClient } from '@/utils/client';
+import {
+  getFormattedAddress,
+  getEmojiForWalletType,
+  formatPrettyNumber
+} from '@/utils/format';
 import {
   Box,
   Button,
@@ -63,20 +69,22 @@ import {
   FiTrash,
   FiX
 } from 'react-icons/fi';
-import { isAddress } from 'viem';
+import { getAddress, isAddress } from 'viem';
 
 interface BundlesProps {
   setCurrentBundle: React.Dispatch<React.SetStateAction<number>>;
   currentBundle: number;
   bundlesData: IBundle[];
   setBundlesData: React.Dispatch<React.SetStateAction<IBundle[]>>;
+  localChain: string;
 }
 
 export default function Bundles({
   setCurrentBundle,
   currentBundle,
   bundlesData,
-  setBundlesData
+  setBundlesData,
+  localChain
 }: BundlesProps) {
   const [profileInput, setBundleInput] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -105,10 +113,27 @@ export default function Bundles({
     router.push(`/`);
   };
 
-  const handleAddBundleSubmit = (formData: {
+  const handleAddBundleSubmit = async (formData: {
     name: string;
     wallets: { address: string; type: string }[];
   }) => {
+    const nonce = await customPublicClient(localChain).getTransactionCount({
+      address: getAddress(formData.wallets[0].address)
+    });
+    if (nonce > Number(ENV.NEXT_PUBLIC_TX_LIMIT)) {
+      toast({
+        title: 'Error',
+        description: `We do not support addresses with more than ${formatPrettyNumber(
+          ENV.NEXT_PUBLIC_TX_LIMIT,
+          0
+        )} transactions during beta`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right'
+      });
+      return;
+    }
     // Add the new profile data to the existing profiles array
     const updatedBundles = [...bundlesData, formData];
     setBundlesData(updatedBundles);

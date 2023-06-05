@@ -154,7 +154,7 @@ export const syncWalletTxs = publicProcedure
     else {
       //case 2.1: recent tx page  in db is less than from covalent
       const dbRecentPage = walletInfo?.recentPage;
-      console.log('dbRecentPage :', dbRecentPage);
+      // console.log('dbRecentPage :', dbRecentPage);
       // console.log('covRecentPage :', covRecentPage);
       if (dbRecentPage != null && latestTx) {
         if (dbRecentPage < covRecentPage) {

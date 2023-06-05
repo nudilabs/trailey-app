@@ -1,5 +1,11 @@
 import { IBundle } from '@/types/IBundle';
-import { getFormattedAddress, getEmojiForWalletType } from '@/utils/format';
+import ENV from '@/utils/Env';
+import { customPublicClient } from '@/utils/client';
+import {
+  getFormattedAddress,
+  getEmojiForWalletType,
+  formatPrettyNumber
+} from '@/utils/format';
 import {
   Button,
   Card,
@@ -35,18 +41,20 @@ import {
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FiChevronLeft, FiEdit, FiPlus, FiPlusCircle } from 'react-icons/fi';
-import { isAddress } from 'viem';
+import { getAddress, isAddress } from 'viem';
 
 interface ProfileProps {
   id: string;
   bundlesData: IBundle[];
   setBundlesData: React.Dispatch<React.SetStateAction<IBundle[]>>;
+  localChain: string;
 }
 
 export default function Profile({
   id,
   bundlesData,
-  setBundlesData
+  setBundlesData,
+  localChain
 }: ProfileProps) {
   const router = useRouter();
   const [input, setInput] = useState('');
@@ -85,7 +93,24 @@ export default function Profile({
     }
   };
 
-  const handleAddAddress = (address: string, type: string) => {
+  const handleAddAddress = async (address: string, type: string) => {
+    const nonce = await customPublicClient(localChain).getTransactionCount({
+      address: getAddress(address)
+    });
+    if (nonce > Number(ENV.NEXT_PUBLIC_TX_LIMIT)) {
+      toast({
+        title: 'Error',
+        description: `We do not support addresses with more than ${formatPrettyNumber(
+          ENV.NEXT_PUBLIC_TX_LIMIT,
+          0
+        )} transactions during beta`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right'
+      });
+      return;
+    }
     if (profile) {
       const newWallets = [...profile.wallets, { address, type }];
       const newProfile = { ...profile, wallets: newWallets };
@@ -99,6 +124,13 @@ export default function Profile({
         JSON.stringify(newProfilesData)
       );
     }
+    toast({
+      title: 'Address added',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+      position: 'top-right'
+    });
   };
 
   const handleRenameProfile = (name: string) => {
@@ -266,13 +298,6 @@ export default function Profile({
                     handleAddAddress(input, type);
                     setShowModal(false);
                     setInput('');
-                    toast({
-                      title: 'Address added',
-                      status: 'success',
-                      duration: 2000,
-                      isClosable: true,
-                      position: 'top-right'
-                    });
                   }
                 }}
               >
