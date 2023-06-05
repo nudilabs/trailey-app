@@ -28,14 +28,13 @@ import {
   FiMoon,
   FiTwitter
 } from 'react-icons/fi';
+import { RxDiscordLogo } from 'react-icons/rx';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { useRouter } from 'next/router';
 import SearchBar from '../SearchBar';
 import BundleButton from '../BundleButton';
 import { IBundle } from '@/types/IBundle';
-
-import CustomConnectButton from '../ConnectButton';
 
 interface LinkItemProps {
   name: string;
@@ -197,9 +196,20 @@ const SidebarContent = ({
           <NavItem
             onClose={onClose}
             isHover={isHover}
+            key={'discord'}
+            icon={RxDiscordLogo}
+            href={'https://discord.gg/8DQY9vA8Y9'}
+            external
+          >
+            Discord
+          </NavItem>
+          <NavItem
+            onClose={onClose}
+            isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
             href={'https://twitter.com/traileyxyz'}
+            external
           >
             Twitter
           </NavItem>
@@ -262,6 +272,7 @@ interface NavItemProps extends FlexProps {
   href?: string;
   children: ReactText;
   isActive?: boolean;
+  external?: boolean;
 }
 
 const NavItem = ({
@@ -270,6 +281,7 @@ const NavItem = ({
   icon,
   href,
   children,
+  external,
   ...rest
 }: NavItemProps) => {
   const router = useRouter();
@@ -278,7 +290,13 @@ const NavItem = ({
   const handleClick = (e: React.MouseEvent) => {
     onClose();
     e.preventDefault();
-    if (href) router.push(href);
+    if (href) {
+      if (external) {
+        window.open(href, '_blank');
+      } else {
+        router.push(href);
+      }
+    }
   };
 
   return (
