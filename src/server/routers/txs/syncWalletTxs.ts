@@ -10,16 +10,20 @@ import * as rpcClient from '@/server/utils/client';
 import { getAddress } from 'viem';
 import * as TxModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
+import * as WalletInfoModel from '@/models/WalletsInfo';
+import { aw } from 'drizzle-orm/select.types.d-e43b2599';
 
 const preData = async (
   txs: any,
   chainId: number,
-  walletAddr: string,
-  latestTx: any
+  latestTx: any,
+  recentPage: number
 ) => {
   //get dbrecent page txs from covalent
+  let txsToInsert: Transaction[] = [];
 
-  const txsToInsert = txs.filter((tx: any) => {
+  // const txsToInsert = txs.filter((tx: any) => {
+  for (let tx of txs) {
     if (
       tx.block_height >= Number(latestTx.blockHeight) &&
       tx.tx_hash !== latestTx.txHash
@@ -40,14 +44,12 @@ const preData = async (
         valueQuote: tx.value_quote,
         feesPaid: tx.fees_paid,
         gasQuote: tx.gas_quote,
-        page: latestTx.page,
+        isInteract: tx.log_events && tx.log_events.length > 0 ? true : false,
         chainId
       };
-      return tmp;
-    } else {
-      return false;
+      txsToInsert.push(tmp);
     }
-  });
+  }
 
   return txsToInsert;
 };
@@ -87,7 +89,16 @@ export const syncWalletTxs = publicProcedure
     }
 
     // select latest block height from wallet from transactions table
-    const latestTx = await TxModel.getLatest(chainId, walletAddr);
+    // const walletInfo = await WalletInfoModel.getInfo(chainId, walletAddr);
+    const recentInfo = await WalletInfoModel.getRecentTx(chainId, walletAddr);
+    let latestTx = null;
+    let walletInfo = null;
+    if (recentInfo.length > 0) {
+      walletInfo = recentInfo[0]?.wallets_info;
+      latestTx = recentInfo[0]?.transactions;
+    }
+
+    // const latestTx = walletInfo[0].transactions[0];
 
     const covalent = new Covalent(serverConfig.covalent.key);
     const recentCovTxPage = await covalent.getWalletRecentTxs(
@@ -144,9 +155,9 @@ export const syncWalletTxs = publicProcedure
     } //case 2: txs in db
     else {
       //case 2.1: recent tx page  in db is less than from covalent
-      const dbRecentPage = latestTx.page;
-      console.log('dbRecentPage :', dbRecentPage);
-      console.log('covRecentPage :', covRecentPage);
+      const dbRecentPage = walletInfo?.recentPage;
+      // console.log('dbRecentPage :', dbRecentPage);
+      // console.log('covRecentPage :', covRecentPage);
       if (dbRecentPage != null && latestTx) {
         if (dbRecentPage < covRecentPage) {
           const res = await covalent.getWalletTxsByPage(
@@ -155,11 +166,20 @@ export const syncWalletTxs = publicProcedure
             dbRecentPage
           );
           const txs = res?.data.data.items;
-          const txsToInsert = await preData(txs, chainId, walletAddr, latestTx);
+          const txsToInsert = await preData(
+            txs,
+            chainId,
+            latestTx,
+            dbRecentPage
+          );
 
           if (txsToInsert.length > 0) {
-            console.log('txsToInsert', txsToInsert.length);
             await TxModel.insertTxs(txsToInsert);
+            await WalletInfoModel.upsertRecentPage(
+              chainId,
+              walletAddr,
+              dbRecentPage
+            );
           }
 
           const caseStartPage = dbRecentPage + 1;
@@ -178,10 +198,20 @@ export const syncWalletTxs = publicProcedure
         } //case 2.2: recent tx page  in db is equa from covalent
         else if (dbRecentPage === covRecentPage) {
           const txs = recentCovTxPage.data.items;
-          const txsToInsert = await preData(txs, chainId, walletAddr, latestTx);
+          const txsToInsert = await preData(
+            txs,
+            chainId,
+            latestTx,
+            dbRecentPage
+          );
           if (txsToInsert.length > 0) {
             console.log('txsToInsert', txsToInsert.length);
             await TxModel.insertTxs(txsToInsert);
+            await WalletInfoModel.upsertRecentPage(
+              chainId,
+              walletAddr,
+              covRecentPage
+            );
           }
           console.log('case dbRecentPage == covRecentPage ');
         }

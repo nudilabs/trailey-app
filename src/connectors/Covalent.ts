@@ -16,7 +16,6 @@ export class Covalent {
       return await fetch(url, { method: 'GET', headers });
     } catch (e) {
       console.log('error from covalent');
-      console.log(e);
     }
   }
 
@@ -25,16 +24,13 @@ export class Covalent {
     walletAddr: string,
     page: number
   ) {
-    console.log('fetch getWalletTxsByPage', page);
     const url = `${this.endPointUrl}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
     const res = await this.fetchFromCovalent(url);
     try {
-      // console.log('res status', res?.status);
       const data = await res?.json();
       return { data, page };
     } catch (e) {
       console.log('error from getWalletTxsByPage');
-      console.log(e);
     }
   }
 
@@ -46,7 +42,6 @@ export class Covalent {
       return data;
     } catch (e) {
       console.log('error from getRecentTxs');
-      console.log(e);
     }
   }
 }

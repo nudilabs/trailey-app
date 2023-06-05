@@ -1,7 +1,6 @@
 import { rpcMapper } from './chains';
 
 export const getTxCount = async (chainName: string, walletAddr: string) => {
-  // console.log('getTxCount', chainName);
   const url = rpcMapper[chainName];
   const body = {
     jsonrpc: '2.0',

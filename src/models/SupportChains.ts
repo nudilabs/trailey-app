@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 // import { Transaction } from '@/types/DB';
 import { supportChains } from '@/db/schema';
 import { db } from '@/db/drizzle-db';

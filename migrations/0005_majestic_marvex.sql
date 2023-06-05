@@ -1,0 +1,1 @@
+ALTER TABLE `wallets_info` ADD `chain_id` int;

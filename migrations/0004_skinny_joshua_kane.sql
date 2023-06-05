@@ -1,0 +1,1 @@
+CREATE INDEX `address_idx` ON `wallets_info` (`address`);
