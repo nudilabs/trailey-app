@@ -272,9 +272,26 @@ export default function ProfileCard({
             {txSummary ? (
               <Stat textAlign="center">
                 <StatNumber>
-                  {txsSummaryByMonth?.txsByMonth.length ?? 0}
+                  <Text>
+                    ${formatPrettyNumber(txSummary?.gasQuoteSum.allTime ?? 0)}
+                  </Text>
                 </StatNumber>
-                <StatLabel color={subHeadingColor}>Active Months</StatLabel>
+                <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
+                {txSummary && txSummary.gasQuoteSum.lastWeek !== 0 && (
+                  <Tooltip
+                    label={`${formatDecimals(
+                      txSummary?.gasQuoteSum.percentChange ?? 0
+                    )}% ${toolTipLabel}`}
+                    hasArrow
+                  >
+                    <StatHelpText>
+                      {`$${formatPrettyNumber(
+                        txSummary?.gasQuoteSum.lastWeek,
+                        1
+                      )} past week`}
+                    </StatHelpText>
+                  </Tooltip>
+                )}
               </Stat>
             ) : (
               <Skeleton height="50px" width="100px" />

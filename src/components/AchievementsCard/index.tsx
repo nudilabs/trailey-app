@@ -74,7 +74,10 @@ export default function AchievementsCard({
       <CardHeader paddingBottom={0}>
         <Flex direction="row" justifyContent="space-between">
           <Heading size="md">Achievements</Heading>
-          <Tooltip label="More Info" hasArrow>
+          <Tooltip
+            label="Achievements are milestones that represent your activities and progress within a specific context or chain of events. They symbolize your notable accomplishments and contributions in that area."
+            hasArrow
+          >
             <IconButton
               aria-label="Previous"
               icon={<FiInfo />}

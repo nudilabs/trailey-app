@@ -17,7 +17,8 @@ import {
   StatHelpText,
   StatNumber,
   Text,
-  useColorModeValue
+  useColorModeValue,
+  chakra
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
@@ -27,6 +28,9 @@ import { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -607,7 +611,7 @@ export default function Account({
                         justifyContent="space-between"
                         alignItems="center"
                       >
-                        <Heading size="md">Bridged Value</Heading>
+                        <Heading size="md">Active months</Heading>
                       </Flex>
                     </CardHeader>
                     <CardBody>
@@ -617,7 +621,7 @@ export default function Account({
                             <StatNumber>
                               <Heading>
                                 {txSummary.data ? (
-                                  `$${0}`
+                                  txsSummaryByMonth?.txsByMonth.length ?? 0
                                 ) : (
                                   <Skeleton height="42px" />
                                 )}
@@ -625,72 +629,37 @@ export default function Account({
                             </StatNumber>
                             <StatHelpText>
                               <Text fontSize="sm" color={subHeadingColor}>
-                                Last 6 months
+                                All time
                               </Text>
                             </StatHelpText>
                           </Stat>
                         </GridItem>
                         <GridItem colSpan={{ base: 6 }}>
                           <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart>
-                              <defs>
-                                <linearGradient
-                                  id="colorUv"
-                                  x1="0"
-                                  y1="0"
-                                  x2="0"
-                                  y2="1"
-                                >
-                                  <stop
-                                    offset="5%"
-                                    stopColor={getGraphColor(
-                                      byMonthData[0].txCount,
-                                      byMonthData[5].txCount,
-                                      0
-                                    )}
-                                    stopOpacity={0.8}
-                                  />
-                                  <stop
-                                    offset="95%"
-                                    stopColor={getGraphColor(
-                                      byMonthData[0].txCount,
-                                      byMonthData[5].txCount,
-                                      1
-                                    )}
-                                    stopOpacity={0}
-                                  />
-                                </linearGradient>
-                              </defs>
+                            <BarChart
+                              width={730}
+                              height={250}
+                              data={txsSummaryByMonth?.txsByMonth}
+                            >
                               <XAxis dataKey="date" hide />
                               <YAxis
-                                domain={[0, maxvalueQuoteSum]}
+                                domain={[0, maxTxCount]}
                                 tickFormatter={value => {
                                   return formatPrettyNumber(value as number, 0);
                                 }}
                                 hide
                               />
-
                               <Tooltip
                                 formatter={value => {
                                   return [
                                     formatPrettyNumber(value as number, 0),
-                                    'Tx Value'
+                                    'Txs'
                                   ];
                                 }}
                                 labelStyle={{ color: 'black' }}
                               />
-                              <Area
-                                type="monotone"
-                                dataKey="valueQuoteSum"
-                                stroke={getGraphColor(
-                                  byMonthData[0].txCount,
-                                  byMonthData[5].txCount,
-                                  2
-                                )}
-                                fillOpacity={1}
-                                fill="url(#colorUv)"
-                              />
-                            </AreaChart>
+                              <Bar dataKey="txCount" fill={'#F857A6'} />
+                            </BarChart>
                           </ResponsiveContainer>
                         </GridItem>
                       </Grid>

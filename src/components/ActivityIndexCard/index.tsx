@@ -152,7 +152,7 @@ export default function ActivityIndexCard({
         <Flex justifyContent="space-between">
           <Heading size="md">Performance</Heading>
           <Tooltip
-            label="The Activity Index is a score between 0 and 100 that measures the overall activity of a blockchain address. It is calculated by combining the normalized values of the number of transactions, number of contract interactions, total value transferred, and total gas used."
+            label="A score between 0 and 100 that measures the overall activity of a blockchain address. The performance score provides an assessment of the address's overall engagement and effectiveness within the blockchain ecosystem. 100 represents the maximum achievable score, indicating exceptionally high activity, while 50 represents the average score."
             placement="top"
             hasArrow
           >

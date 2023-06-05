@@ -64,7 +64,7 @@ export default function TopProtocolsUsageCard({
             <Text size="md">{`${interactedContractCount} / ${protocolsCount}`}</Text>
           </Flex>
           <Tooltip
-            label="The % change is the increase in usage since last week"
+            label="Your engagement with a curated list of protocols on a chosen blockchain. It represents your activity and interactions with the protocols deemed most prominent or influential within that particular ecosystem."
             hasArrow
           >
             <IconButton
@@ -123,9 +123,6 @@ export default function TopProtocolsUsageCard({
                             </Text>
                             <FiExternalLink />
                           </Flex>
-                          {/* <Text color={subHeadingColor} fontSize="xs">
-                            0 days active
-                          </Text> */}
                         </Flex>
                       </Flex>
                     </Td>
