@@ -75,7 +75,7 @@ export default function Settings() {
           >
             <Flex direction="column">
               <Heading fontSize={{ base: 'md' }}>Logout</Heading>
-              <Text fontSize="sm">Logout of Abtrail</Text>
+              <Text fontSize="sm">Logout of Trailey</Text>
             </Flex>
             <Button size="sm" colorScheme="red">
               Logout

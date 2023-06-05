@@ -43,8 +43,8 @@ const { chains, provider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: 'Abtrail Analytics',
-  projectId: 'AbtrailAnalytics',
+  appName: 'Trailey Analytics',
+  projectId: 'TraileyAnalytics',
   chains
 });
 
@@ -70,11 +70,11 @@ const App = ({ Component, pageProps }: AppProps<{}>) => {
   useEffect(() => {
     const localStorage = window.localStorage;
     // Get item from local storage
-    const profiles = localStorage.getItem('abtrail.bundles');
+    const profiles = localStorage.getItem('trailey.bundles');
     if (profiles) setBundlesData(JSON.parse(profiles));
     const currentBundleId = localStorage.getItem('profileId');
     if (currentBundleId) setCurrentBundle(parseInt(currentBundleId));
-    const localChain = localStorage.getItem('abtrail.chain');
+    const localChain = localStorage.getItem('trailey.chain');
     if (localChain) setLocalChain(localChain);
   }, []);
 

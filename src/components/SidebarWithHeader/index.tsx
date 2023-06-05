@@ -149,13 +149,13 @@ const SidebarContent = ({
             src={
               isHover ? logo : logo.replace('/logos/logo', '/logos/logo-small')
             }
-            alt="Abtrail Logo"
+            alt="Trailey Logo"
             height={'40px'}
             display={{ base: 'none', xl: 'block' }}
           />
           <Image
             src={logo}
-            alt="Abtrail Logo"
+            alt="Trailey Logo"
             height={'40px'}
             display={{ base: 'block', xl: 'none' }}
           />
@@ -199,7 +199,7 @@ const SidebarContent = ({
             isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
-            href={'https://twitter.com/AbtrailAnalytics'}
+            href={'https://twitter.com/TraileyAnalytics'}
           >
             Twitter
           </NavItem>
@@ -382,7 +382,7 @@ const MobileNav = ({ onOpen, bundlesData, ...rest }: MobileProps) => {
           icon={<FiMenu />}
         />
         <Box display={{ base: 'flex', xl: 'none' }}>
-          <Image src={logo} alt="Abtrail Logo" width="128px" />
+          <Image src={logo} alt="Trailey Logo" width="128px" />
         </Box>
       </Flex>
       {/* <CustomConnectButton /> */}

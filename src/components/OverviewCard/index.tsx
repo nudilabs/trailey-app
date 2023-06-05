@@ -65,7 +65,7 @@ const OverviewCard = ({
         timestamp: currentDate
       };
       const localStorage = window.localStorage;
-      const lrsFromLocal = localStorage.getItem('abtrail.lrs');
+      const lrsFromLocal = localStorage.getItem('trailey.lrs');
       // find the old lrs in storage
       if (lrsFromLocal) {
         let lrsFromLocalObj = JSON.parse(lrsFromLocal);
@@ -79,11 +79,11 @@ const OverviewCard = ({
         } else {
           lrsFromLocalObj.push(obj);
         }
-        localStorage.setItem('abtrail.lrs', JSON.stringify(lrsFromLocalObj));
+        localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
         lastResyncs.push(currentLsrObj);
       } else {
         // if not found, create a new one
-        localStorage.setItem('abtrail.lrs', JSON.stringify([obj]));
+        localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
         lastResyncs.push(obj);
       }
       setLastResynced(lastResyncs);
@@ -105,7 +105,7 @@ const OverviewCard = ({
 
   useEffect(() => {
     const localStorage = window.localStorage;
-    const lastResyncedString = localStorage.getItem('abtrail.lrs');
+    const lastResyncedString = localStorage.getItem('trailey.lrs');
     const lastResyncs: LastResync[] = [];
     txSummaries.forEach((summary: any) => {
       if (lastResyncedString) {

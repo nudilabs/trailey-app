@@ -78,7 +78,7 @@ export default function ProfileCard({
       timestamp: currentDate
     };
     const localStorage = window.localStorage;
-    const lrsFromLocal = localStorage.getItem('abtrail.lrs');
+    const lrsFromLocal = localStorage.getItem('trailey.lrs');
     // find the old lrs in storage
     if (lrsFromLocal) {
       let lrsFromLocalObj = JSON.parse(lrsFromLocal);
@@ -92,11 +92,11 @@ export default function ProfileCard({
       } else {
         lrsFromLocalObj.push(obj);
       }
-      localStorage.setItem('abtrail.lrs', JSON.stringify(lrsFromLocalObj));
+      localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
       setLastResynced(currentLsrObj);
     } else {
       // if not found, create a new one
-      localStorage.setItem('abtrail.lrs', JSON.stringify([obj]));
+      localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
       setLastResynced(obj);
     }
 
@@ -111,7 +111,7 @@ export default function ProfileCard({
 
   useEffect(() => {
     const localStorage = window.localStorage;
-    const lastResyncedString = localStorage.getItem('abtrail.lrs');
+    const lastResyncedString = localStorage.getItem('trailey.lrs');
     if (lastResyncedString) {
       const lastResynced = JSON.parse(lastResyncedString).find(
         (item: { chain: string; address: string }) =>
@@ -306,7 +306,7 @@ export default function ProfileCard({
           color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
           fontSize="xs"
         >
-          Powered by Abtrail Analytics
+          Powered by Trailey Analytics
         </Text>
       </CardFooter>
     </Card>

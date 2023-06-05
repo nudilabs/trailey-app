@@ -113,7 +113,7 @@ export default function Bundles({
     const updatedBundles = [...bundlesData, formData];
     setBundlesData(updatedBundles);
     window.localStorage.setItem(
-      'abtrail.bundles',
+      'trailey.bundles',
       JSON.stringify(updatedBundles)
     );
 
@@ -125,7 +125,7 @@ export default function Bundles({
     const updatedBundles = bundlesData.filter((_, i) => i !== index);
     setBundlesData(updatedBundles);
     window.localStorage.setItem(
-      'abtrail.bundles',
+      'trailey.bundles',
       JSON.stringify(updatedBundles)
     );
     setCurrentBundle(0);

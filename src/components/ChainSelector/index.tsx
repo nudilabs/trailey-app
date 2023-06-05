@@ -35,7 +35,7 @@ const ChainSelector = ({
 
   const handleSelectChain = (chain: string) => {
     setLocalChain(chain);
-    localStorage.setItem('abtrail.chain', chain);
+    localStorage.setItem('trailey.chain', chain);
   };
 
   return (
