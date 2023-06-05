@@ -7,7 +7,8 @@ import {
   MenuItem,
   useColorModeValue,
   Box,
-  Badge
+  Badge,
+  Tooltip
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
@@ -59,20 +60,50 @@ const ChainSelector = ({
       </MenuButton>
       <MenuList>
         {chainConfigs.map((chain, index) => (
-          <MenuItem
-            key={index}
-            gap={2}
-            alignContent={'center'}
-            onClick={() => handleSelectChain(chain.name.toLowerCase())}
-          >
-            <Image
-              src={chain.logo_url}
-              alt={chain.label}
-              boxSize={5}
-              rounded="full"
-            />
-            {chain.label}
-          </MenuItem>
+          <>
+            {!chain.name ? (
+              <Tooltip
+                label={'coming soon'}
+                key={index}
+                hasArrow
+                placement="right"
+              >
+                <MenuItem
+                  key={index}
+                  gap={2}
+                  alignContent={'center'}
+                  onClick={() => handleSelectChain(chain.name.toLowerCase())}
+                  // disable if no name or chainId
+                  isDisabled={!chain.name}
+                >
+                  <Image
+                    src={chain.logo_url}
+                    alt={chain.label}
+                    boxSize={5}
+                    rounded="full"
+                  />
+                  {chain.label}
+                </MenuItem>
+              </Tooltip>
+            ) : (
+              <MenuItem
+                key={index}
+                gap={2}
+                alignContent={'center'}
+                onClick={() => handleSelectChain(chain.name.toLowerCase())}
+                // disable if no name or chainId
+                isDisabled={!chain.name}
+              >
+                <Image
+                  src={chain.logo_url}
+                  alt={chain.label}
+                  boxSize={5}
+                  rounded="full"
+                />
+                {chain.label}
+              </MenuItem>
+            )}
+          </>
         ))}
       </MenuList>
     </Menu>

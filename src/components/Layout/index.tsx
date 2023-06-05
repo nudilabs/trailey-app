@@ -25,7 +25,7 @@ export default function Layout({
 
   const pageTitle =
     pathname === '/' || pathname === '/address/[address]'
-      ? 'Abtrail'
+      ? 'Abtrail | Track your activity'
       : `Abtrail | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
 
   useEffect(() => {

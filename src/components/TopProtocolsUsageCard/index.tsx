@@ -32,25 +32,17 @@ import moment from 'moment';
 type TopProtocolsUsageCardProps = {
   txsSummaryByContract: TxSummaryByContract | undefined;
   currentChain: Chain;
-  account: IAccount;
 };
 
 export default function TopProtocolsUsageCard({
   txsSummaryByContract,
-  currentChain,
-  account
+  currentChain
 }: TopProtocolsUsageCardProps) {
-  const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
-  const subCardColor = useColorModeValue('white', 'red');
   const interactedContractCount = txsSummaryByContract?.contracts.filter(
-    contract => {
-      // Check if the contract address is included in protocols
-
-      return currentChain.protocols.some(
-        protocol =>
-          protocol?.address?.toLowerCase() === contract?.address?.toLowerCase()
-      );
-    }
+    contract =>
+      currentChain.protocols.some(protocol =>
+        protocol.addresses.includes(contract?.address?.toLowerCase())
+      )
   ).length;
 
   const protocolsCount = currentChain.protocols.length;
@@ -88,11 +80,30 @@ export default function TopProtocolsUsageCard({
             </Thead>
             <Tbody>
               {currentChain.protocols.map((protocol, index) => {
-                const contractInteractions =
-                  txsSummaryByContract?.contracts.find(
-                    contract =>
-                      contract.address.toLowerCase() ===
-                      protocol.address.toLowerCase()
+                const contractInteractions = txsSummaryByContract?.contracts
+                  .filter(contract =>
+                    protocol.addresses.some(
+                      address =>
+                        address.toLowerCase() ===
+                        contract?.address?.toLowerCase()
+                    )
+                  )
+                  .reduce(
+                    (accumulator, contract) => {
+                      accumulator.txCount.allTime +=
+                        parseInt(
+                          contract.txCount.allTime as unknown as string
+                        ) || 0;
+                      accumulator.lastTx =
+                        accumulator.lastTx || contract.lastTx;
+                      return accumulator;
+                    },
+                    {
+                      txCount: {
+                        allTime: 0
+                      },
+                      lastTx: null as string | null // Set the initial value to string | null
+                    }
                   );
                 return (
                   <Tr key={index}>
@@ -115,13 +126,19 @@ export default function TopProtocolsUsageCard({
                           >
                             <Text
                               as="a"
-                              href={`${currentChain.block_explorer_url}address/${protocol.address}`}
+                              href={protocol.protocol_url}
                               target="_blank"
-                              textDecor="underline"
+                              textDecor={
+                                protocol.protocol_url ? 'underline' : 'none'
+                              }
                             >
                               {protocol?.label}
                             </Text>
-                            <FiExternalLink />
+                            <Box
+                              display={protocol.protocol_url ? 'block' : 'none'}
+                            >
+                              <FiExternalLink />
+                            </Box>
                           </Flex>
                         </Flex>
                       </Flex>

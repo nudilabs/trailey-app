@@ -16,9 +16,10 @@ export type Chain = {
 };
 
 type Protocol = {
-  address: string;
+  addresses: string[];
   label: string;
   logo_url: string;
+  protocol_url: string;
 };
 
 export type Achievement = {

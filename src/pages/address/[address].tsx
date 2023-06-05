@@ -671,7 +671,6 @@ export default function Account({
                 <TopProtocolsUsageCard
                   txsSummaryByContract={txsSummaryByContract}
                   currentChain={currentChain}
-                  account={account}
                 />
               </GridItem>
             </Grid>

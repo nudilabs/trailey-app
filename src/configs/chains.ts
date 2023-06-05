@@ -12,26 +12,30 @@ export const CHAINS = [
     appchain_of: null,
     protocols: [
       {
-        address: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
+        addresses: ['0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614'],
         label: 'Stargate Finance',
         logo_url:
-          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png'
+          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
+        protocol_url: 'https://stargate.finance/'
       },
       {
-        address: '0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5',
+        addresses: ['0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5'],
         label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
+        logo_url: '/protocols/uniswap.png',
+        protocol_url: 'https://uniswap.org/'
       },
       {
-        address: '0x3749C4f034022c39ecafFaBA182555d4508caCCC',
+        addresses: ['0x3749C4f034022c39ecafFaBA182555d4508caCCC'],
         label: 'Hop',
-        logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+        logo_url: 'https://app.hop.exchange/images/hop_logo.png',
+        protocol_url: 'https://hop.exchange/'
       },
       {
-        address: '0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C',
+        addresses: ['0xBeb09beB09e95E6FEBf0d6EEb1d0D46d1013CC3C'],
         label: 'Bepop',
         logo_url:
-          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0'
+          'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0',
+        protocol_url: 'https://bepop.xyz/'
       }
     ],
     achievements: [
@@ -86,26 +90,30 @@ export const CHAINS = [
     appchain_of: null,
     protocols: [
       {
-        address: '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+        addresses: ['0xB0D502E938ed5f4df2E681fE6E419ff29631d62b'],
         label: 'Stargate Finance',
         logo_url:
-          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png'
+          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
+        protocol_url: 'https://stargate.finance/'
       },
       {
-        address: '0xb555edF5dcF85f42cEeF1f3630a52A108E55A654',
+        addresses: ['0xb555edF5dcF85f42cEeF1f3630a52A108E55A654'],
         label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
+        logo_url: '/protocols/uniswap.png',
+        protocol_url: 'https://uniswap.org/'
       },
       {
-        address: '0x83f6244Bd87662118d96D9a6D44f09dffF14b30E',
+        addresses: ['0x83f6244Bd87662118d96D9a6D44f09dffF14b30E'],
         label: 'Hop',
-        logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+        logo_url: 'https://app.hop.exchange/images/hop_logo.png',
+        protocol_url: 'https://hop.exchange/'
       },
       {
-        address: '0x41838b44C20EB6b89b7169e4017eb1435165C1C3',
+        addresses: ['0x41838b44C20EB6b89b7169e4017eb1435165C1C3'],
         label: 'Holograph',
         logo_url:
-          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4='
+          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0OSA0OCIgY2xhc3M9ImZpbGwtWyNGOUY5RjldIGxpZ2h0OmZpbGwtWyMwMDAwMDBdICIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS45NjQ2MiAxNi40MDhMMjAuMzI5NyAxMC40MzJWMEwwIDExLjcyVjQ3Ljk2TDkuOTY0NjIgNDIuMjE2VjE2LjQwOFpNMTQuNzcwNyAzOS40NEwyMi45MzMgMzQuNzM2VjE0LjQ3MkwxNC43NzA3IDE5LjE3NlYzOS40NFpNMjcuNzM5MSA0OEw0OC4wNjA5IDM2LjI4TDQ4LjAyODggMEwyNy43MzkxIDExLjY5NlY0OFoiPjwvcGF0aD48L3N2Zz4=',
+        protocol_url: 'https://holograph.xyz/'
       }
     ],
     achievements: [
@@ -213,14 +221,16 @@ export const CHAINS = [
     appchain_of: null,
     protocols: [
       {
-        address: '0xd9880690bd717189cc3fbe7b9020f27fae7ac76f',
+        addresses: ['0xd9880690bd717189cc3fbe7b9020f27fae7ac76f'],
         label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
+        logo_url: '/protocols/uniswap.png',
+        protocol_url: 'http://uniswap-v3.scroll.io/'
       },
       {
-        address: '0xC458eED598eAb247ffc19d15F19cf06ae729432c',
+        addresses: ['0xC458eED598eAb247ffc19d15F19cf06ae729432c'],
         label: 'Syncswap',
-        logo_url: '/protocols/syncswap.jpg'
+        logo_url: '/protocols/syncswap.jpg',
+        protocol_url: 'https://syncswap.xyz/'
       }
     ],
     achievements: [
@@ -276,14 +286,16 @@ export const CHAINS = [
     appchain_of: null,
     protocols: [
       {
-        address: '0x7191061d5d4c60f598214cc6913502184baddf18',
+        addresses: ['0x7191061d5d4c60f598214cc6913502184baddf18'],
         label: 'Hop',
-        logo_url: 'https://app.hop.exchange/images/hop_logo.png'
+        logo_url: 'https://app.hop.exchange/images/hop_logo.png',
+        white_logo_url: 'https://goerli.hop.exchange/'
       },
       {
-        address: '0x6aa397CAB00a2A40025Dbf839a83f16D5EC7c1eB',
+        addresses: ['0x6aa397CAB00a2A40025Dbf839a83f16D5EC7c1eB'],
         label: 'Uniswap',
-        logo_url: '/protocols/uniswap.png'
+        logo_url: '/protocols/uniswap.png',
+        protocol_url: 'https://swap.goerli.linea.build/'
       }
     ],
     achievements: [
@@ -352,6 +364,43 @@ export const CHAINS = [
       }
     ],
     block_explorer_url: 'https://zkevm.polygonscan.com/',
+    scores: {
+      txCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      contractCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      valueQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      gasQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      }
+    }
+  },
+  {
+    name: '',
+    chain_id: '',
+    is_testnet: false,
+    label: 'zkSync Era Mainnet',
+    category_label: 'Ethereum',
+    logo_url: 'https://lite.zksync.io/images/logo-no-letters.svg',
+    black_logo_url: 'https://lite.zksync.io/images/logo-no-letters.svg',
+    white_logo_url: 'https://lite.zksync.io/images/logo-no-letters.svg',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [],
+    achievements: [],
+    block_explorer_url: 'https://explorer.zksync.io/',
     scores: {
       txCount: {
         min: 0,
