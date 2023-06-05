@@ -12,20 +12,30 @@ export const CHAINS = [
     appchain_of: null,
     protocols: [
       {
-        addresses: ['0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614'],
+        addresses: [
+          '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
+          '0x6694340fc020c5E6B96567843da2df01b2CE1eb6'
+        ],
         label: 'Stargate Finance',
         logo_url:
           'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
         protocol_url: 'https://stargate.finance/'
       },
       {
-        addresses: ['0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5'],
+        addresses: [
+          '0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5',
+          '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
+        ],
         label: 'Uniswap',
         logo_url: '/protocols/uniswap.png',
         protocol_url: 'https://uniswap.org/'
       },
       {
-        addresses: ['0x3749C4f034022c39ecafFaBA182555d4508caCCC'],
+        addresses: [
+          '0x3749C4f034022c39ecafFaBA182555d4508caCCC',
+          '0x33ceb27b39d2Bb7D2e61F7564d3Df29344020417',
+          '0x10541b07d8Ad2647Dc6cD67abd4c03575dade261'
+        ],
         label: 'Hop',
         logo_url: 'https://app.hop.exchange/images/hop_logo.png',
         protocol_url: 'https://hop.exchange/'

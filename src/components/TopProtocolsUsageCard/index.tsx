@@ -38,21 +38,19 @@ export default function TopProtocolsUsageCard({
   txsSummaryByContract,
   currentChain
 }: TopProtocolsUsageCardProps) {
-  const interactedContractCount = txsSummaryByContract?.contracts
-    .filter(contract =>
-      currentChain.protocols.some(protocol =>
+  const interactedContractCount = currentChain.protocols.reduce(
+    (count, protocol) => {
+      const hasInteraction = txsSummaryByContract?.contracts.some(contract =>
         protocol.addresses.some(
           address =>
             address.toLowerCase() === (contract?.address?.toLowerCase() || '')
         )
-      )
-    )
-    .reduce((count, contract) => {
-      const hasInteraction =
-        parseInt(contract.txCount.allTime as unknown as string) > 0;
+      );
       count += hasInteraction ? 1 : 0;
       return count;
-    }, 0);
+    },
+    0
+  );
 
   const protocolsCount = currentChain.protocols.length;
 
