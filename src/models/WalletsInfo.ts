@@ -20,10 +20,7 @@ export const getRecentTx = async (chainId: number, address: string) => {
     .leftJoin(
       transactions,
       and(
-        or(
-          eq(walletsInfo.address, transactions.fromAddress),
-          eq(walletsInfo.address, transactions.toAddress)
-        ),
+        eq(walletsInfo.address, transactions.fromAddress),
         eq(walletsInfo.chainId, transactions.chainId)
       )
     )

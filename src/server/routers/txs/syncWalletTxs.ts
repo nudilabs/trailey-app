@@ -7,11 +7,9 @@ import { config as serverConfig } from '@/configs/server';
 import { Covalent } from '@/connectors/Covalent';
 import { QStash } from '@/connectors/Qstash';
 import * as rpcClient from '@/server/utils/client';
-import { getAddress } from 'viem';
 import * as TxModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
 import * as WalletInfoModel from '@/models/WalletsInfo';
-import { aw } from 'drizzle-orm/select.types.d-e43b2599';
 
 const preData = async (
   txs: any,
@@ -156,7 +154,7 @@ export const syncWalletTxs = publicProcedure
     else {
       //case 2.1: recent tx page  in db is less than from covalent
       const dbRecentPage = walletInfo?.recentPage;
-      // console.log('dbRecentPage :', dbRecentPage);
+      console.log('dbRecentPage :', dbRecentPage);
       // console.log('covRecentPage :', covRecentPage);
       if (dbRecentPage != null && latestTx) {
         if (dbRecentPage < covRecentPage) {
