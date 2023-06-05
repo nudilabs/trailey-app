@@ -393,7 +393,7 @@ export default function Account({
                 txsSummaryByMonth={txsSummaryByMonth}
                 lastResynced={lastResynced}
                 setLastResynced={setLastResynced}
-                isRefetching={txSummary.isRefetching}
+                isRefetching={txSummary.isRefetching || txSummary.isFetching}
               />
               <AddToBundleBtn
                 account={account}
