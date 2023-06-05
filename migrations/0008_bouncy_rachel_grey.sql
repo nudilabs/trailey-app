@@ -1,0 +1,1 @@
+ALTER TABLE `wallets_info` ADD `updated_at` timestamp DEFAULT (now()) NOT NULL;

@@ -1,3 +1,4 @@
+import { create } from 'domain';
 import {
   mysqlTable,
   serial,
@@ -6,7 +7,8 @@ import {
   datetime,
   decimal,
   boolean,
-  index
+  index,
+  timestamp
 } from 'drizzle-orm/mysql-core';
 // {
 //   "block_signed_at": "2022-06-29T10:35:44Z",
@@ -33,12 +35,29 @@ export const supportChains = mysqlTable(
   'support_chains',
   {
     id: serial('id').primaryKey(),
-    name: varchar('name', { length: 255 })
+    name: varchar('name', { length: 255 }),
+    createdAt: timestamp('created_at').notNull().defaultNow()
   },
   chain => ({
     nameIdx: index('name_idx').on(chain.name)
   })
 );
+
+export const walletsInfo = mysqlTable(
+  'wallets_info',
+  {
+    id: serial('id').primaryKey(),
+    address: varchar('address', { length: 42 }),
+    chainId: int('chain_id'),
+    recentPage: int('recent_page'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow()
+  },
+  wallet => ({
+    addressIdx: index('address_idx').on(wallet.address)
+  })
+);
+
 export const transactions = mysqlTable(
   'transactions',
   {
@@ -57,8 +76,9 @@ export const transactions = mysqlTable(
     feesPaid: varchar('fees_paid', { length: 255 }),
     gasQuote: decimal('gas_quote', { precision: 20, scale: 10 }),
     isInteract: boolean('is_interact'),
-    page: int('page'),
-    chainId: int('chain_id').references(() => supportChains.id)
+    chainId: int('chain_id').references(() => supportChains.id),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow()
   },
   tx => ({
     txHashIdx: index('tx_hash_idx').on(tx.txHash),

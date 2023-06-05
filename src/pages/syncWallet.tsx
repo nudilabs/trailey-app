@@ -12,10 +12,6 @@ const SyncWalletPage = () => {
       chainName,
       walletAddr
     });
-    // Handle form submission logic here
-    // console.log('Input 1:', chainName);
-    console.log('data', data);
-    // console.log('Input 2:', walletAddr);
   };
 
   return (

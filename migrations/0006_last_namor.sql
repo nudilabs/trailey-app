@@ -1,0 +1,1 @@
+ALTER TABLE `wallets_info` RENAME COLUMN `last_page` TO `recent_page`;

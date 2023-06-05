@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { Transaction } from '@/types/DB';
 import * as TxModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
+import * as WalletInfoModel from '@/models/WalletsInfo';
 
 import { config as serverConfig } from '@/configs/server';
 import { QStash } from '@/connectors/Qstash';
@@ -42,9 +43,6 @@ const getTxs = async (
   }
   const batchCount = Math.ceil(totalGetPage / batch);
 
-  console.log('totalPage', totalGetPage);
-  console.log('batchCount', batchCount);
-
   const fetchTxs = async (
     page: number
   ): Promise<{ items: any; page: number }> => {
@@ -71,28 +69,18 @@ const getTxs = async (
     for (let j = 0; j < batch; j++) {
       const page = startPage + i * batch + j;
       if (!(page < totalPage) || i * batch + j >= totalGetPage) break;
-      // console.log('round', i * batch + j);
-      // const url = `${serverConfig.covalent.url}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
       promises.push(fetchTxs(page));
     }
 
-    // const res = await axios.all(promises);
     const res = await Promise.all(promises);
-    // const data = res.map((r): any => r.data.data.items);
-    // const data = res.map((r): any => r.items);
 
-    // console.log('resolve data', res.length);
     txs.push(...res);
   }
   const result = [];
 
   for (let tx of txs) {
     const { items, page } = tx;
-    // console.log('items', items);
     for (let item of items) {
-      // if (item.from_address.toLowerCase() !== walletAddr.toLowerCase()) {
-      //   continue;
-      // } else {
       const signDate = moment.utc(item.block_signed_at).toDate();
       let tmpTx: Transaction = {
         signedAt: signDate,
@@ -108,7 +96,6 @@ const getTxs = async (
         valueQuote: item.value_quote,
         feesPaid: item.fees_paid,
         gasQuote: item.gas_quote,
-        page,
         isInteract:
           item.log_events && item.log_events.length > 0 ? true : false,
         chainId
@@ -118,8 +105,6 @@ const getTxs = async (
     // }
   }
 
-  // console.log('txs len', result.length);
-  // console.log('txs[0]', result[0]);
   return result;
 };
 
@@ -127,9 +112,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log('store-txs trigger');
   if (req.method !== 'POST')
-    // return NextResponse.json(null, { status: 404, statusText: 'Not Found' });
     return res.status(404).json({ status: 404, statusText: 'Not Found' });
 
   const qstash = new QStash(
@@ -169,10 +152,6 @@ export default async function handler(
       startPage + serverConfig.pagePerBatch > totalPage
         ? totalPage
         : startPage + serverConfig.pagePerBatch;
-    // const nextEndPage =
-    //   nextStartPage + 50 > totalPage ? totalPage - 1 : nextStartPage + 50;
-    console.log('nextStartPage', nextStartPage);
-    console.log('totalPage', totalPage);
 
     if (nextStartPage < totalPage) {
       const nextStore = {
@@ -184,14 +163,23 @@ export default async function handler(
       };
 
       await qstash.publishMsg('store-txs', nextStore);
+      await WalletInfoModel.upsertRecentPage(
+        chainId,
+        walletAddr,
+        nextStartPage - 1
+      );
 
       return res.status(200).json(nextStore);
     } else {
+      await WalletInfoModel.upsertRecentPage(
+        chainId,
+        walletAddr,
+        totalPage - 1
+      );
       return res.status(200).json({ status: 200, statusText: 'OK' });
     }
   } catch (e) {
     console.log('error from api');
-    console.log(e);
     return res.status(500).json({ status: 500, statusText: 'Internal Error' });
   }
 }
