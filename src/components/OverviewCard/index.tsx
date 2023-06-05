@@ -23,7 +23,7 @@ import {
 
 import { FiArrowRight, FiRefreshCw } from 'react-icons/fi';
 
-import { getFormattedAddress } from '@/utils/format';
+import { formatPrettyNumber, getFormattedAddress } from '@/utils/format';
 import { useRouter } from 'next/router';
 import Avatar from '../Avatar';
 import ChainSelector from '../ChainSelector';
@@ -34,12 +34,14 @@ import { LastResync } from '@/types/LastResync';
 
 const OverviewCard = ({
   txSummaries,
+  txSummariesByMonth,
   localChain,
   setLocalChain,
   chainConfigs,
   handleSubmit
 }: {
   txSummaries: any[];
+  txSummariesByMonth: any[];
   localChain: string;
   setLocalChain: (chain: string) => void;
   chainConfigs: Chain[];
@@ -47,7 +49,7 @@ const OverviewCard = ({
 }) => {
   const [lastResynced, setLastResynced] = useState<LastResync[]>();
   const [isSyncing, setIsSyncing] = useState(false);
-  const [scores, setScores] = useState<any>();
+  const [symbol, setSymbol] = useState('ETH');
 
   const router = useRouter();
   const toast = useToast();
@@ -119,59 +121,12 @@ const OverviewCard = ({
 
   useEffect(() => {
     if (chainConfigs) {
-      const scores = chainConfigs?.find(
+      const symbol = chainConfigs?.find(
         (chain: Chain) => chain.name === localChain
-      )?.scores;
-      setScores(scores);
+      )?.symbol;
+      if (symbol) setSymbol(symbol);
     }
   }, []);
-
-  const getScoreColor = (score: number): string => {
-    if (score <= 45) {
-      return 'red';
-    } else if (score <= 49) {
-      return 'yellow';
-    } else if (score == 50) {
-      return 'gray';
-    } else {
-      return 'green';
-    }
-  };
-
-  let normalizedTxCount: any[] = [];
-  let normalizedContractCount: any[] = [];
-  let normalizedValueQuoteSum: any[] = [];
-  let normalizedGasQuoteSum: any[] = [];
-
-  // Calculate normalized value for the minimum to average range
-  if (txSummaries.every((summary: any) => !summary.isLoading) && scores) {
-    txSummaries.forEach((summary: any) => {
-      normalizedTxCount[summary.address] = calculateNormalizedValue(
-        summary.data.txCount.allTime,
-        scores.txCount.min,
-        scores.txCount.average,
-        scores.txCount.max
-      );
-      normalizedContractCount[summary.address] = calculateNormalizedValue(
-        summary.data.contractCount.allTime,
-        scores.contractCount.min,
-        scores.contractCount.average,
-        scores.contractCount.max
-      );
-      normalizedValueQuoteSum[summary.address] = calculateNormalizedValue(
-        summary.data.valueQuoteSum.allTime,
-        scores.valueQuoteSum.min,
-        scores.valueQuoteSum.average,
-        scores.valueQuoteSum.max
-      );
-      normalizedGasQuoteSum[summary.address] = calculateNormalizedValue(
-        summary.data.gasQuoteSum.allTime,
-        scores.gasQuoteSum.min,
-        scores.gasQuoteSum.average,
-        scores.gasQuoteSum.max
-      );
-    });
-  }
 
   return (
     <Card size="lg">
@@ -223,10 +178,10 @@ const OverviewCard = ({
               <Tr>
                 <Th>Address</Th>
                 <Th>Last Synced</Th>
-                <Th>Txs</Th>
-                <Th>Contracts</Th>
-                <Th>Value</Th>
-                <Th>Gas</Th>
+                <Th>Active Months</Th>
+                <Th>Contract Interactions</Th>
+                <Th>{`${symbol} Volume`}</Th>
+                <Th>Fees Paid</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -246,6 +201,10 @@ const OverviewCard = ({
                         item?.chain === localChain &&
                         item?.address === summary.address
                     );
+                  const activeMonths =
+                    txSummariesByMonth.find(
+                      (item: any) => item.address === summary.address
+                    )?.data.txsByMonth.length || 0;
                   return (
                     <Tr key={i}>
                       <Td>
@@ -272,71 +231,19 @@ const OverviewCard = ({
                           </Text>
                         )}
                       </Td>
+                      <Td>{activeMonths}</Td>
                       <Td>
-                        <Tooltip
-                          label={normalizedTxCount[summary.address]?.toFixed(2)}
-                        >
-                          <Progress
-                            hasStripe
-                            size="sm"
-                            rounded="full"
-                            value={normalizedTxCount[summary.address]}
-                            colorScheme={getScoreColor(
-                              normalizedTxCount[summary.address]
-                            )}
-                          />
-                        </Tooltip>
+                        {formatPrettyNumber(
+                          summary.data.contractCount.allTime,
+                          0
+                        )}
                       </Td>
                       <Td>
-                        <Tooltip
-                          label={normalizedContractCount[
-                            summary.address
-                          ]?.toFixed(2)}
-                        >
-                          <Progress
-                            hasStripe
-                            size="sm"
-                            rounded="full"
-                            value={normalizedContractCount[summary.address]}
-                            colorScheme={getScoreColor(
-                              normalizedContractCount[summary.address]
-                            )}
-                          />
-                        </Tooltip>
+                        $
+                        {formatPrettyNumber(summary.data.valueQuoteSum.allTime)}
                       </Td>
                       <Td>
-                        <Tooltip
-                          label={normalizedValueQuoteSum[
-                            summary.address
-                          ]?.toFixed(2)}
-                        >
-                          <Progress
-                            hasStripe
-                            size="sm"
-                            rounded="full"
-                            value={normalizedValueQuoteSum[summary.address]}
-                            colorScheme={getScoreColor(
-                              normalizedValueQuoteSum[summary.address]
-                            )}
-                          />
-                        </Tooltip>
-                      </Td>
-                      <Td>
-                        <Tooltip
-                          label={normalizedGasQuoteSum[
-                            summary.address
-                          ]?.toFixed(2)}
-                        >
-                          <Progress
-                            hasStripe
-                            size="sm"
-                            rounded="full"
-                            value={normalizedGasQuoteSum[summary.address]}
-                            colorScheme={getScoreColor(
-                              normalizedGasQuoteSum[summary.address]
-                            )}
-                          />
-                        </Tooltip>
+                        ${formatPrettyNumber(summary.data.gasQuoteSum.allTime)}
                       </Td>
                     </Tr>
                   );

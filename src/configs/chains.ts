@@ -83,7 +83,8 @@ export const CHAINS = [
         average: 0.3085844272,
         max: 1387152.37511605
       }
-    }
+    },
+    symbol: 'ETH'
   },
   {
     name: 'optimism-mainnet',
@@ -161,7 +162,8 @@ export const CHAINS = [
         average: 0.1143610545076827,
         max: 9197.049514224103
       }
-    }
+    },
+    symbol: 'ETH'
   },
   {
     name: 'base-testnet',
@@ -213,7 +215,8 @@ export const CHAINS = [
         average: 0,
         max: 0
       }
-    }
+    },
+    symbol: 'ETH'
   },
   {
     name: 'scroll-alpha-testnet',
@@ -278,7 +281,8 @@ export const CHAINS = [
         average: 0,
         max: 0
       }
-    }
+    },
+    symbol: 'ETH'
   },
   {
     name: 'linea-testnet',
@@ -343,7 +347,8 @@ export const CHAINS = [
         average: 0,
         max: 0
       }
-    }
+    },
+    symbol: 'ETH'
   },
   {
     name: 'polygon-zkevm-mainnet',
@@ -395,7 +400,8 @@ export const CHAINS = [
         average: 0,
         max: 0
       }
-    }
+    },
+    symbol: 'MATIC'
   },
   {
     name: '',
@@ -432,6 +438,7 @@ export const CHAINS = [
         average: 0,
         max: 0
       }
-    }
+    },
+    symbol: 'ETH'
   }
 ];

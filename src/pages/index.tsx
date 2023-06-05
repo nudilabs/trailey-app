@@ -64,10 +64,27 @@ export default function Home({
       ) ?? []
   );
 
+  const txSummariesByMonth = trpc.useQueries(
+    t =>
+      bundlesData[currentBundle]?.wallets?.map(addr =>
+        t.txs.getSummaryByMonth({
+          chainName: localChain,
+          walletAddr: addr.address
+        })
+      ) ?? []
+  );
+
   const txSummariesWithAddress = txSummaries.map((txSummary, index) => ({
     ...txSummary,
     address: bundlesData[currentBundle]?.wallets[index]?.address
   }));
+
+  const txSummariesByMonthWithAddress = txSummariesByMonth.map(
+    (txSummary, index) => ({
+      ...txSummary,
+      address: bundlesData[currentBundle]?.wallets[index]?.address
+    })
+  );
 
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -202,6 +219,7 @@ export default function Home({
         <GridItem colSpan={{ base: 12, lg: 8 }}>
           <OverviewCard
             txSummaries={txSummariesWithAddress}
+            txSummariesByMonth={txSummariesByMonthWithAddress}
             chainConfigs={chainConfigs}
             localChain={localChain}
             setLocalChain={setLocalChain}
