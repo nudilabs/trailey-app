@@ -51,7 +51,6 @@ export default function TopProtocolsUsageCard({
     },
     0
   );
-  // console.log('interactedContractCount: ', interactedContractCount);
 
   const protocolsCount = currentChain.protocols.length;
 
