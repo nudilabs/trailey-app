@@ -176,24 +176,24 @@ export const CHAINS = [
     block_explorer_url: 'https://goerli.basescan.org/',
     scores: {
       txCount: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       },
       contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       },
       valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
+        min: 0,
+        average: 0,
+        max: 0
       },
       gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       }
     }
   },
@@ -354,24 +354,24 @@ export const CHAINS = [
     block_explorer_url: 'https://zkevm.polygonscan.com/',
     scores: {
       txCount: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       },
       contractCount: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       },
       valueQuoteSum: {
-        min: 1,
-        average: 1000,
-        max: 1000000
+        min: 0,
+        average: 0,
+        max: 0
       },
       gasQuoteSum: {
-        min: 1,
-        average: 35,
-        max: 500
+        min: 0,
+        average: 0,
+        max: 0
       }
     }
   }

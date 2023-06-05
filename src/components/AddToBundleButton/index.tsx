@@ -5,7 +5,6 @@ import { useColorModeValue } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/toast';
 import { useState } from 'react';
 import { FiPlusCircle } from 'react-icons/fi';
-import { useSession } from 'next-auth/react';
 
 type AddToBundleBtnProps = {
   setBundlesData: (newProfilesData: IBundle[]) => void;
@@ -22,7 +21,6 @@ export default function AddToBundleBtn({
 }: AddToBundleBtnProps) {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
-  const { data: session } = useSession();
 
   const handleAddToBundle = () => {
     setIsLoading(true);
@@ -62,7 +60,7 @@ export default function AddToBundleBtn({
       onClick={handleAddToBundle}
       isLoading={isLoading}
       isDisabled={addressExists} // Disable the button if the address exists
-      display={!hasBundle || !session || addressExists ? 'none' : 'flex'}
+      display={!hasBundle || addressExists ? 'none' : 'flex'}
     >
       Add to Bundle
     </Button>

@@ -174,9 +174,15 @@ export default function ActivityIndexCard({
                 capIsRound
                 trackColor={trackColor}
               >
-                <CircularProgressLabel fontSize={24} fontWeight="bold">
-                  {isDisabled ? 51 : formatDecimals(score, 1)}
-                </CircularProgressLabel>
+                <Tooltip
+                  label={score > 50 ? 'Above Average' : 'Below Average'}
+                  placement={score > 50 ? 'top' : 'bottom'}
+                  hasArrow
+                >
+                  <CircularProgressLabel fontSize={24} fontWeight="bold">
+                    {isDisabled ? 51 : formatDecimals(score, 1)}
+                  </CircularProgressLabel>
+                </Tooltip>
               </CircularProgress>
             ) : (
               <SkeletonCircle size="32" />
@@ -410,7 +416,7 @@ export default function ActivityIndexCard({
         display={isDisabled ? 'flex' : 'none'}
       >
         <Heading>Coming Soon</Heading>
-        <Text>For {chainLabel}</Text>
+        <Text>To {chainLabel}</Text>
       </Flex>
     </Card>
   );

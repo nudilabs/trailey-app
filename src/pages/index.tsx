@@ -10,24 +10,15 @@ import {
   Grid,
   GridItem,
   Heading,
-  Highlight,
   Stack,
-  Stat,
-  StatLabel,
-  StatNumber,
   Text,
   useColorModeValue,
-  StatArrow,
-  StatHelpText,
   IconButton,
   CardHeader,
-  chakra,
-  Divider,
-  AbsoluteCenter
+  chakra
 } from '@chakra-ui/react';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { GetServerSideProps } from 'next';
-import { useSession } from 'next-auth/react';
+
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';

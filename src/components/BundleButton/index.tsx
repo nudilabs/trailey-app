@@ -20,7 +20,6 @@ import {
 import { FiUser, FiChevronDown, FiSettings, FiPlus } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { IBundle } from '@/types/IBundle';
-import { useSession } from 'next-auth/react';
 
 export default function BundleButton({
   onClose,
