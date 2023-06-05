@@ -51,6 +51,7 @@ export default function TopProtocolsUsageCard({
     },
     0
   );
+  console.log('interactedContractCount: ', interactedContractCount);
 
   const protocolsCount = currentChain.protocols.length;
 
@@ -60,7 +61,7 @@ export default function TopProtocolsUsageCard({
         <Flex direction="row" justifyContent="space-between">
           <Flex direction="row" gap={2}>
             <Heading size="md">Top Protocols Usage</Heading>
-            {interactedContractCount ? (
+            {interactedContractCount !== undefined ? (
               <Text size="md">{`${interactedContractCount} / ${protocolsCount}`}</Text>
             ) : (
               <Skeleton height="20px" width="40px" />

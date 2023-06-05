@@ -249,7 +249,9 @@ export default function ProfileCard({
                     ${formatPrettyNumber(txSummary?.valueQuoteSum.allTime ?? 0)}
                   </Text>
                 </StatNumber>
-                <StatLabel color={subHeadingColor}>Tx Value</StatLabel>
+                <StatLabel
+                  color={subHeadingColor}
+                >{`${balance?.symbol} Volume`}</StatLabel>
                 {txSummary && txSummary.valueQuoteSum.lastWeek !== 0 && (
                   <Tooltip
                     label={`${formatDecimals(
