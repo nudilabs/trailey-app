@@ -417,15 +417,6 @@ export default function Account({
           >
             <Grid templateColumns="repeat(12, 1fr)" gap={4}>
               <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
-                <Flex direction="column" gap={4}>
-                  <ActivityIndexCard
-                    txSummary={txSummary.data}
-                    chainConfigs={chainConfigs}
-                    localChain={localChain}
-                  />
-                </Flex>
-              </GridItem>
-              <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
                 <Flex
                   direction="column"
                   gap={4}
@@ -687,6 +678,15 @@ export default function Account({
                       </Grid>
                     </CardBody>
                   </Card>
+                </Flex>
+              </GridItem>
+              <GridItem colSpan={{ base: 12, md: 6, lg: 12, xl: 6 }}>
+                <Flex direction="column" gap={4}>
+                  <ActivityIndexCard
+                    txSummary={txSummary.data}
+                    chainConfigs={chainConfigs}
+                    localChain={localChain}
+                  />
                 </Flex>
               </GridItem>
               <GridItem colSpan={{ base: 12 }}>

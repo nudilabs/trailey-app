@@ -65,23 +65,23 @@ export const CHAINS = [
     scores: {
       txCount: {
         min: 1,
-        average: 3,
-        max: 73959657
+        average: 34.323727,
+        max: 76121486
       },
       contractCount: {
         min: 1,
-        average: 3,
-        max: 73959657
+        average: 33.389309,
+        max: 76121486
       },
       valueQuoteSum: {
         min: 1,
-        average: 30.810660688,
-        max: 4625002573.91708
+        average: 6979.667017,
+        max: 4689727203
       },
       gasQuoteSum: {
         min: 1,
-        average: 0.3085844272,
-        max: 1387152.37511605
+        average: 5.955650887,
+        max: 1535042.772
       }
     },
     symbol: 'ETH'
@@ -196,24 +196,24 @@ export const CHAINS = [
     block_explorer_url: 'https://goerli.basescan.org/',
     scores: {
       txCount: {
-        min: 0,
-        average: 0,
-        max: 0
+        min: 1,
+        average: 8.993319,
+        max: 4390064
       },
       contractCount: {
-        min: 0,
-        average: 0,
-        max: 0
+        min: 1,
+        average: 7.677852,
+        max: 4390064
       },
       valueQuoteSum: {
-        min: 0,
-        average: 0,
-        max: 0
+        min: 1,
+        average: 2795.424831,
+        max: 1825249923
       },
       gasQuoteSum: {
-        min: 0,
-        average: 0,
-        max: 0
+        min: 1,
+        average: 30.60477239,
+        max: 811277.9842
       }
     },
     symbol: 'ETH'
