@@ -44,6 +44,8 @@ const ChainSelector = ({
         _hover={{ bg: useColorModeValue('blackAlpha.50', 'whiteAlpha.50') }}
         p={2}
         rounded="lg"
+        borderWidth={1}
+        border={useColorModeValue('blackAlpha.50', 'whiteAlpha.50')}
       >
         <Flex align="center" gap={1}>
           <Image
