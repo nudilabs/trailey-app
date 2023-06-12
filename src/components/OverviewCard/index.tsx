@@ -17,7 +17,6 @@ import {
   IconButton,
   Spacer,
   SkeletonText,
-  Progress,
   useToast
 } from '@chakra-ui/react';
 
@@ -128,6 +127,8 @@ const OverviewCard = ({
     }
   }, []);
 
+  console.log('txSummariesByMonth: ', txSummariesByMonth);
+
   return (
     <Card size="lg">
       <CardHeader>
@@ -204,7 +205,7 @@ const OverviewCard = ({
                   const activeMonths =
                     txSummariesByMonth.find(
                       (item: any) => item.address === summary.address
-                    )?.data.txsByMonth.length || 0;
+                    )?.data?.txsByMonth.length || 0;
                   return (
                     <Tr key={i}>
                       <Td>
@@ -234,16 +235,21 @@ const OverviewCard = ({
                       <Td>{activeMonths}</Td>
                       <Td>
                         {formatPrettyNumber(
-                          summary.data.contractCount.allTime,
+                          summary?.data?.contractCount.allTime ?? 0,
                           0
                         )}
                       </Td>
                       <Td>
                         $
-                        {formatPrettyNumber(summary.data.valueQuoteSum.allTime)}
+                        {formatPrettyNumber(
+                          summary?.data?.valueQuoteSum.allTime ?? 0
+                        )}
                       </Td>
                       <Td>
-                        ${formatPrettyNumber(summary.data.gasQuoteSum.allTime)}
+                        $
+                        {formatPrettyNumber(
+                          summary?.data?.gasQuoteSum.allTime ?? 0
+                        )}
                       </Td>
                     </Tr>
                   );
