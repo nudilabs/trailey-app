@@ -112,7 +112,7 @@ const OverviewCard = ({
           (item: { chain: string; address: string }) =>
             item.chain === localChain && item.address === summary.address
         );
-        lastResyncs.push(lastResynced);
+        if (lastResynced) lastResyncs.push(lastResynced);
       }
     });
     setLastResynced(lastResyncs);
@@ -127,8 +127,6 @@ const OverviewCard = ({
     }
   }, []);
 
-  console.log('txSummariesByMonth: ', txSummariesByMonth);
-
   return (
     <Card size="lg">
       <CardHeader>
@@ -140,7 +138,7 @@ const OverviewCard = ({
               label={
                 lastResynced &&
                 lastResynced.length > 0 &&
-                moment(lastResynced[0].timestamp)
+                moment(lastResynced[0]?.timestamp)
                   .add(10, 'minutes')
                   .isAfter(new Date())
                   ? 'You can resync once every 10 minutes'
