@@ -46,6 +46,13 @@ export const CHAINS = [
         logo_url:
           'https://3867326743-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1RxNDo04vPwMIPYZIvks%2Fuploads%2FJQ1qNdZJJpTeuXu7N2mK%2FBebop_B_Logo.svg?alt=media&token=166f9c3a-6be2-4feb-b2d5-f35a73799dc0',
         protocol_url: 'https://bepop.xyz/'
+      },
+      {
+        addresses: ['0x80c67432656d59144ceff962e8faf8926599bcf8'],
+        label: 'Orbiter Finance',
+        logo_url:
+          'https://www.dappland.com/dapps/orbiterfinance/dapp-icon-orbiter.png',
+        protocol_url: 'https://www.orbiter.finance/'
       }
     ],
     achievements: [
@@ -71,7 +78,7 @@ export const CHAINS = [
       contractCount: {
         min: 1,
         average: 33.389309,
-        max: 76121486
+        max: 761214862
       },
       valueQuoteSum: {
         min: 1,
@@ -79,7 +86,7 @@ export const CHAINS = [
         max: 4689727203
       },
       gasQuoteSum: {
-        min: 1,
+        min: 0.0001,
         average: 5.955650887,
         max: 1535042.772
       }
@@ -158,7 +165,7 @@ export const CHAINS = [
         max: 1022670764.303293
       },
       gasQuoteSum: {
-        min: 1,
+        min: 0.0001,
         average: 0.1143610545076827,
         max: 9197.049514224103
       }
@@ -211,7 +218,7 @@ export const CHAINS = [
         max: 1825249923
       },
       gasQuoteSum: {
-        min: 1,
+        min: 0.0001,
         average: 30.60477239,
         max: 811277.9842
       }
@@ -364,12 +371,40 @@ export const CHAINS = [
       'https://assets-global.website-files.com/6364e65656ab107e465325d2/642235057dbc06788f6c45c1_polygon-zkevm-logo.png',
     is_appchain: false,
     appchain_of: null,
-    protocols: [],
+    protocols: [
+      {
+        addresses: ['0xf6ad3ccf71abb3e12becf6b3d2a74c963859adcd'],
+        label: 'Quickswap',
+        logo_url:
+          'https://altcoinsbox.com/wp-content/uploads/2023/04/quickswap-logo.png',
+        protocol_url: 'https://quickswap.exchange/'
+      },
+      {
+        addresses: ['0xdccada4894941593f4c842d7c6bfd486e8344116'],
+        label: 'Kokonutswap',
+        logo_url:
+          'https://alphagrowth.io/media/images/logo/kokonut-swap-0e317588.jpeg',
+        protocol_url: 'https://kokonutswap.finance/'
+      },
+      {
+        addresses: ['0x7481c16e7782608ccba70029c0fd41d78aa6b56e'],
+        label: 'Doveswap',
+        logo_url: 'https://icons.llama.fi/dove-swap.png',
+        protocol_url: 'https://swap.dovish.finance/'
+      },
+      {
+        addresses: ['0x12d41b6df938c739f00c392575e3fd9292d98215'],
+        label: 'Mantis',
+        logo_url:
+          'https://pbs.twimg.com/profile_images/1527615955177680897/m_AXn0Ds_400x400.jpg',
+        protocol_url: 'https://mantissa.finance/'
+      }
+    ],
     achievements: [
       {
         name: 'Welcome to Polygon zkEVM Mainnet',
         description: 'Have at least one transaction on Polygon zkEVM Mainnet',
-        image_url: '/badges/polygon-zkevm-mainnet/welcome.png',
+        image_url: '/badges/polygon/welcome.png',
         conditions: [
           {
             type: 'txCount',
@@ -401,7 +436,7 @@ export const CHAINS = [
         max: 0
       }
     },
-    symbol: 'MATIC'
+    symbol: 'ETH'
   },
   {
     name: '',

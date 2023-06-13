@@ -116,6 +116,7 @@ export default function TopProtocolsUsageCard({
                       lastTx: null as string | null // Set the initial value to string | null
                     }
                   );
+
                 return (
                   <Tr key={index}>
                     <Td>
@@ -164,7 +165,7 @@ export default function TopProtocolsUsageCard({
                     <Td>
                       {txsSummaryByContract ? (
                         contractInteractions?.lastTx ? (
-                          moment(contractInteractions?.lastTx).fromNow()
+                          moment.utc(contractInteractions?.lastTx).fromNow()
                         ) : (
                           'N/A'
                         )
