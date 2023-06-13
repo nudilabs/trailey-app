@@ -45,7 +45,7 @@ const ChainSelector = ({
         p={2}
         rounded="lg"
         borderWidth={1}
-        border={useColorModeValue('blackAlpha.50', 'whiteAlpha.50')}
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
       >
         <Flex align="center" gap={1}>
           <Image
