@@ -68,6 +68,9 @@ export default function ProfileCard({
   const subHeadingColor = useColorModeValue('blackAlpha.500', 'whiteAlpha.500');
   const toast = useToast();
   const toolTipLabel = 'compared to prior week';
+  const [currentChain, setCurrentChain] = useState<Chain | undefined>(
+    chainConfigs.find(chain => chain.name === localChain)
+  );
 
   const handleResync = () => {
     handleSubmit({ preventDefault: () => {} });
@@ -119,7 +122,7 @@ export default function ProfileCard({
       );
       setLastResynced(lastResynced);
     }
-    const chain = chainConfigs.find(chain => chain.name === localChain);
+    setCurrentChain(chainConfigs.find(chain => chain.name === localChain));
   }, [localChain]);
   return (
     <Card size="lg">
@@ -246,7 +249,13 @@ export default function ProfileCard({
               <Stat textAlign="center">
                 <StatNumber>
                   <Text>
-                    ${formatPrettyNumber(txSummary?.valueQuoteSum.allTime ?? 0)}
+                    {currentChain?.is_testnet
+                      ? `${balance?.symbol} ${formatPrettyNumber(
+                          txSummary?.valueSum.allTime ?? 0
+                        )}`
+                      : `$${formatPrettyNumber(
+                          txSummary?.valueQuoteSum.allTime ?? 0
+                        )}`}
                   </Text>
                 </StatNumber>
                 <StatLabel
@@ -254,16 +263,25 @@ export default function ProfileCard({
                 >{`${balance?.symbol} Volume`}</StatLabel>
                 {txSummary && txSummary.valueQuoteSum.lastWeek !== 0 && (
                   <Tooltip
-                    label={`${formatDecimals(
-                      txSummary?.valueQuoteSum.percentChange ?? 0
-                    )}% ${toolTipLabel}`}
+                    label={
+                      currentChain?.is_testnet
+                        ? `${formatPrettyNumber(
+                            txSummary?.valueSum.percentChange ?? 0
+                          )}% ${toolTipLabel}`
+                        : `${formatPrettyNumber(
+                            txSummary?.valueQuoteSum.percentChange ?? 0
+                          )}% ${toolTipLabel}`
+                    }
                     hasArrow
                   >
                     <StatHelpText>
-                      {`$${formatPrettyNumber(
-                        txSummary?.valueQuoteSum.lastWeek,
-                        1
-                      )} past week`}
+                      {currentChain?.is_testnet
+                        ? `${balance?.symbol} ${formatPrettyNumber(
+                            txSummary?.valueSum.allTime ?? 0
+                          )} past week`
+                        : `$${formatPrettyNumber(
+                            txSummary?.valueQuoteSum.allTime ?? 0
+                          )} past week`}
                     </StatHelpText>
                   </Tooltip>
                 )}
@@ -275,22 +293,37 @@ export default function ProfileCard({
               <Stat textAlign="center">
                 <StatNumber>
                   <Text>
-                    ${formatPrettyNumber(txSummary?.gasQuoteSum.allTime ?? 0)}
+                    {currentChain?.is_testnet
+                      ? `${balance?.symbol} ${formatPrettyNumber(
+                          txSummary?.gasSum.allTime ?? 0
+                        )}`
+                      : `$${formatPrettyNumber(
+                          txSummary?.gasQuoteSum.allTime ?? 0
+                        )}`}
                   </Text>
                 </StatNumber>
                 <StatLabel color={subHeadingColor}>Fees Paid</StatLabel>
                 {txSummary && txSummary.gasQuoteSum.lastWeek !== 0 && (
                   <Tooltip
-                    label={`${formatDecimals(
-                      txSummary?.gasQuoteSum.percentChange ?? 0
-                    )}% ${toolTipLabel}`}
+                    label={
+                      currentChain?.is_testnet
+                        ? `${formatPrettyNumber(
+                            txSummary?.gasSum.percentChange ?? 0
+                          )}% ${toolTipLabel}`
+                        : `${formatPrettyNumber(
+                            txSummary?.gasQuoteSum.percentChange ?? 0
+                          )}% ${toolTipLabel}`
+                    }
                     hasArrow
                   >
                     <StatHelpText>
-                      {`$${formatPrettyNumber(
-                        txSummary?.gasQuoteSum.lastWeek,
-                        1
-                      )} past week`}
+                      {currentChain?.is_testnet
+                        ? `${balance?.symbol} ${formatPrettyNumber(
+                            txSummary?.gasSum.allTime ?? 0
+                          )} past week`
+                        : `$${formatPrettyNumber(
+                            txSummary?.gasQuoteSum.allTime ?? 0
+                          )} past week`}
                     </StatHelpText>
                   </Tooltip>
                 )}

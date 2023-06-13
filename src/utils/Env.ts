@@ -4,7 +4,9 @@ const ENV = {
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
   NEXT_PUBLIC_TX_LIMIT: process.env.NEXT_PUBLIC_TX_LIMIT || 20000,
   NEXT_PUBLIC_REVALIDATE_TIME:
-    Number(process.env.NEXT_PUBLIC_REVALIDATE_TIME) || 5000
+    Number(process.env.NEXT_PUBLIC_REVALIDATE_TIME) || 5000,
+  NEXT_PUBLIC_DEFAULT_CHAIN:
+    process.env.NEXT_PUBLIC_DEFAULT_CHAIN || 'arbitrum-mainnet'
 };
 
 export default ENV;

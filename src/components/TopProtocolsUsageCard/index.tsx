@@ -86,7 +86,7 @@ export default function TopProtocolsUsageCard({
                 <Th>Protocol</Th>
                 <Th>Interactions</Th>
                 <Th>Last Active</Th>
-                <Th>Volume ($)</Th>
+                {!currentChain.is_testnet && <Th>Volume ($)</Th>}
               </Tr>
             </Thead>
             <Tbody>
@@ -162,6 +162,7 @@ export default function TopProtocolsUsageCard({
                         <Skeleton height="20px" />
                       )}
                     </Td>
+
                     <Td>
                       {txsSummaryByContract ? (
                         contractInteractions?.lastTx ? (
@@ -173,13 +174,15 @@ export default function TopProtocolsUsageCard({
                         <Skeleton height="20px" />
                       )}
                     </Td>
-                    <Td>
-                      {txsSummaryByContract ? (
-                        `Coming soon`
-                      ) : (
-                        <Skeleton height="20px" />
-                      )}
-                    </Td>
+                    {!currentChain.is_testnet && (
+                      <Td>
+                        {txsSummaryByContract ? (
+                          `Coming soon`
+                        ) : (
+                          <Skeleton height="20px" />
+                        )}
+                      </Td>
+                    )}
                   </Tr>
                 );
               })}

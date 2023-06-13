@@ -31,7 +31,6 @@ import {
   AreaChart,
   Bar,
   BarChart,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -526,7 +525,7 @@ export default function Account({
                         justifyContent="space-between"
                         alignItems="center"
                       >
-                        <Heading size="md">Transaction Value</Heading>
+                        <Heading size="md">{`${currentChain.symbol} Volume`}</Heading>
                       </Flex>
                     </CardHeader>
                     <CardBody>
@@ -616,6 +615,26 @@ export default function Account({
                         </GridItem>
                       </Grid>
                     </CardBody>
+                    <Flex
+                      position="absolute"
+                      direction="column"
+                      top={0}
+                      left={0}
+                      right={0}
+                      bottom={0}
+                      zIndex={1}
+                      alignItems="center"
+                      justifyContent="center"
+                      rounded="3xl"
+                      bgGradient={useColorModeValue(
+                        'linear(to-b, whiteAlpha.700, white)',
+                        'linear(to-b, blackAlpha.700, gray.900)'
+                      )}
+                      display={currentChain.is_testnet ? 'flex' : 'none'}
+                    >
+                      {/* <Heading>Coming Soon</Heading> */}
+                      <Text>Testnet coins have no real value</Text>
+                    </Flex>
                   </Card>
                   <Card height="100%">
                     <CardHeader>

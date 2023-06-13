@@ -26,6 +26,7 @@ import {
 import { publicProvider } from 'wagmi/providers/public';
 
 import { trpc } from '../connectors/Trpc';
+import ENV from '@/utils/Env';
 
 const { chains, provider } = configureChains(
   [
@@ -57,7 +58,7 @@ const wagmiClient = createClient({
 const App = ({ Component, pageProps }: AppProps<{}>) => {
   const [currentBundle, setCurrentBundle] = useState(0);
   const [bundlesData, setBundlesData] = useState<IBundle[]>([]);
-  const [localChain, setLocalChain] = useState('arbitrum-mainnet'); // default to mainnet
+  const [localChain, setLocalChain] = useState(ENV.NEXT_PUBLIC_DEFAULT_CHAIN);
   const profileProps = {
     currentBundle,
     setCurrentBundle,
