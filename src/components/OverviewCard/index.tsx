@@ -46,7 +46,7 @@ const OverviewCard = ({
   chainConfigs: Chain[];
   handleSubmit: (e: { preventDefault: () => void }) => Promise<void>;
 }) => {
-  const [lastResynced, setLastResynced] = useState<LastResync[]>();
+  const [lastResynced, setLastResynced] = useState<LastResync[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [symbol, setSymbol] = useState('ETH');
 
@@ -79,12 +79,16 @@ const OverviewCard = ({
           lrsFromLocalObj.push(obj);
         }
         localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
-        lastResyncs.push(currentLsrObj);
+
+        // Push the updated currentLsrObj or obj into lastResyncs array
+        lastResyncs.push(currentLsrObj || obj);
       } else {
         // if not found, create a new one
         localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
+
         lastResyncs.push(obj);
       }
+
       setLastResynced(lastResyncs);
 
       toast({
@@ -95,6 +99,10 @@ const OverviewCard = ({
         position: 'top-right'
       });
     });
+
+    if (lastResyncs.length === 0) {
+      setLastResynced([]);
+    }
     // set timer to 10 seconds
     setIsSyncing(true);
     setTimeout(() => {
@@ -108,14 +116,20 @@ const OverviewCard = ({
     const lastResyncs: LastResync[] = [];
     txSummaries.forEach((summary: any) => {
       if (lastResyncedString) {
-        const lastResynced = JSON.parse(lastResyncedString).find(
+        const lastResynced_ = JSON.parse(lastResyncedString).find(
           (item: { chain: string; address: string }) =>
             item.chain === localChain && item.address === summary.address
         );
-        if (lastResynced) lastResyncs.push(lastResynced);
+        if (lastResynced_) {
+          lastResyncs.push(lastResynced_);
+        }
       }
     });
-    setLastResynced(lastResyncs);
+    if (lastResyncs.length === 0) {
+      setLastResynced([]);
+    } else {
+      setLastResynced(lastResyncs);
+    }
   }, [localChain]);
 
   useEffect(() => {
@@ -156,7 +170,7 @@ const OverviewCard = ({
                 isDisabled={
                   lastResynced &&
                   lastResynced.length > 0 &&
-                  moment(lastResynced[0].timestamp)
+                  moment(lastResynced[0]?.timestamp)
                     .add(10, 'minutes')
                     .isAfter(new Date())
                 }
