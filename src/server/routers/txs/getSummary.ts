@@ -231,8 +231,7 @@ export const getSummaryByContract = publicProcedure
       .where(
         and(
           eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr),
-          eq(transactions.isInteract, true)
+          eq(transactions.fromAddress, walletAddr)
         )
       )
       .groupBy(sql`to_address`)) as unknown as QueryResult[];
