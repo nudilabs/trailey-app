@@ -215,8 +215,7 @@ export const getSummaryByContract = publicProcedure
       .where(
         and(
           eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr),
-          eq(transactions.isInteract, true)
+          eq(transactions.fromAddress, walletAddr)
         )
       )
       .groupBy(sql`to_address`)
@@ -249,8 +248,7 @@ export const getSummaryByContract = publicProcedure
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`,
-          eq(transactions.isInteract, true)
+          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`
         )
       )
       .groupBy(sql`to_address`)
@@ -269,8 +267,7 @@ export const getSummaryByContract = publicProcedure
         and(
           eq(transactions.chainId, chainId),
           eq(transactions.fromAddress, walletAddr),
-          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)`,
-          eq(transactions.isInteract, true)
+          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)`
         )
       )
       .groupBy(sql`to_address`)
