@@ -1,4 +1,3 @@
-import OverviewCard from '@/components/OverviewCard';
 import { IBundle } from '@/types/IBundle';
 import {
   Box,
@@ -15,7 +14,21 @@ import {
   useColorModeValue,
   IconButton,
   CardHeader,
-  chakra
+  chakra,
+  Tooltip,
+  useToast,
+  Skeleton,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Tr,
+  Td,
+  Image,
+  TableContainer,
+  Table,
+  Tbody
 } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 
@@ -23,12 +36,16 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spline from '@splinetool/react-spline';
 import { trpc } from '@/connectors/Trpc';
-import AvatarGroup from '@/components/AvatarGroup';
-import { FiPlus } from 'react-icons/fi';
+import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { get } from '@vercel/edge-config';
 import { Chain } from '@/types/Chains';
 import { CHAINS } from '@/configs/chains';
 import SearchBar from '@/components/SearchBar';
+import ChainSelector from '@/components/ChainSelector';
+import moment from 'moment';
+import { LastResync } from '@/types/LastResync';
+import { formatPrettyNumber, getFormattedAddress } from '@/utils/format';
+import Avatar from '@/components/Avatar';
 
 export default function Home({
   currentBundle,
@@ -43,7 +60,14 @@ export default function Home({
   localChain: string;
   setLocalChain: (chain: string) => void;
 }) {
-  const [address, setAddress] = useState<string | null>(null);
+  const [lastResynced, setLastResynced] = useState<LastResync[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [currentChain, setCurrentChain] = useState<Chain | undefined>(
+    chainConfigs.find(chain => chain.name === localChain)
+  );
+  const [tabIndex, setTabIndex] = useState(0);
+  const toolTipLabel = 'compared to prior week';
+  const toast = useToast();
 
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
   const hightlightColor = useColorModeValue(
@@ -53,6 +77,10 @@ export default function Home({
   const dividerColor = useColorModeValue('gray.300', 'gray.700');
 
   const router = useRouter();
+
+  useEffect(() => {
+    setCurrentChain(chainConfigs.find(chain => chain.name === localChain));
+  }, [localChain]);
 
   const txSummaries = trpc.useQueries(
     t =>
@@ -86,6 +114,23 @@ export default function Home({
     })
   );
 
+  const txsSummariesByContract = trpc.useQueries(
+    t =>
+      bundlesData[currentBundle]?.wallets?.map(addr =>
+        t.txs.getSummaryByContract({
+          chainName: localChain,
+          walletAddr: addr.address
+        })
+      ) ?? []
+  );
+
+  const txSummariesByContractWithAddress = txsSummariesByContract.map(
+    (txSummary, index) => ({
+      ...txSummary,
+      address: bundlesData[currentBundle]?.wallets[index]?.address
+    })
+  );
+
   const { mutate } = trpc.txs.syncWalletTxs.useMutation();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -95,6 +140,63 @@ export default function Home({
         walletAddr: txSummary.address
       });
     });
+  };
+
+  const handleResync = () => {
+    handleSubmit({ preventDefault: () => {} });
+    const currentDate = new Date();
+    const lastResyncs: LastResync[] = [];
+    txSummaries.forEach((summary: any) => {
+      const obj = {
+        chain: localChain,
+        address: summary.address,
+        timestamp: currentDate
+      };
+      const localStorage = window.localStorage;
+      const lrsFromLocal = localStorage.getItem('trailey.lrs');
+      // find the old lrs in storage
+      if (lrsFromLocal) {
+        let lrsFromLocalObj = JSON.parse(lrsFromLocal);
+        let currentLsrObj = lrsFromLocalObj.find(
+          (item: { chain: string; address: string }) =>
+            item.chain === localChain && item.address === summary.address
+        );
+        if (currentLsrObj) {
+          // if found, update the timestamp
+          currentLsrObj.timestamp = currentDate;
+        } else {
+          lrsFromLocalObj.push(obj);
+        }
+        localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
+
+        // Push the updated currentLsrObj or obj into lastResyncs array
+        lastResyncs.push(currentLsrObj || obj);
+      } else {
+        // if not found, create a new one
+        localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
+
+        lastResyncs.push(obj);
+      }
+
+      setLastResynced(lastResyncs);
+
+      toast({
+        title: `Resyncing ${getFormattedAddress(summary.address)}...`,
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+        position: 'top-right'
+      });
+    });
+
+    if (lastResyncs.length === 0) {
+      setLastResynced([]);
+    }
+    // set timer to 10 seconds
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+    }, 2000);
   };
 
   if (bundlesData.length === 0) {
@@ -175,57 +277,333 @@ export default function Home({
 
   return (
     <Flex direction="column" paddingTop={4} gap={4}>
+      <Flex
+        direction="row"
+        justifyContent="space-between"
+        px={4}
+        alignItems="center"
+      >
+        {bundlesData[currentBundle] && (
+          <Flex direction="column">
+            <Heading>{bundlesData[currentBundle].name}</Heading>
+            <Flex direction="row" alignItems="center" gap={2}>
+              <Text
+                color={subHeadingColor}
+              >{`Bundle (${bundlesData[currentBundle].wallets.length} Wallets)`}</Text>
+              <Button
+                size="xs"
+                onClick={() => {
+                  router.push(`/bundle/${currentBundle}`);
+                }}
+              >
+                Add Wallet
+              </Button>
+            </Flex>
+          </Flex>
+        )}
+        <Flex direction="row" gap={4} alignItems="center">
+          <Tooltip
+            label={
+              lastResynced &&
+              lastResynced.length > 0 &&
+              moment(lastResynced[0]?.timestamp)
+                .add(10, 'minutes')
+                .isAfter(new Date())
+                ? 'You can resync once every 10 minutes'
+                : 'Resync data'
+            }
+            hasArrow
+          >
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="refresh"
+              icon={<FiRefreshCw />}
+              onClick={handleResync}
+              isLoading={isSyncing}
+              isDisabled={
+                lastResynced &&
+                lastResynced.length > 0 &&
+                moment(lastResynced[0]?.timestamp)
+                  .add(10, 'minutes')
+                  .isAfter(new Date())
+              }
+            />
+          </Tooltip>
+          <Box>
+            <ChainSelector
+              chainConfigs={chainConfigs}
+              localChain={localChain}
+              setLocalChain={setLocalChain}
+            />
+          </Box>
+        </Flex>
+      </Flex>
       <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-        <GridItem colSpan={{ base: 12, lg: 4 }}>
-          <Grid templateColumns="repeat(12, 1fr)" gap={4}>
-            <GridItem colSpan={{ base: 12, lg: 12 }}>
-              <Card size="lg">
-                <CardHeader>
-                  <Flex
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Heading size="md">Profile</Heading>
-                    <IconButton
-                      aria-label="Profile"
-                      icon={<FiPlus />}
+        {txSummariesWithAddress.map((summary: any, i: number) => {
+          const byContract = txSummariesByContractWithAddress.find(
+            (obj: any) => obj.address === summary.address
+          );
+          console.log('byContract: ', byContract);
+          return (
+            <GridItem colSpan={{ base: 12, md: 6, lg: 3 }} key={i}>
+              <Card key={i}>
+                <CardHeader
+                  borderBottomColor={dividerColor}
+                  borderBottomWidth={1}
+                  py={4}
+                >
+                  <Flex direction="row" justifyContent="space-between">
+                    <Text fontSize="sm" color={subHeadingColor}>
+                      {summary.name}
+                    </Text>
+                    <Button
+                      colorScheme="primary"
+                      variant="link"
+                      rightIcon={<FiExternalLink />}
                       onClick={() => {
-                        router.push(`/bundle/${currentBundle}`);
+                        router.push(`/address/${summary.address}`);
                       }}
-                    />
+                    >
+                      More Details
+                    </Button>
                   </Flex>
                 </CardHeader>
-                <CardBody>
+                <CardBody px={0}>
                   <Flex direction="column" gap={4}>
-                    <AvatarGroup
-                      wallets={bundlesData[currentBundle].wallets}
-                      max={5}
-                    />
-                    {bundlesData[currentBundle] && (
+                    <Flex direction="row" alignItems="center" gap={2} px={4}>
+                      <Avatar address={summary.address} size={48} />
                       <Flex direction="column">
-                        <Heading>{bundlesData[currentBundle].name}</Heading>
-                        <Text color={subHeadingColor}>
-                          {bundlesData[currentBundle].wallets.length} Wallets
-                        </Text>
+                        <Heading size="md">
+                          {getFormattedAddress(summary.address)}
+                        </Heading>
+                        <Text color={subHeadingColor}>{`${formatPrettyNumber(
+                          summary?.data?.txCount.allTime ?? 0,
+                          0
+                        )} transactions`}</Text>
                       </Flex>
-                    )}
+                    </Flex>
+                    <Grid templateColumns="repeat(12, 1fr)" gap={2} px={4}>
+                      <GridItem colSpan={4}>
+                        <Flex
+                          direction="column"
+                          bg={useColorModeValue('gray.50', 'gray.900')}
+                          p={3}
+                          rounded="md"
+                        >
+                          {summary?.data ? (
+                            <Text>
+                              {formatPrettyNumber(
+                                summary?.data?.txCount.allTime ?? 0,
+                                0
+                              )}
+                            </Text>
+                          ) : (
+                            <Skeleton height="24px" width="100%" />
+                          )}
+                          <Text color={subHeadingColor}>Txs</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem colSpan={4}>
+                        <Flex
+                          direction="column"
+                          bg={useColorModeValue('gray.50', 'gray.900')}
+                          p={3}
+                          rounded="md"
+                        >
+                          {summary?.data ? (
+                            <Text>
+                              {currentChain?.is_testnet
+                                ? `${currentChain?.symbol} ${formatPrettyNumber(
+                                    summary?.data?.valueSum.allTime ?? 0
+                                  )}`
+                                : `$${formatPrettyNumber(
+                                    summary?.data?.valueQuoteSum.allTime ?? 0
+                                  )}`}
+                            </Text>
+                          ) : (
+                            <Skeleton height="24px" width="100%" />
+                          )}
+                          <Text color={subHeadingColor}>Vol</Text>
+                        </Flex>
+                      </GridItem>
+                      <GridItem colSpan={4}>
+                        <Flex
+                          direction="column"
+                          bg={useColorModeValue('gray.50', 'gray.900')}
+                          p={3}
+                          rounded="md"
+                        >
+                          {summary?.data ? (
+                            <Text>
+                              {currentChain?.is_testnet
+                                ? `${currentChain?.symbol} ${formatPrettyNumber(
+                                    summary?.data?.gasSum.allTime ?? 0
+                                  )}`
+                                : `$${formatPrettyNumber(
+                                    summary?.data?.gasQuoteSum.allTime ?? 0
+                                  )}`}
+                            </Text>
+                          ) : (
+                            <Skeleton height="24px" width="100%" />
+                          )}
+                          <Text color={subHeadingColor}>Fees</Text>
+                        </Flex>
+                      </GridItem>
+                    </Grid>
+                    <Tabs
+                      colorScheme="primary"
+                      onChange={index => setTabIndex(index)}
+                      index={tabIndex}
+                    >
+                      <TabList
+                        justifyContent="center"
+                        borderColor={dividerColor}
+                      >
+                        <Tab>Protocols</Tab>
+                        <Tab>Performance</Tab>
+                      </TabList>
+
+                      <TabPanels p={2}>
+                        <TabPanel>
+                          <TableContainer>
+                            <Table variant="compact">
+                              <Tbody>
+                                {currentChain &&
+                                  currentChain.protocols.map(
+                                    (protocol, index) => {
+                                      const contractInteractions =
+                                        byContract?.data?.contracts
+                                          .filter(contract =>
+                                            protocol.addresses.some(
+                                              address =>
+                                                address.toLowerCase() ===
+                                                contract?.address?.toLowerCase()
+                                            )
+                                          )
+                                          .reduce(
+                                            (accumulator, contract) => {
+                                              accumulator.txCount.allTime +=
+                                                parseInt(
+                                                  contract.txCount
+                                                    .allTime as unknown as string
+                                                ) || 0;
+                                              accumulator.lastTx =
+                                                accumulator.lastTx ||
+                                                contract.lastTx;
+                                              return accumulator;
+                                            },
+                                            {
+                                              txCount: {
+                                                allTime: 0
+                                              },
+                                              lastTx: null as string | null // Set the initial value to string | null
+                                            }
+                                          );
+
+                                      return (
+                                        <Tr key={index}>
+                                          <Td>
+                                            <Flex
+                                              direction="row"
+                                              alignItems="center"
+                                            >
+                                              <Image
+                                                src={protocol.logo_url}
+                                                alt={protocol.label}
+                                                boxSize="24px"
+                                                mr="2"
+                                                rounded="lg"
+                                              />
+                                              <Flex direction="column">
+                                                <Flex
+                                                  direction="row"
+                                                  alignItems="center"
+                                                  gap={1}
+                                                  fontSize="xs"
+                                                  fontWeight="bold"
+                                                >
+                                                  <Text
+                                                    as="a"
+                                                    href={protocol.protocol_url}
+                                                    target="_blank"
+                                                    textDecor={
+                                                      protocol.protocol_url
+                                                        ? 'underline'
+                                                        : 'none'
+                                                    }
+                                                  >
+                                                    {protocol?.label}
+                                                  </Text>
+                                                  <Box
+                                                    display={
+                                                      protocol.protocol_url
+                                                        ? 'block'
+                                                        : 'none'
+                                                    }
+                                                  >
+                                                    <FiExternalLink />
+                                                  </Box>
+                                                </Flex>
+                                              </Flex>
+                                            </Flex>
+                                          </Td>
+                                          <Td>
+                                            {byContract?.data ? (
+                                              <Text fontSize="sm">
+                                                {`${
+                                                  contractInteractions?.txCount
+                                                    .allTime ?? 0
+                                                }txs`}
+                                              </Text>
+                                            ) : (
+                                              <Skeleton
+                                                height="20px"
+                                                width="40px"
+                                              />
+                                            )}
+                                          </Td>
+
+                                          <Td>
+                                            {byContract?.data ? (
+                                              <Text
+                                                fontSize="xs"
+                                                color={subHeadingColor}
+                                              >
+                                                {contractInteractions?.lastTx
+                                                  ? moment
+                                                      .utc(
+                                                        contractInteractions?.lastTx
+                                                      )
+                                                      .fromNow()
+                                                  : 'N/A'}
+                                              </Text>
+                                            ) : (
+                                              <Skeleton
+                                                height="20px"
+                                                width="40px"
+                                              />
+                                            )}
+                                          </Td>
+                                        </Tr>
+                                      );
+                                    }
+                                  )}
+                              </Tbody>
+                            </Table>
+                          </TableContainer>
+                        </TabPanel>
+                        <TabPanel>
+                          <p>two!</p>
+                        </TabPanel>
+                      </TabPanels>
+                    </Tabs>
                   </Flex>
                 </CardBody>
               </Card>
             </GridItem>
-          </Grid>
-        </GridItem>
-        <GridItem colSpan={{ base: 12, lg: 8 }}>
-          <OverviewCard
-            txSummaries={txSummariesWithAddress}
-            txSummariesByMonth={txSummariesByMonthWithAddress}
-            chainConfigs={chainConfigs}
-            localChain={localChain}
-            setLocalChain={setLocalChain}
-            handleSubmit={handleSubmit}
-          />
-        </GridItem>
+          );
+        })}
       </Grid>
     </Flex>
   );

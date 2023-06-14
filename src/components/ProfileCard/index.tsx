@@ -277,10 +277,10 @@ export default function ProfileCard({
                     <StatHelpText>
                       {currentChain?.is_testnet
                         ? `${balance?.symbol} ${formatPrettyNumber(
-                            txSummary?.valueSum.allTime ?? 0
+                            txSummary?.valueSum.lastWeek ?? 0
                           )} past week`
                         : `$${formatPrettyNumber(
-                            txSummary?.valueQuoteSum.allTime ?? 0
+                            txSummary?.valueQuoteSum.lastWeek ?? 0
                           )} past week`}
                     </StatHelpText>
                   </Tooltip>
@@ -319,10 +319,10 @@ export default function ProfileCard({
                     <StatHelpText>
                       {currentChain?.is_testnet
                         ? `${balance?.symbol} ${formatPrettyNumber(
-                            txSummary?.gasSum.allTime ?? 0
+                            txSummary?.gasSum.lastWeek ?? 0
                           )} past week`
                         : `$${formatPrettyNumber(
-                            txSummary?.gasQuoteSum.allTime ?? 0
+                            txSummary?.gasQuoteSum.lastWeek ?? 0
                           )} past week`}
                     </StatHelpText>
                   </Tooltip>
