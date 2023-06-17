@@ -68,6 +68,7 @@ export default function Home({
   const [tabIndex, setTabIndex] = useState(0);
   const toolTipLabel = 'compared to prior week';
   const toast = useToast();
+  const lightBackgroundColor = useColorModeValue('gray.50', 'gray.900');
 
   const subHeadingColor = useColorModeValue('gray.600', 'gray.400');
   const hightlightColor = useColorModeValue(
@@ -387,7 +388,7 @@ export default function Home({
                       <GridItem colSpan={4}>
                         <Flex
                           direction="column"
-                          bg={useColorModeValue('gray.50', 'gray.900')}
+                          bg={lightBackgroundColor}
                           p={3}
                           rounded="md"
                         >
@@ -407,7 +408,7 @@ export default function Home({
                       <GridItem colSpan={4}>
                         <Flex
                           direction="column"
-                          bg={useColorModeValue('gray.50', 'gray.900')}
+                          bg={lightBackgroundColor}
                           p={3}
                           rounded="md"
                         >
@@ -430,7 +431,7 @@ export default function Home({
                       <GridItem colSpan={4}>
                         <Flex
                           direction="column"
-                          bg={useColorModeValue('gray.50', 'gray.900')}
+                          bg={lightBackgroundColor}
                           p={3}
                           rounded="md"
                         >
