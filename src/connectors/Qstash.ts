@@ -1,7 +1,8 @@
 import { NextApiRequest } from 'next';
 import { jwtVerify } from 'jose';
 import { Client } from '@upstash/qstash';
-import { config as serverConfig } from '@/configs/server';
+// import { config as serverConfig } from '@/configs/server';
+import { env } from '@/env.mjs';
 
 export class SignatureError extends Error {
   constructor(message: string) {
@@ -87,7 +88,7 @@ export class QStash {
   public async publishMsg(path: string, body: any): Promise<any> {
     const client = new Client({ token: String(this.apiToken) });
     const response = await client.publishJSON({
-      url: serverConfig.serverUrl + path,
+      url: env.SERVER_HOST + path,
       body
     });
     return response;

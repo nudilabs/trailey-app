@@ -1,12 +1,11 @@
-import { config as serverConfig } from '../configs/server';
-
+import { env } from '@/env.mjs';
 export class Covalent {
   private readonly endPointUrl: string;
   private readonly apiToken: string;
 
   constructor(apiToken: string) {
     this.apiToken = apiToken;
-    this.endPointUrl = serverConfig.covalent.url;
+    this.endPointUrl = env.COVALENT_URL;
   }
 
   private async fetchFromCovalent(url: string) {

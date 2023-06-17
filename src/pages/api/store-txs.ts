@@ -1,17 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { eq } from 'drizzle-orm';
-// import { db } from '@/db/drizzle-db';
 import { Transaction } from '@/types/DB';
 import * as TxModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
 import * as WalletInfoModel from '@/models/WalletsInfo';
 
-import { config as serverConfig } from '@/configs/server';
 import { QStash } from '@/connectors/Qstash';
-// import { Covalent } from '@/connectors/Covalent';
 import moment from 'moment';
 import * as z from 'zod';
 import axios from 'axios';
+import { env } from '@/env.mjs';
 
 // export const config = {
 //   runtime: 'edge'
@@ -33,13 +31,14 @@ const getTxs = async (
   chainId: number,
   totalPage: number
 ) => {
-  const batch = serverConfig.batchSize;
+  const batch = env.INDEX_BATCH_SIZE;
+  const pagePerBatch = env.PAGE_PER_BATCH;
 
   let totalGetPage;
-  if (startPage + serverConfig.pagePerBatch > totalPage) {
+  if (startPage + pagePerBatch > totalPage) {
     totalGetPage = totalPage - startPage;
   } else {
-    totalGetPage = serverConfig.pagePerBatch;
+    totalGetPage = pagePerBatch;
   }
   const batchCount = Math.ceil(totalGetPage / batch);
 
@@ -48,10 +47,10 @@ const getTxs = async (
   ): Promise<{ items: any; page: number }> => {
     //   const url = `${serverConfig.covalent.url}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
     return new Promise((resolve, reject) => {
-      const url = `${serverConfig.covalent.url}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
+      const url = `${env.COVALENT_URL}${chainName}/address/${walletAddr}/transactions_v3/page/${page}/`;
       axios
         .get(url, {
-          headers: { Authorization: 'Basic ' + btoa(serverConfig.covalent.key) }
+          headers: { Authorization: 'Basic ' + btoa(env.COVALENT_KEY) }
         })
         .then(res => {
           resolve({ items: res.data.data.items, page });
@@ -116,9 +115,9 @@ export default async function handler(
     return res.status(404).json({ status: 404, statusText: 'Not Found' });
 
   const qstash = new QStash(
-    serverConfig.qstash.currSigKey,
-    serverConfig.qstash.nextSigKey,
-    serverConfig.qstash.token
+    env.QSTASH_CURRENT_SIGNING_KEY,
+    env.QSTASH_NEXT_SIGNING_KEY,
+    env.QSTASH_TOKEN
   );
 
   const valid = await qstash.auth(req);
@@ -149,9 +148,9 @@ export default async function handler(
     }
 
     const nextStartPage =
-      startPage + serverConfig.pagePerBatch > totalPage
+      startPage + env.PAGE_PER_BATCH > totalPage
         ? totalPage
-        : startPage + serverConfig.pagePerBatch;
+        : startPage + env.PAGE_PER_BATCH;
 
     if (nextStartPage < totalPage) {
       const nextStore = {

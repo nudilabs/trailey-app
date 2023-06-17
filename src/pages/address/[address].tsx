@@ -56,7 +56,7 @@ import { formatPrettyNumber } from '@/utils/format';
 import { fetchBalance } from '@wagmi/core';
 import { CHAINS } from '@/configs/chains';
 import { LastResync } from '@/types/LastResync';
-import ENV from '@/utils/Env';
+import { env } from '@/env.mjs';
 
 export default function Account({
   account_,
@@ -100,11 +100,11 @@ export default function Account({
     const nonce = await customPublicClient(localChain).getTransactionCount({
       address: account.address
     });
-    if (nonce > Number(ENV.NEXT_PUBLIC_TX_LIMIT)) {
+    if (nonce > Number(env.NEXT_PUBLIC_TX_LIMIT)) {
       toast({
         title: 'Error',
         description: `We do not support addresses with more than ${formatPrettyNumber(
-          ENV.NEXT_PUBLIC_TX_LIMIT,
+          env.NEXT_PUBLIC_TX_LIMIT,
           0
         )} transactions during beta`,
         status: 'error',
@@ -132,7 +132,7 @@ export default function Account({
       walletAddr: account.address
     },
     {
-      refetchInterval: validateData ? ENV.NEXT_PUBLIC_REVALIDATE_TIME : 0
+      refetchInterval: validateData ? env.NEXT_PUBLIC_REVALIDATE_TIME : 0
     }
   );
 
@@ -143,7 +143,7 @@ export default function Account({
         walletAddr: account.address
       },
       {
-        refetchInterval: validateData ? ENV.NEXT_PUBLIC_REVALIDATE_TIME : 0
+        refetchInterval: validateData ? env.NEXT_PUBLIC_REVALIDATE_TIME : 0
       }
     ).data;
 
@@ -154,7 +154,7 @@ export default function Account({
         walletAddr: account.address
       },
       {
-        refetchInterval: validateData ? ENV.NEXT_PUBLIC_REVALIDATE_TIME : 0
+        refetchInterval: validateData ? env.NEXT_PUBLIC_REVALIDATE_TIME : 0
       }
     ).data;
 

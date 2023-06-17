@@ -20,6 +20,7 @@
     "@rainbow-me/rainbowkit-siwe-next-auth": "^0.1.9",
     "@splinetool/react-spline": "^2.2.6",
     "@splinetool/runtime": "^0.9.357",
+    "@t3-oss/env-nextjs": "^0.4.1",
     "@tanstack/react-query": "^4.29.5",
     "@trpc/client": "^10.23.0",
     "@trpc/next": "^10.23.0",
