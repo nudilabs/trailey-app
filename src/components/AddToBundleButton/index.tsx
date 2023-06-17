@@ -53,7 +53,7 @@ export default function AddToBundleBtn({
     const newProfilesData = [...bundlesData];
     newProfilesData[currentBundle] = newProfile;
     setBundlesData(newProfilesData);
-    localStorage.setItem('trailey.bundles', JSON.stringify(newProfilesData));
+    localStorage.setItem('dropbook.bundles', JSON.stringify(newProfilesData));
     toast({
       title: 'Wallet added to bundle',
       status: 'success',

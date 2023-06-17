@@ -81,7 +81,7 @@ export default function ProfileCard({
       timestamp: currentDate
     };
     const localStorage = window.localStorage;
-    const lrsFromLocal = localStorage.getItem('trailey.lrs');
+    const lrsFromLocal = localStorage.getItem('dropbook.lrs');
     // find the old lrs in storage
     if (lrsFromLocal) {
       let lrsFromLocalObj = JSON.parse(lrsFromLocal);
@@ -95,11 +95,11 @@ export default function ProfileCard({
       } else {
         lrsFromLocalObj.push(obj);
       }
-      localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
+      localStorage.setItem('dropbook.lrs', JSON.stringify(lrsFromLocalObj));
       setLastResynced(currentLsrObj);
     } else {
       // if not found, create a new one
-      localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
+      localStorage.setItem('dropbook.lrs', JSON.stringify([obj]));
       setLastResynced(obj);
     }
 
@@ -114,7 +114,7 @@ export default function ProfileCard({
 
   useEffect(() => {
     const localStorage = window.localStorage;
-    const lastResyncedString = localStorage.getItem('trailey.lrs');
+    const lastResyncedString = localStorage.getItem('dropbook.lrs');
     if (lastResyncedString) {
       const lastResynced = JSON.parse(lastResyncedString).find(
         (item: { chain: string; address: string }) =>
@@ -277,10 +277,10 @@ export default function ProfileCard({
                     <StatHelpText>
                       {currentChain?.is_testnet
                         ? `${balance?.symbol} ${formatPrettyNumber(
-                            txSummary?.valueSum.allTime ?? 0
+                            txSummary?.valueSum.lastWeek ?? 0
                           )} past week`
                         : `$${formatPrettyNumber(
-                            txSummary?.valueQuoteSum.allTime ?? 0
+                            txSummary?.valueQuoteSum.lastWeek ?? 0
                           )} past week`}
                     </StatHelpText>
                   </Tooltip>
@@ -319,10 +319,10 @@ export default function ProfileCard({
                     <StatHelpText>
                       {currentChain?.is_testnet
                         ? `${balance?.symbol} ${formatPrettyNumber(
-                            txSummary?.gasSum.allTime ?? 0
+                            txSummary?.gasSum.lastWeek ?? 0
                           )} past week`
                         : `$${formatPrettyNumber(
-                            txSummary?.gasQuoteSum.allTime ?? 0
+                            txSummary?.gasQuoteSum.lastWeek ?? 0
                           )} past week`}
                     </StatHelpText>
                   </Tooltip>
@@ -339,7 +339,7 @@ export default function ProfileCard({
           color={useColorModeValue('blackAlpha.500', 'whiteAlpha.500')}
           fontSize="xs"
         >
-          Powered by Trailey Analytics
+          Powered by Dropbook Analytics
         </Text>
       </CardFooter>
     </Card>

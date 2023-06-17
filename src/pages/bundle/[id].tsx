@@ -87,7 +87,7 @@ export default function Profile({
       );
       setBundlesData(newProfilesData);
       window.localStorage.setItem(
-        'trailey.bundles',
+        'dropbook.bundles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -120,7 +120,7 @@ export default function Profile({
       );
       setBundlesData(newProfilesData);
       window.localStorage.setItem(
-        'trailey.bundles',
+        'dropbook.bundles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -142,7 +142,7 @@ export default function Profile({
       );
       setBundlesData(newProfilesData);
       window.localStorage.setItem(
-        'trailey.bundles',
+        'dropbook.bundles',
         JSON.stringify(newProfilesData)
       );
     }
@@ -150,7 +150,7 @@ export default function Profile({
 
   useEffect(() => {
     // Get item from local storage
-    const profiles = window.localStorage.getItem('trailey.bundles');
+    const profiles = window.localStorage.getItem('dropbook.bundles');
     if (profiles) {
       const parsedProfiles = JSON.parse(profiles);
       setBundlesData(parsedProfiles);

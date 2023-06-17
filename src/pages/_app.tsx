@@ -44,8 +44,8 @@ const { chains, provider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: 'Trailey Analytics',
-  projectId: 'TraileyAnalytics',
+  appName: 'Dropbook Analytics',
+  projectId: 'DropbookAnalytics',
   chains
 });
 
@@ -71,11 +71,11 @@ const App = ({ Component, pageProps }: AppProps<{}>) => {
   useEffect(() => {
     const localStorage = window.localStorage;
     // Get item from local storage
-    const profiles = localStorage.getItem('trailey.bundles');
+    const profiles = localStorage.getItem('dropbook.bundles');
     if (profiles) setBundlesData(JSON.parse(profiles));
     const currentBundleId = localStorage.getItem('profileId');
     if (currentBundleId) setCurrentBundle(parseInt(currentBundleId));
-    const localChain = localStorage.getItem('trailey.chain');
+    const localChain = localStorage.getItem('dropbook.chain');
     if (localChain) setLocalChain(localChain);
   }, []);
 

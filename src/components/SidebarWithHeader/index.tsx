@@ -148,13 +148,13 @@ const SidebarContent = ({
             src={
               isHover ? logo : logo.replace('/logos/logo', '/logos/logo-small')
             }
-            alt="Trailey Logo"
+            alt="Dropbook Logo"
             height={'40px'}
             display={{ base: 'none', xl: 'block' }}
           />
           <Image
             src={logo}
-            alt="Trailey Logo"
+            alt="Dropbook Logo"
             height={'40px'}
             display={{ base: 'block', xl: 'none' }}
           />
@@ -208,7 +208,7 @@ const SidebarContent = ({
             isHover={isHover}
             key={'twitter'}
             icon={FiTwitter}
-            href={'https://twitter.com/traileyxyz'}
+            href={'https://twitter.com/dropbookxyz'}
             external
           >
             Twitter
@@ -400,7 +400,7 @@ const MobileNav = ({ onOpen, bundlesData, ...rest }: MobileProps) => {
           icon={<FiMenu />}
         />
         <Box display={{ base: 'flex', xl: 'none' }}>
-          <Image src={logo} alt="Trailey Logo" width="128px" />
+          <Image src={logo} alt="Dropbook Logo" width="128px" />
         </Box>
       </Flex>
       {/* <CustomConnectButton /> */}

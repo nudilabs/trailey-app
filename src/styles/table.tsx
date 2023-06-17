@@ -1,8 +1,5 @@
 import { tableAnatomy } from '@chakra-ui/anatomy';
-import {
-  createMultiStyleConfigHelpers,
-  useColorModeValue
-} from '@chakra-ui/react';
+import { createMultiStyleConfigHelpers } from '@chakra-ui/react';
 
 const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(tableAnatomy.keys);
@@ -41,5 +38,41 @@ const baseStyle = definePartsStyle({
   }
 });
 
+const variants = {
+  compact: definePartsStyle({
+    thead: {
+      th: {
+        _dark: {
+          borderBottom: '1px solid',
+          borderColor: 'transparent'
+        }
+      }
+    },
+    tbody: {
+      td: {
+        borderTop: '1px solid',
+        borderBottom: 'none',
+        borderColor: 'transparent',
+        py: 2,
+        _dark: {
+          borderTop: '1px solid',
+          borderBottom: 'none',
+          borderColor: 'transparent'
+        }
+      },
+      tr: {
+        _hover: {
+          bg: 'blackAlpha.50'
+        },
+        _dark: {
+          _hover: {
+            bg: 'whiteAlpha.50'
+          }
+        }
+      }
+    }
+  })
+};
+
 // export the component theme
-export const tableTheme = defineMultiStyleConfig({ baseStyle });
+export const tableTheme = defineMultiStyleConfig({ baseStyle, variants });

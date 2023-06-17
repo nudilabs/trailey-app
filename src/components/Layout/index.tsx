@@ -25,8 +25,8 @@ export default function Layout({
 
   const pageTitle =
     pathname === '/' || pathname === '/address/[address]'
-      ? 'Trailey | Track your activity'
-      : `Trailey | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
+      ? 'Dropbook | Track your activity'
+      : `Dropbook | ${pathname.charAt(1).toUpperCase() + pathname.slice(2)}`;
 
   useEffect(() => {
     setPathname(router.pathname);
