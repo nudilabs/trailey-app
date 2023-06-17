@@ -64,7 +64,7 @@ const OverviewCard = ({
         timestamp: currentDate
       };
       const localStorage = window.localStorage;
-      const lrsFromLocal = localStorage.getItem('trailey.lrs');
+      const lrsFromLocal = localStorage.getItem('dropbook.lrs');
       // find the old lrs in storage
       if (lrsFromLocal) {
         let lrsFromLocalObj = JSON.parse(lrsFromLocal);
@@ -78,13 +78,13 @@ const OverviewCard = ({
         } else {
           lrsFromLocalObj.push(obj);
         }
-        localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
+        localStorage.setItem('dropbook.lrs', JSON.stringify(lrsFromLocalObj));
 
         // Push the updated currentLsrObj or obj into lastResyncs array
         lastResyncs.push(currentLsrObj || obj);
       } else {
         // if not found, create a new one
-        localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
+        localStorage.setItem('dropbook.lrs', JSON.stringify([obj]));
 
         lastResyncs.push(obj);
       }
@@ -112,7 +112,7 @@ const OverviewCard = ({
 
   useEffect(() => {
     const localStorage = window.localStorage;
-    const lastResyncedString = localStorage.getItem('trailey.lrs');
+    const lastResyncedString = localStorage.getItem('dropbook.lrs');
     const lastResyncs: LastResync[] = [];
     txSummaries.forEach((summary: any) => {
       if (lastResyncedString) {

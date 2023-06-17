@@ -217,7 +217,7 @@ export default function Account({
     // check if type is string
     if (typeof chain === 'string') {
       setLocalChain(chain);
-      localStorage.setItem('trailey.chain', chain);
+      localStorage.setItem('dropbook.chain', chain);
     }
   }, [chain]);
 
@@ -255,7 +255,7 @@ export default function Account({
         timestamp: currentDate
       };
       const localStorage = window.localStorage;
-      const lrsFromLocal = localStorage.getItem('trailey.lrs');
+      const lrsFromLocal = localStorage.getItem('dropbook.lrs');
       // find the old lrs in storage
       if (lrsFromLocal) {
         let lrsFromLocalObj = JSON.parse(lrsFromLocal);
@@ -269,11 +269,11 @@ export default function Account({
         } else {
           lrsFromLocalObj.push(obj);
         }
-        localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
+        localStorage.setItem('dropbook.lrs', JSON.stringify(lrsFromLocalObj));
         setLastResynced(currentLsrObj);
       } else {
         // if not found, create a new one
-        localStorage.setItem('trailey.lrs', JSON.stringify([obj]));
+        localStorage.setItem('dropbook.lrs', JSON.stringify([obj]));
         setLastResynced(obj);
       }
     }
@@ -283,7 +283,7 @@ export default function Account({
   useEffect(() => {
     const localStorage = window.localStorage;
     const currentDate = new Date();
-    const lrsFromLocal = localStorage.getItem('trailey.lrs');
+    const lrsFromLocal = localStorage.getItem('dropbook.lrs');
     let lrsFromLocalObj = lrsFromLocal ? JSON.parse(lrsFromLocal) : [];
 
     let currentLsrObj = lrsFromLocalObj.find(
@@ -310,7 +310,7 @@ export default function Account({
         lrsFromLocalObj.push(currentLsrObj);
       }
 
-      localStorage.setItem('trailey.lrs', JSON.stringify(lrsFromLocalObj));
+      localStorage.setItem('dropbook.lrs', JSON.stringify(lrsFromLocalObj));
       setLastResynced(currentLsrObj);
     }
   }, [localChain, account.address]);
@@ -324,7 +324,7 @@ export default function Account({
 
   useEffect(() => {
     const localStorage = window.localStorage;
-    const lrsFromLocal = localStorage.getItem('trailey.lrs');
+    const lrsFromLocal = localStorage.getItem('dropbook.lrs');
     if (lrsFromLocal) {
       let lrsFromLocalObj = JSON.parse(lrsFromLocal);
       let currentLsrObj = lrsFromLocalObj.find(

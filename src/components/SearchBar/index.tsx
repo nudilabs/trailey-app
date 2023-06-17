@@ -62,7 +62,7 @@ export default function SearchBar({
 
   useEffect(() => {
     const recentSearchesFromStorage = localStorage.getItem(
-      'trailey.recentSearches'
+      'dropbook.recentSearches'
     );
 
     if (recentSearchesFromStorage) {
@@ -106,7 +106,7 @@ export default function SearchBar({
 
       // Save the recent searches to local storage
       localStorage.setItem(
-        'trailey.recentSearches',
+        'dropbook.recentSearches',
         JSON.stringify(updatedRecentSearches)
       );
       setSearchTerm('');
@@ -199,7 +199,7 @@ export default function SearchBar({
                   size="sm"
                   onClick={() => {
                     setRecentSearches([]);
-                    localStorage.removeItem('trailey.recentSearches');
+                    localStorage.removeItem('dropbook.recentSearches');
                   }}
                 >
                   Clear
