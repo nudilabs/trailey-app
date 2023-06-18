@@ -5,7 +5,9 @@ import {
   arbitrum,
   scrollTestnet,
   baseGoerli,
-  polygonZkEvm
+  polygonZkEvm,
+  polygon,
+  bsc
 } from 'viem/chains';
 
 export const publicClient = createPublicClient({
@@ -13,7 +15,7 @@ export const publicClient = createPublicClient({
   transport: http()
 });
 
-export const customPublicClient = (chainName: string = 'ethereum-mainnet') => {
+export const customPublicClient = (chainName: string = 'eth-mainnet') => {
   return createPublicClient({
     chain: chainsMapper[chainName],
     transport: http()
@@ -45,7 +47,9 @@ export const lineaTestnet = {
 export const chainsMapper: {
   [key: string]: Chain;
 } = {
-  'ethereum-mainnet': mainnet,
+  'eth-mainnet': mainnet,
+  'matic-mainnet': polygon,
+  'bsc-mainnet': bsc,
   'arbitrum-mainnet': arbitrum,
   'optimism-mainnet': optimism,
   'scroll-alpha-testnet': scrollTestnet,

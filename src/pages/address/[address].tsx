@@ -116,6 +116,7 @@ export default function Account({
       return;
     }
     setValidateData(true);
+    console.log('######## localChain:', localChain);
     mutate({
       chainName: localChain,
       walletAddr: account.address

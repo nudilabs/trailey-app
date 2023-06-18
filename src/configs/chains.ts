@@ -1,5 +1,192 @@
 export const CHAINS = [
   {
+    name: 'eth-mainnet',
+    chain_id: '1',
+    is_testnet: false,
+    label: 'Ethereum Mainnet',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [
+      {
+        addresses: [
+          '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
+          '0x150f94B44927F078737562f0fcF3C95c01Cc2376',
+          '0xb1b2eeF380f21747944f46d28f683cD1FBB4d03c',
+          '0x296F55F8Fb28E498B858d0BcDA06D955B2Cb3f97',
+          '0x06D538690AF257Da524f25D0CD52fD85b1c2173E',
+          '0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6',
+          '0x6FaF1AB85FFbe7B3A557F4864046ff861734afd0',
+          '0x76d4d68966728894961AA3DDC1d5B0e45668a5A6',
+          '0x101816545F6bd2b1076434B54383a1E633390A2E',
+          '0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56',
+          '0x38EA452219524Bb87e18dE1C24D3bB59510BD783',
+          '0x692953e758c3669290cb1677180c64183cEe374e',
+          '0x0Faf1d2d3CED330824de3B8200fc8dc6E397850d',
+          '0xfA0F307783AC21C39E939ACFF795e27b650F6e68',
+          '0x590d4f8A68583639f215f675F3a259Ed84790580',
+          '0xE8F55368C82D38bbbbDb5533e7F56AfC2E978CC2',
+          '0x9cef9a0b1bE0D289ac9f4a98ff317c33EAA84eb8',
+          '0xd8772edBF88bBa2667ed011542343b0eDDaCDa47',
+          '0x430Ebff5E3E80A6C58E7e6ADA1d90F5c28AA116d',
+          '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+          '0x1c3000b8f475A958b87c73a5cc5780Ab763122FC'
+        ],
+        label: 'Stargate Finance',
+        logo_url:
+          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
+        protocol_url: 'https://stargate.finance/'
+      }
+    ],
+    achievements: [],
+    block_explorer_url: 'https://etherscan.io/',
+    scores: {
+      txCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      contractCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      valueQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      gasQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      }
+    },
+    symbol: 'ETH'
+  },
+  {
+    name: 'matic-mainnet',
+    chain_id: '137',
+    is_testnet: false,
+    label: 'Polygon',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [
+      {
+        addresses: [
+          '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
+          '0x9d1B1669c73b033DFe47ae5a0164Ab96df25B944',
+          '0x808d7c71ad2ba3FA531b068a2417C63106BC0949',
+          '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+          '0xA0732186f556F034CF9930B7796Bc3a03E614750',
+          '0xdc2716B92480225533aBC3328C2Ab961f2A9247d',
+          '0x1205f31718499dBf1fCa446663B532Ef87481fe1',
+          '0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c',
+          '0x1c272232Df0bb6225dA87f4dEcD9d37c32f63Eea',
+          '0x8736f92646B2542B3e5F3c63590cA7Fe313e283B',
+          '0x8731d54E9D02c286767d56ac03e8037C07e01e98'
+        ],
+        label: 'Stargate Finance',
+        logo_url:
+          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
+        protocol_url: 'https://stargate.finance/'
+      }
+    ],
+    achievements: [],
+    block_explorer_url: 'https://polygonscan.com/',
+    scores: {
+      txCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      contractCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      valueQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      gasQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      }
+    },
+    symbol: 'MATIC'
+  },
+  {
+    name: 'bsc-mainnet',
+    chain_id: '56',
+    is_testnet: false,
+    label: 'BNB Chain',
+    category_label: 'Ethereum',
+    logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+    black_logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+    white_logo_url: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+    is_appchain: false,
+    appchain_of: null,
+    protocols: [
+      {
+        addresses: [
+          '0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8',
+          '0x6694340fc020c5E6B96567843da2df01b2CE1eb6',
+          '0xe7Ec689f432f29383f217e36e680B5C855051f25',
+          '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+          '0xCa46058a5682B13c44F4Dd2558aFDEbf3A28f41f',
+          '0x2Eb9ea9dF49BeBB97e7750f231A32129a89b82ee',
+          '0x9aA83081AA06AF7208Dcc7A4cB72C94d057D2cda',
+          '0x98a5737749490856b401DB5Dc27F522fC314A4e1',
+          '0x4e145a589e4c03cBe3d28520e4BF3089834289Df',
+          '0x7BfD7f2498C4796f10b6C611D9db393D3052510C',
+          '0xD4CEc732b3B135eC52a3c0bc8Ce4b8cFb9dacE46',
+          '0x68C6c27fB0e02285829e69240BE16f32C5f8bEFe',
+          '0x3052A0F6ab15b4AE1df39962d5DdEFacA86DaB47',
+          '0x2c6dcEd426D265045737Ff55C2D746C11b2F457a'
+        ],
+        label: 'Stargate Finance',
+        logo_url:
+          'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
+        protocol_url: 'https://stargate.finance/'
+      }
+    ],
+    achievements: [],
+    block_explorer_url: 'https://bscscan.com/',
+    scores: {
+      txCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      contractCount: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      valueQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      },
+      gasQuoteSum: {
+        min: 0,
+        average: 0,
+        max: 0
+      }
+    },
+    symbol: 'MATIC'
+  },
+  {
     name: 'arbitrum-mainnet',
     chain_id: '42161',
     is_testnet: false,
@@ -14,7 +201,19 @@ export const CHAINS = [
       {
         addresses: [
           '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
-          '0x6694340fc020c5E6B96567843da2df01b2CE1eb6'
+          '0xbf22f0f184bCcbeA268dF387a49fF5238dD23E40',
+          '0x352d8275AAE3e0c2404d9f68f6cEE084B5bEB3DD',
+          '0x55bDb4164D28FBaF0898e0eF14a589ac09Ac9970',
+          '0x6694340fc020c5E6B96567843da2df01b2CE1eb6',
+          '0xB1641D94684225B72F97E52b2b02Ad07F7bA9089',
+          '0x6c33A7b29C8B012D060F3a5046f3ee5aC48f4780',
+          '0x915A55e36A01285A14f05dE6e81ED9cE89772f8e',
+          '0x892785f33CdeE22A30AEF750F285E18c18040c3e',
+          '0xB6CfcF89a7B22988bfC96632aC2A9D6daB60d641',
+          '0xaa4BF442F024820B2C28Cd0FD72b82c63e66F56C',
+          '0xF39B7Be294cB36dE8c510e267B82bb588705d977',
+          '0x600E576F9d853c95d58029093A16EE49646F3ca5',
+          '0xeA8DfEE1898a7e0a59f7527F076106d7e44c2176'
         ],
         label: 'Stargate Finance',
         logo_url:
@@ -48,7 +247,7 @@ export const CHAINS = [
         protocol_url: 'https://bepop.xyz/'
       },
       {
-        addresses: ['0x80c67432656d59144ceff962e8faf8926599bcf8'],
+        addresses: ['0xE4eDb277e41dc89aB076a1F049f4a3EfA700bCE8'],
         label: 'Orbiter Finance',
         logo_url:
           'https://www.dappland.com/dapps/orbiterfinance/dapp-icon-orbiter.png',
@@ -108,7 +307,23 @@ export const CHAINS = [
     appchain_of: null,
     protocols: [
       {
-        addresses: ['0xB0D502E938ed5f4df2E681fE6E419ff29631d62b'],
+        addresses: [
+          '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+          '0xB49c4e680174E331CB0A7fF3Ab58afC9738d5F8b',
+          '0x701a95707A0290AC8B90b3719e8EE5b210360883',
+          '0xE3B53AF74a4BF62Ae5511055290838050bf764Df',
+          '0x296F55F8Fb28E498B858d0BcDA06D955B2Cb3f97',
+          '0xaE8d00e43adB49d14Fa07C93b27cdB3Ee94C4675',
+          '0x46Bc16F76B0aE14Abb820D3410843Ba54D8ef6f0',
+          '0xd22363e3762cA7339569F3d33EADe20127D5F98C',
+          '0xDecC0c09c3B5f6e92EF4184125D5648a66E35298',
+          '0x165137624F1f692e69659f944BF69DE02874ee27',
+          '0x368605D9C6243A80903b9e326f1Cddde088B8924',
+          '0x2F8bC9081c7FCFeC25b9f41a50d97EaA592058ae',
+          '0x3533F5e279bDBf550272a199a223dA798D9eff78',
+          '0x5421FA1A48f9FF81e4580557E86C7C0D24C18036',
+          '0x4DeA9e918c6289a52cd469cAC652727B7b412Cd2'
+        ],
         label: 'Stargate Finance',
         logo_url:
           'https://assets.coingecko.com/coins/images/24413/large/STG_LOGO.png',
@@ -398,6 +613,13 @@ export const CHAINS = [
         logo_url:
           'https://pbs.twimg.com/profile_images/1527615955177680897/m_AXn0Ds_400x400.jpg',
         protocol_url: 'https://mantissa.finance/'
+      },
+      {
+        addresses: ['0xe4edb277e41dc89ab076a1f049f4a3efa700bce8'],
+        label: 'Orbiter Finance',
+        logo_url:
+          'https://www.dappland.com/dapps/orbiterfinance/dapp-icon-orbiter.png',
+        protocol_url: 'https://www.orbiter.finance/'
       }
     ],
     achievements: [
