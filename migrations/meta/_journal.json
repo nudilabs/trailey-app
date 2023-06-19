@@ -99,6 +99,13 @@
       "when": 1687186049211,
       "tag": "0013_early_deadpool",
       "breakpoints": false
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1687187036368,
+      "tag": "0014_open_sunspot",
+      "breakpoints": false
     }
   ]
 }

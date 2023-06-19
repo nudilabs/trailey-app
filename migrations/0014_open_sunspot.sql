@@ -1,0 +1,1 @@
+ALTER TABLE `wallets_info` ADD PRIMARY KEY(`chain_id`,`address`);

@@ -35,6 +35,7 @@ export const walletsInfo = mysqlTable(
     updatedAt: timestamp('updated_at').notNull().defaultNow()
   },
   wallet => ({
+    pk: primaryKey(wallet.chainId, wallet.address),
     addressIdx: index('address_idx').on(wallet.address)
   })
 );
