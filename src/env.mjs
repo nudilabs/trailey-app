@@ -20,11 +20,11 @@ export const env = createEnv({
     //Indexer.coerce
     INDEX_BATCH_SIZE: z.coerce.number().int().default(6),
     PAGE_PER_BATCH: z.coerce.number().int().default(50),
-    TX_LIMIT: z.coerce.number().int().default(20000)
+    TX_LIMIT: z.coerce.number().int().default(2000)
   },
   client: {
     //Next
-    NEXT_PUBLIC_TX_LIMIT: z.coerce.number().int().default(20000),
+    NEXT_PUBLIC_TX_LIMIT: z.coerce.number().int().default(2000),
     NEXT_PUBLIC_REVALIDATE_TIME: z.coerce.number().int().default(5000),
     NEXT_PUBLIC_DEFAULT_CHAIN: z.string().default('arbitrum-mainnet')
   },

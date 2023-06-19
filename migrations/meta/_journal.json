@@ -71,6 +71,34 @@
       "when": 1685977535557,
       "tag": "0009_shiny_jubilee",
       "breakpoints": false
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1687185396084,
+      "tag": "0010_zippy_forge",
+      "breakpoints": false
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1687185938510,
+      "tag": "0011_broad_kingpin",
+      "breakpoints": false
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1687185968020,
+      "tag": "0012_tiny_tempest",
+      "breakpoints": false
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1687186049211,
+      "tag": "0013_early_deadpool",
+      "breakpoints": false
     }
   ]
 }

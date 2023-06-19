@@ -1,4 +1,5 @@
 import { env } from '@/env.mjs';
+import { start } from 'repl';
 export class Covalent {
   private readonly endPointUrl: string;
   private readonly apiToken: string;
@@ -41,6 +42,33 @@ export class Covalent {
       return data;
     } catch (e) {
       console.log('error from getRecentTxs');
+    }
+  }
+
+  public async getERC20Balances(chainName: string, walletAddr: string) {
+    const url = `${this.endPointUrl}${chainName}/address/${walletAddr}/balances_v2/?no-spam=true`;
+    const res = await this.fetchFromCovalent(url);
+    try {
+      const data = await res?.json();
+      return data;
+    } catch (e) {
+      console.log('error from getTokenBalances');
+    }
+  }
+
+  public async getErc20Trasnfers(
+    chainName: string,
+    walletAddr: string,
+    contractAddr: string,
+    startBlock: number = 1
+  ) {
+    const url = `${this.endPointUrl}${chainName}/address/${walletAddr}/transfers_v2/?contract-address=${contractAddr}&starting-block=${startBlock}`;
+    const res = await this.fetchFromCovalent(url);
+    try {
+      const data = await res?.json();
+      return data;
+    } catch (e) {
+      console.log('error from getTokenTransfer');
     }
   }
 }
