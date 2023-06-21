@@ -3,7 +3,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { publicProcedure } from '@/server/trpc';
 import { Transaction } from '@/types/DB';
-import { config as serverConfig } from '@/configs/server';
+// import { config as serverConfig } from '@/configs/server';
+import { env } from '@/env.mjs';
 import { Covalent } from '@/connectors/Covalent';
 import { QStash } from '@/connectors/Qstash';
 import * as rpcClient from '@/server/utils/client';
@@ -80,7 +81,7 @@ export const syncWalletTxs = publicProcedure
       return {
         message: `No transactions found for wallet ${walletAddr} on chain ${chainName}`
       };
-    } else if (txCount > serverConfig.txLimit) {
+    } else if (txCount > env.TX_LIMIT) {
       return {
         message: `Too many transactions found for wallet ${walletAddr} on chain ${chainName}`
       };
@@ -98,7 +99,7 @@ export const syncWalletTxs = publicProcedure
 
     // const latestTx = walletInfo[0].transactions[0];
 
-    const covalent = new Covalent(serverConfig.covalent.key);
+    const covalent = new Covalent(env.COVALENT_KEY);
     const recentCovTxPage = await covalent.getWalletRecentTxs(
       chainName,
       walletAddr
@@ -143,9 +144,9 @@ export const syncWalletTxs = publicProcedure
       // }
 
       const qstash = new QStash(
-        serverConfig.qstash.currSigKey,
-        serverConfig.qstash.nextSigKey,
-        serverConfig.qstash.token
+        env.QSTASH_CURRENT_SIGNING_KEY,
+        env.QSTASH_NEXT_SIGNING_KEY,
+        env.QSTASH_TOKEN
       );
       // const deduplicationId = sha256(JSON.stringify(pubStoreMsg)).toString();
       await qstash.publishMsg('store-txs', pubStoreMsg);
@@ -185,9 +186,9 @@ export const syncWalletTxs = publicProcedure
           pubStoreMsg.startPage = caseStartPage;
 
           const qstash = new QStash(
-            serverConfig.qstash.currSigKey,
-            serverConfig.qstash.nextSigKey,
-            serverConfig.qstash.token
+            env.QSTASH_CURRENT_SIGNING_KEY,
+            env.QSTASH_NEXT_SIGNING_KEY,
+            env.QSTASH_TOKEN
           );
 
           await qstash.publishMsg('store-txs', pubStoreMsg);

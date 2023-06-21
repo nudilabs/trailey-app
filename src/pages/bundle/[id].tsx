@@ -1,5 +1,4 @@
 import { IBundle } from '@/types/IBundle';
-import ENV from '@/utils/Env';
 import { customPublicClient } from '@/utils/client';
 import {
   getFormattedAddress,
@@ -42,6 +41,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FiChevronLeft, FiEdit, FiPlus, FiPlusCircle } from 'react-icons/fi';
 import { getAddress, isAddress } from 'viem';
+import { env } from '@/env.mjs';
 
 interface ProfileProps {
   id: string;
@@ -97,11 +97,11 @@ export default function Profile({
     const nonce = await customPublicClient(localChain).getTransactionCount({
       address: getAddress(address)
     });
-    if (nonce > Number(ENV.NEXT_PUBLIC_TX_LIMIT)) {
+    if (nonce > Number(env.NEXT_PUBLIC_TX_LIMIT)) {
       toast({
         title: 'Error',
         description: `We do not support addresses with more than ${formatPrettyNumber(
-          ENV.NEXT_PUBLIC_TX_LIMIT,
+          env.NEXT_PUBLIC_TX_LIMIT,
           0
         )} transactions during beta`,
         status: 'error',

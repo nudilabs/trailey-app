@@ -1,4 +1,5 @@
-import ENV from '@/utils/Env';
+// import ENV from '@/utils/Env';
+import { env } from '@/env.mjs';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { getCsrfToken } from 'next-auth/react';
@@ -25,7 +26,7 @@ export default async function auth(req: any, res: any) {
           const siwe = new SiweMessage(
             JSON.parse(credentials?.message || '{}')
           );
-          const nextAuthUrl = new URL(ENV.NEXTAUTH_URL);
+          const nextAuthUrl = new URL(env.NEXTAUTH_URL);
 
           const result = await siwe.verify({
             signature: credentials?.signature || '',

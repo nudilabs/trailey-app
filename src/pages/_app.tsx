@@ -26,7 +26,8 @@ import {
 import { publicProvider } from 'wagmi/providers/public';
 
 import { trpc } from '../connectors/Trpc';
-import ENV from '@/utils/Env';
+import { env } from '@/env.mjs';
+// import ENV from '@/utils/Env';
 
 const { chains, provider } = configureChains(
   [
@@ -58,7 +59,7 @@ const wagmiClient = createClient({
 const App = ({ Component, pageProps }: AppProps<{}>) => {
   const [currentBundle, setCurrentBundle] = useState(0);
   const [bundlesData, setBundlesData] = useState<IBundle[]>([]);
-  const [localChain, setLocalChain] = useState(ENV.NEXT_PUBLIC_DEFAULT_CHAIN);
+  const [localChain, setLocalChain] = useState(env.NEXT_PUBLIC_DEFAULT_CHAIN);
   const profileProps = {
     currentBundle,
     setCurrentBundle,

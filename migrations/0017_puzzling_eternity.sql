@@ -1,0 +1,1 @@
+ALTER TABLE `wallets_info` DROP COLUMN `id`;
