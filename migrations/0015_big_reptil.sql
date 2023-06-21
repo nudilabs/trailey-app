@@ -1,0 +1,1 @@
+ALTER TABLE `erc20_transactions` ADD `quote_rate` decimal(20,10);

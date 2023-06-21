@@ -26,7 +26,6 @@ export const supportChains = mysqlTable(
 export const walletsInfo = mysqlTable(
   'wallets_info',
   {
-    id: serial('id').primaryKey(),
     address: varchar('address', { length: 42 }),
     chainId: int('chain_id'),
     recentPage: int('recent_page'),
@@ -72,10 +71,13 @@ export const erc20Transactions = mysqlTable(
   'erc20_transactions',
   {
     txHash: varchar('tx_hash', { length: 66 }),
+    signedAt: datetime('block_signed_at'),
+    blockHeight: int('block_height'),
     contractAddress: varchar('contract_address', { length: 42 }),
     contractDecimals: int('contract_decimals'),
     contractName: varchar('contract_name', { length: 255 }),
     contractSymbol: varchar('contract_symbol', { length: 255 }),
+    quoteRate: decimal('quote_rate', { precision: 20, scale: 10 }),
     fromAddress: varchar('from_address', { length: 42 }),
     toAddress: varchar('to_address', { length: 42 }),
     amount: varchar('value', { length: 255 }),

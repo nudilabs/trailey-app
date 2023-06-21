@@ -1,5 +1,4 @@
 import { env } from '@/env.mjs';
-import { start } from 'repl';
 export class Covalent {
   private readonly endPointUrl: string;
   private readonly apiToken: string;

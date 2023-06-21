@@ -51,3 +51,23 @@ export const upsertRecentPage = async (
       }
     });
 };
+
+export const upsertRecentBlock = async (
+  chainId: number,
+  address: string,
+  recentBlock: number
+) => {
+  await db
+    .insert(walletsInfo)
+    .values({
+      chainId,
+      address,
+      recentBlock
+    })
+    .onDuplicateKeyUpdate({
+      set: {
+        recentBlock,
+        updatedAt: sql`NOW()`
+      }
+    });
+};
