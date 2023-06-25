@@ -192,8 +192,10 @@ export default function TopProtocolsUsageCard({
                     {!currentChain.is_testnet && (
                       <Td>
                         {txsSummaryByContract ? (
-                          (contractInteractions?.valueQuoteSum as number) +
-                          (contractInteractions?.erc20ValueQuoteSum as number)
+                          formatPrettyNumber(
+                            (contractInteractions?.valueQuoteSum as number) +
+                              (contractInteractions?.erc20ValueQuoteSum as number)
+                          )
                         ) : (
                           <Skeleton height="20px" />
                         )}

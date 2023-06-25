@@ -68,7 +68,9 @@ export const getWalletTxStatsbyWeek = async (
       and(
         eq(transactions.chainId, chainId),
         eq(transactions.fromAddress, walletAddr),
-        sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL ${week * 7} DAY)`,
+        sql`transactions.block_signed_at >= DATE_SUB(NOW(), INTERVAL ${
+          week * 7
+        } DAY)`,
         eq(transactions.success, true)
       )
     );
