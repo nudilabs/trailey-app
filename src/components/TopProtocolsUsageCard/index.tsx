@@ -176,7 +176,6 @@ export default function TopProtocolsUsageCard({
                         <Skeleton height="20px" />
                       )}
                     </Td>
-                    {/* {console.log(contractInteractions)} */}
 
                     <Td>
                       {txsSummaryByContract ? (
