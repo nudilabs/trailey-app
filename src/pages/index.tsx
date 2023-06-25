@@ -345,7 +345,6 @@ export default function Home({
           const byContract = txSummariesByContractWithAddress.find(
             (obj: any) => obj.address === summary.address
           );
-          console.log('byContract: ', byContract);
           return (
             <GridItem colSpan={{ base: 12, md: 6, lg: 3 }} key={i}>
               <Card key={i}>
