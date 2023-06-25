@@ -3,10 +3,10 @@ import moment from 'moment';
 import _ from 'lodash';
 import { publicProcedure } from '@/server/trpc';
 import { Transaction } from '@/types/DB';
-// import { config as serverConfig } from '@/configs/server';
 import { env } from '@/env.mjs';
 import { Covalent } from '@/connectors/Covalent';
 import { QStash } from '@/connectors/Qstash';
+import { inngest } from '@/inngest';
 import * as rpcClient from '@/server/utils/client';
 import * as TxModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
@@ -150,6 +150,13 @@ export const syncWalletTxs = publicProcedure
       );
       // const deduplicationId = sha256(JSON.stringify(pubStoreMsg)).toString();
       await qstash.publishMsg('store-txs', pubStoreMsg);
+      await await inngest.send({
+        name: 'store/erc20-tx',
+        data: {
+          walletAddr: walletAddr,
+          chainName: chainName
+        }
+      });
       console.log('case no txs in db');
     } //case 2: txs in db
     else {
@@ -192,6 +199,13 @@ export const syncWalletTxs = publicProcedure
           );
 
           await qstash.publishMsg('store-txs', pubStoreMsg);
+          await await inngest.send({
+            name: 'store/erc20-tx',
+            data: {
+              walletAddr: walletAddr,
+              chainName: chainName
+            }
+          });
           console.log('case dbRecentPage < covRecentPage');
           console.log('case have tx in db');
         } //case 2.2: recent tx page  in db is equa from covalent
@@ -212,6 +226,13 @@ export const syncWalletTxs = publicProcedure
               covRecentPage
             );
           }
+          await await inngest.send({
+            name: 'store/erc20-tx',
+            data: {
+              walletAddr: walletAddr,
+              chainName: chainName
+            }
+          });
           console.log('case dbRecentPage == covRecentPage ');
         }
       } else {

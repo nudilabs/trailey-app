@@ -20,7 +20,8 @@ export const env = createEnv({
     //Indexer.coerce
     INDEX_BATCH_SIZE: z.coerce.number().int().default(6),
     PAGE_PER_BATCH: z.coerce.number().int().default(50),
-    TX_LIMIT: z.coerce.number().int().default(2000)
+    TX_LIMIT: z.coerce.number().int().default(2000),
+    INNGEST_EVENT_KEY: z.string().default('local')
   },
   client: {
     //Next
@@ -45,6 +46,8 @@ export const env = createEnv({
     TX_LIMIT: process.env.TX_LIMIT,
     NEXT_PUBLIC_TX_LIMIT: process.env.NEXT_PUBLIC_TX_LIMIT,
     NEXT_PUBLIC_REVALIDATE_TIME: process.env.NEXT_PUBLIC_REVALIDATE_TIME,
-    NEXT_PUBLIC_DEFAULT_CHAIN: process.env.NEXT_PUBLIC_DEFAULT_CHAIN
+    NEXT_PUBLIC_DEFAULT_CHAIN: process.env.NEXT_PUBLIC_DEFAULT_CHAIN,
+    INNGEST_EVENT_KEY: process.env.INNGEST_EVENT_KEY,
+    INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY
   }
 });
