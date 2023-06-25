@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
 import { publicProcedure } from '@/server/trpc';
 import { db } from '@/db/drizzle-db';
-import { supportChains, transactions } from '@/db/schema';
+import { erc20Transactions, supportChains, transactions } from '@/db/schema';
 import { getDefaultSummary, calculateChange } from '../../utils/fmt';
 import * as TrasactionsModel from '@/models/Transactions';
 import * as SupportChainsModel from '@/models/SupportChains';
@@ -54,6 +54,11 @@ export const getSummary = publicProcedure
         dataAllTime.valueQuoteSum,
         dataLastWeek.valueQuoteSum,
         dataLastTwoWeeks.valueQuoteSum
+      ),
+      erc20ValueQuoteSum: calculateChange(
+        dataAllTime.erc20ValueQuoteSum,
+        dataLastWeek.erc20ValueQuoteSum,
+        dataLastTwoWeeks.erc20ValueQuoteSum
       ),
       gasSum: calculateChange(
         dataAllTime.gasSum,
@@ -112,19 +117,25 @@ export const getSummaryByMonth = publicProcedure
       contractCount: number;
       valueQuoteSum: number;
       gasQuoteSum: number;
+      erc20ValueQuoteSum: number;
     }
 
     const chainId = supportedChain[0].id;
     const txsByMonth = (await db
       .select({
-        year: sql`YEAR(block_signed_at)`,
-        month: sql`MONTH(block_signed_at)`,
-        txCount: sql`COUNT(tx_hash)`,
-        contractCount: sql`COUNT(CASE WHEN is_interact THEN 1 ELSE NULL END)`,
-        valueQuoteSum: sql`SUM(value_quote)`,
-        gasQuoteSum: sql`SUM(gas_quote)`
+        year: sql<string>`YEAR(transactions.block_signed_at)`,
+        month: sql<string>`MONTH(transactions.block_signed_at)`,
+        txCount: sql<number>`COUNT(transactions.tx_hash)`,
+        contractCount: sql<number>`COUNT(CASE WHEN transactions.is_interact THEN 1 ELSE NULL END)`,
+        valueQuoteSum: sql<number>`SUM(transactions.value_quote)`,
+        gasQuoteSum: sql<number>`SUM(transactions.gas_quote)`,
+        erc20ValueQuoteSum: sql<number>`coalesce(sum(DISTINCT erc20_transactions.value_quote), 0)`
       })
       .from(transactions)
+      .leftJoin(
+        erc20Transactions,
+        eq(transactions.txHash, erc20Transactions.txHash)
+      )
       .where(
         and(
           eq(transactions.chainId, chainId),
@@ -132,10 +143,13 @@ export const getSummaryByMonth = publicProcedure
           eq(transactions.success, true)
         )
       )
-      .groupBy(sql`YEAR(block_signed_at)`, sql`MONTH(block_signed_at)`)
+      .groupBy(
+        sql`YEAR(transactions.block_signed_at)`,
+        sql`MONTH(transactions.block_signed_at)`
+      )
       .orderBy(
-        sql`YEAR(block_signed_at) ASC`,
-        sql`MONTH(block_signed_at) ASC`
+        sql`YEAR(transactions.block_signed_at) ASC`,
+        sql`MONTH(transactions.block_signed_at) ASC`
       )) as unknown as QueryResult[];
 
     const txsByMonthFormatted = txsByMonth.map(tx => {
@@ -145,7 +159,8 @@ export const getSummaryByMonth = publicProcedure
         txCount: tx.txCount,
         contractCount: tx.contractCount,
         valueQuoteSum: tx.valueQuoteSum,
-        gasQuoteSum: tx.gasQuoteSum
+        gasQuoteSum: tx.gasQuoteSum,
+        erc20ValueQuoteSum: tx.erc20ValueQuoteSum
       };
     });
     return {

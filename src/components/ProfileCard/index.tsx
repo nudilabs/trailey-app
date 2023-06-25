@@ -124,6 +124,7 @@ export default function ProfileCard({
     }
     setCurrentChain(chainConfigs.find(chain => chain.name === localChain));
   }, [localChain]);
+
   return (
     <Card size="lg">
       <CardHeader paddingBottom={0}>
@@ -254,13 +255,12 @@ export default function ProfileCard({
                           txSummary?.valueSum.allTime ?? 0
                         )}`
                       : `$${formatPrettyNumber(
-                          txSummary?.valueQuoteSum.allTime ?? 0
+                          Number(txSummary?.valueQuoteSum.allTime) +
+                            Number(txSummary?.erc20ValueQuoteSum.allTime) ?? 0
                         )}`}
                   </Text>
                 </StatNumber>
-                <StatLabel
-                  color={subHeadingColor}
-                >{`${balance?.symbol} Volume`}</StatLabel>
+                <StatLabel color={subHeadingColor}>Volume</StatLabel>
                 {txSummary && txSummary.valueQuoteSum.lastWeek !== 0 && (
                   <Tooltip
                     label={
@@ -269,7 +269,8 @@ export default function ProfileCard({
                             txSummary?.valueSum.percentChange ?? 0
                           )}% ${toolTipLabel}`
                         : `${formatPrettyNumber(
-                            txSummary?.valueQuoteSum.percentChange ?? 0
+                            (txSummary?.valueQuoteSum.allTime ?? 0) +
+                              (txSummary?.erc20ValueQuoteSum.allTime ?? 0)
                           )}% ${toolTipLabel}`
                     }
                     hasArrow

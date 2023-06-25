@@ -116,7 +116,6 @@ export default function Account({
       return;
     }
     setValidateData(true);
-    console.log('######## localChain:', localChain);
     mutate({
       chainName: localChain,
       walletAddr: account.address
@@ -184,7 +183,9 @@ export default function Account({
         date: month.date,
         txCount: monthData?.txCount ?? 0,
         contractCount: monthData?.contractCount ?? 0,
-        valueQuoteSum: monthData?.valueQuoteSum ?? 0,
+        valueQuoteSum:
+          Number(monthData?.valueQuoteSum ?? 0) +
+          Number(monthData?.erc20ValueQuoteSum ?? 0),
         gasQuoteSum: monthData?.gasQuoteSum ?? 0
       };
     })
@@ -194,14 +195,14 @@ export default function Account({
   const maxvalueQuoteSum = Math.max(...byMonthData.map(d => d.valueQuoteSum));
 
   let totalTxCountByMonthData = 0;
-  let totalValueQuoteByMonthData = 0;
+  let totalVolumeByMonthData = 0;
 
   byMonthData.forEach(d => {
     totalTxCountByMonthData += Number(d.txCount);
   });
 
   byMonthData.forEach(d => {
-    totalValueQuoteByMonthData += Number(d.valueQuoteSum);
+    totalVolumeByMonthData += d.valueQuoteSum;
   });
 
   const colors = {
@@ -526,7 +527,7 @@ export default function Account({
                         justifyContent="space-between"
                         alignItems="center"
                       >
-                        <Heading size="md">{`${currentChain.symbol} Volume`}</Heading>
+                        <Heading size="md">Volume</Heading>
                       </Flex>
                     </CardHeader>
                     <CardBody>
@@ -537,7 +538,7 @@ export default function Account({
                               <Heading>
                                 {txSummary.data ? (
                                   `$${formatPrettyNumber(
-                                    totalValueQuoteByMonthData
+                                    totalVolumeByMonthData
                                   )}`
                                 ) : (
                                   <Skeleton height="42px" />

@@ -12,6 +12,7 @@ export type TxSummary = {
   valueQuoteSum: TxSum;
   gasSum: TxSum;
   gasQuoteSum: TxSum;
+  erc20ValueQuoteSum: TxSum;
 };
 
 export type TxSummaryByContract = {
@@ -31,6 +32,7 @@ export type TxSummaryByMonth = {
     txCount: number;
     contractCount: number;
     valueQuoteSum: number;
+    erc20ValueQuoteSum: number;
     gasQuoteSum: number;
   }[];
 };

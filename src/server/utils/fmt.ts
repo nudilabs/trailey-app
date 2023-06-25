@@ -9,6 +9,7 @@ export const getDefaultSummary = () => ({
   contractCount: getEmptyChange(),
   valueSum: getEmptyChange(),
   valueQuoteSum: getEmptyChange(),
+  erc20ValueQuoteSum: getEmptyChange(),
   gasSum: getEmptyChange(),
   gasQuoteSum: getEmptyChange()
 });

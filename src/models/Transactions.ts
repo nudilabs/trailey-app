@@ -32,11 +32,8 @@ export const getWalletTxStats = async (chainId: number, walletAddr: string) => {
     )
     .where(
       and(
-        eq(transactions.chainId, 6),
-        eq(
-          transactions.fromAddress,
-          '0xfbFA1dC9e4a3972421aBCA95c85891dF83ACAb54'
-        ),
+        eq(transactions.chainId, chainId),
+        eq(transactions.fromAddress, walletAddr),
         eq(transactions.success, true)
       )
     );
