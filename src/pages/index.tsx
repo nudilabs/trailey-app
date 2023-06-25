@@ -485,10 +485,7 @@ export default function Home({
                                           .reduce(
                                             (accumulator, contract) => {
                                               accumulator.txCount.allTime +=
-                                                parseInt(
-                                                  contract.txCount
-                                                    .allTime as unknown as string
-                                                ) || 0;
+                                                contract.txCount || 0;
                                               accumulator.lastTx =
                                                 accumulator.lastTx ||
                                                 contract.lastTx;

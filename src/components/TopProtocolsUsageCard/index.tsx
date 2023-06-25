@@ -91,31 +91,45 @@ export default function TopProtocolsUsageCard({
             </Thead>
             <Tbody>
               {currentChain.protocols.map((protocol, index) => {
-                const contractInteractions = txsSummaryByContract?.contracts
-                  .filter(contract =>
-                    protocol.addresses.some(
-                      address =>
-                        address.toLowerCase() ===
-                        contract?.address?.toLowerCase()
-                    )
+                const walletStats = txsSummaryByContract?.contracts;
+                const protocolContracts = protocol.addresses.map(address =>
+                  address.toLowerCase()
+                );
+                const filterAddress = walletStats?.filter(contract =>
+                  protocolContracts.includes(
+                    contract?.address?.toLowerCase() ?? ''
                   )
-                  .reduce(
-                    (accumulator, contract) => {
-                      accumulator.txCount.allTime +=
-                        parseInt(
-                          contract.txCount.allTime as unknown as string
-                        ) || 0;
-                      accumulator.lastTx =
-                        accumulator.lastTx || contract.lastTx;
-                      return accumulator;
-                    },
-                    {
-                      txCount: {
-                        allTime: 0
-                      },
-                      lastTx: null as string | null // Set the initial value to string | null
-                    }
-                  );
+                );
+
+                const contractInteractions = filterAddress?.reduce(
+                  (accumulator, contract) => {
+                    accumulator.txCount +=
+                      parseInt(contract.txCount as unknown as string) || 0;
+
+                    accumulator.valueQuoteSum = contract.valueQuoteSum
+                      ? Number(accumulator.valueQuoteSum) +
+                        Number(contract.valueQuoteSum)
+                      : Number(accumulator.valueQuoteSum);
+
+                    accumulator.erc20ValueQuoteSum = contract.erc20ValueQuoteSum
+                      ? Number(accumulator.erc20ValueQuoteSum) +
+                        Number(contract.erc20ValueQuoteSum)
+                      : Number(accumulator.erc20ValueQuoteSum);
+                    accumulator.lastTx =
+                      !accumulator.lastTx ||
+                      contract.lastTx > accumulator.lastTx
+                        ? contract.lastTx
+                        : accumulator.lastTx;
+
+                    return accumulator;
+                  },
+                  {
+                    txCount: 0,
+                    valueQuoteSum: 0,
+                    erc20ValueQuoteSum: 0,
+                    lastTx: null as string | null // Set the initial value to string | null
+                  }
+                );
 
                 return (
                   <Tr key={index}>
@@ -157,11 +171,12 @@ export default function TopProtocolsUsageCard({
                     </Td>
                     <Td>
                       {txsSummaryByContract ? (
-                        contractInteractions?.txCount.allTime ?? 0
+                        contractInteractions?.txCount ?? 0
                       ) : (
                         <Skeleton height="20px" />
                       )}
                     </Td>
+                    {/* {console.log(contractInteractions)} */}
 
                     <Td>
                       {txsSummaryByContract ? (
@@ -177,7 +192,8 @@ export default function TopProtocolsUsageCard({
                     {!currentChain.is_testnet && (
                       <Td>
                         {txsSummaryByContract ? (
-                          `Coming soon`
+                          (contractInteractions?.valueQuoteSum as number) +
+                          (contractInteractions?.erc20ValueQuoteSum as number)
                         ) : (
                           <Skeleton height="20px" />
                         )}

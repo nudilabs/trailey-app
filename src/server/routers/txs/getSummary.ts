@@ -3,6 +3,9 @@ import { and, eq, sql } from 'drizzle-orm';
 import { publicProcedure } from '@/server/trpc';
 import { db } from '@/db/drizzle-db';
 import { supportChains, transactions } from '@/db/schema';
+import { getDefaultSummary, calculateChange } from '../../utils/fmt';
+import * as TrasactionsModel from '@/models/Transactions';
+import * as SupportChainsModel from '@/models/SupportChains';
 
 export const getSummary = publicProcedure
   .input(
@@ -13,171 +16,55 @@ export const getSummary = publicProcedure
   )
   .query(async opts => {
     const { chainName, walletAddr } = opts.input;
-    const supportedChain = await db
-      .select()
-      .from(supportChains)
-      .where(eq(supportChains.name, chainName));
-    if (supportedChain.length === 0)
-      return {
-        txCount: {
-          allTime: 0,
-          lastWeek: 0,
-          percentChange: 0
-        },
-        contractCount: {
-          allTime: 0,
-          lastWeek: 0,
-          percentChange: 0
-        },
-        valueSum: {
-          allTime: 0,
-          lastWeek: 0,
-          percentChange: 0
-        },
-        valueQuoteSum: {
-          allTime: 0,
-          lastWeek: 0,
-          percentChange: 0
-        },
-        gasSum: {
-          allTime: 0,
-          lastWeek: 0,
-          percentChange: 0
-        },
-        gasQuoteSum: {
-          allTime: 0,
-          lastWeek: 0,
-          percentChange: 0
-        }
-      };
+    const supportedChain = await SupportChainsModel.getChain(chainName);
+    if (supportedChain.length === 0) return getDefaultSummary();
     const chainId = supportedChain[0].id;
 
-    interface QueryResult {
-      txCount: number;
-      contractCount: number;
-      valueSum: number;
-      valueQuoteSum: number;
-      gasSum: number;
-      gasQuoteSum: number;
-    }
-    const dataAllTime = (await db
-      .select({
-        txCount: sql`count(tx_hash)`,
-        contractCount: sql`count(case when is_interact then 1 else null end)`,
-        valueSum: sql`coalesce(sum(value), 0)`,
-        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasSum: sql`coalesce(sum(gas_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr)
-        )
-      )
-      .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
-    const dataLastWeek = (await db
-      .select({
-        txCount: sql`count(tx_hash)`,
-        contractCount: sql`count(case when is_interact then 1 else null end)`,
-        valueSum: sql`coalesce(sum(value), 0)`,
-        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasSum: sql`coalesce(sum(gas_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)` // CHECK THIS, does it include failed TXs?
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr),
-          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`
-        )
-      )
-      .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
-
-    const dataLastTwoWeeks = (await db
-      .select({
-        txCount: sql`count(tx_hash)`,
-        contractCount: sql`count(case when is_interact then 1 else null end)`,
-        valueSum: sql`coalesce(sum(value), 0)`,
-        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasSum: sql`coalesce(sum(gas_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr),
-          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)`
-        )
-      )
-      .orderBy(sql`DATE(block_signed_at) DESC`)) as unknown as QueryResult[];
-
-    // Difference in change from 2 weeks ago to last week
-
-    const txCountPercentChange =
-      ((dataLastWeek[0].txCount - dataLastTwoWeeks[0].txCount) /
-        dataLastTwoWeeks[0].txCount) *
-      100;
-
-    const contractCountPercentChange =
-      ((dataLastWeek[0].contractCount - dataLastTwoWeeks[0].contractCount) /
-        dataLastTwoWeeks[0].contractCount) *
-      100;
-
-    const valueSumPercentChange =
-      ((dataLastWeek[0].valueSum - dataLastTwoWeeks[0].valueSum) /
-        dataLastTwoWeeks[0].valueSum) *
-      100;
-
-    const valueQuoteSumPercentChange =
-      ((dataLastWeek[0].valueQuoteSum - dataLastTwoWeeks[0].valueQuoteSum) /
-        dataLastTwoWeeks[0].valueQuoteSum) *
-      100;
-
-    const gasSumPercentChange =
-      ((dataLastWeek[0].gasSum - dataLastTwoWeeks[0].gasSum) /
-        dataLastTwoWeeks[0].gasSum) *
-      100;
-
-    const gasQuoteSumPercentChange =
-      ((dataLastWeek[0].gasQuoteSum - dataLastTwoWeeks[0].gasQuoteSum) /
-        dataLastTwoWeeks[0].gasQuoteSum) *
-      100;
-
+    const dataAllTime = await TrasactionsModel.getWalletTxStats(
+      chainId,
+      walletAddr
+    );
+    const dataLastWeek = await TrasactionsModel.getWalletTxStatsbyWeek(
+      chainId,
+      walletAddr,
+      1
+    );
+    const dataLastTwoWeeks = await TrasactionsModel.getWalletTxStatsbyWeek(
+      chainId,
+      walletAddr,
+      2
+    );
     return {
-      txCount: {
-        allTime: dataAllTime[0].txCount,
-        lastWeek: dataLastWeek[0].txCount,
-        percentChange: txCountPercentChange
-      },
-      contractCount: {
-        allTime: dataAllTime[0].contractCount,
-        lastWeek: dataLastWeek[0].contractCount,
-        percentChange: contractCountPercentChange
-      },
-      valueSum: {
-        allTime: dataAllTime[0].valueSum,
-        lastWeek: dataLastWeek[0].valueSum,
-        percentChange: valueSumPercentChange
-      },
-      valueQuoteSum: {
-        allTime: dataAllTime[0].valueQuoteSum,
-        lastWeek: dataLastWeek[0].valueQuoteSum,
-        percentChange: valueQuoteSumPercentChange
-      },
-      gasSum: {
-        allTime: dataAllTime[0].gasSum,
-        lastWeek: dataLastWeek[0].gasSum,
-        percentChange: gasSumPercentChange
-      },
-      gasQuoteSum: {
-        allTime: dataAllTime[0].gasQuoteSum,
-        lastWeek: dataLastWeek[0].gasQuoteSum,
-        percentChange: gasQuoteSumPercentChange
-      }
+      txCount: calculateChange(
+        dataAllTime.txCount,
+        dataLastWeek.txCount,
+        dataLastTwoWeeks.txCount
+      ),
+      contractCount: calculateChange(
+        dataAllTime.contractCount,
+        dataLastWeek.contractCount,
+        dataLastTwoWeeks.contractCount
+      ),
+      valueSum: calculateChange(
+        dataAllTime.valueSum,
+        dataLastWeek.valueSum,
+        dataLastTwoWeeks.valueSum
+      ),
+      valueQuoteSum: calculateChange(
+        dataAllTime.valueQuoteSum,
+        dataLastWeek.valueQuoteSum,
+        dataLastTwoWeeks.valueQuoteSum
+      ),
+      gasSum: calculateChange(
+        dataAllTime.gasSum,
+        dataLastWeek.gasSum,
+        dataLastTwoWeeks.gasSum
+      ),
+      gasQuoteSum: calculateChange(
+        dataAllTime.gasQuoteSum,
+        dataLastWeek.gasQuoteSum,
+        dataLastTwoWeeks.gasQuoteSum
+      )
     };
   });
 
@@ -190,145 +77,14 @@ export const getSummaryByContract = publicProcedure
   )
   .query(async opts => {
     const { chainName, walletAddr } = opts.input;
-    const supportedChain = await db
-      .select()
-      .from(supportChains)
-      .where(eq(supportChains.name, chainName));
+    const supportedChain = await SupportChainsModel.getChain(chainName);
     if (supportedChain.length === 0) return { contracts: [] };
-    interface QueryResult {
-      address: string;
-      txCount: number;
-      valueQuoteSum: number;
-      gasQuoteSum: number;
-      lastActive: string;
-    }
+
     const chainId = supportedChain[0].id;
-    const txsByContractAllTime = (await db
-      .select({
-        address: sql`to_address`,
-        txCount: sql`count(tx_hash)`,
-        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`, // CHECK THIS, does it include failed TXs?
-        signedAt: sql`max(block_signed_at)`
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr)
-        )
-      )
-      .groupBy(sql`to_address`)
-      .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
+    const walletStatsByContract =
+      await TrasactionsModel.getWalletStatsByContract(chainId, walletAddr);
 
-    const lastActiveDates = (await db
-      .select({
-        address: sql`to_address`,
-        lastActive: sql`MAX(block_signed_at)`
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr)
-        )
-      )
-      .groupBy(sql`to_address`)) as unknown as QueryResult[];
-
-    const txsByContractLastWeek = (await db
-      .select({
-        address: sql`to_address`,
-        txCount: sql`count(tx_hash)`,
-        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`, // CHECK THIS, does it include failed TXs?
-        signedAt: sql`max(block_signed_at)`
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr),
-          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`
-        )
-      )
-      .groupBy(sql`to_address`)
-      .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
-
-    const txsByContractLastTwoWeeks = (await db
-      .select({
-        address: sql`to_address`,
-        txCount: sql`count(tx_hash)`,
-        valueQuoteSum: sql`coalesce(sum(value_quote), 0)`,
-        gasQuoteSum: sql`coalesce(sum(gas_quote), 0)`, // CHECK THIS, does it include failed TXs?
-        signedAt: sql`max(block_signed_at)`
-      })
-      .from(transactions)
-      .where(
-        and(
-          eq(transactions.chainId, chainId),
-          eq(transactions.fromAddress, walletAddr),
-          sql`block_signed_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)`
-        )
-      )
-      .groupBy(sql`to_address`)
-      .orderBy(sql`count(tx_hash) DESC`)) as unknown as QueryResult[];
-
-    const txsByContractFormatted = txsByContractAllTime.map(tx => {
-      const lastWeek = txsByContractLastWeek.find(
-        txLastWeek => txLastWeek.address === tx.address
-      );
-      const lastTwoWeeks = txsByContractLastTwoWeeks.find(
-        txLastTwoWeeks => txLastTwoWeeks.address === tx.address
-      );
-
-      // Difference in change from 2 weeks ago to last week
-      const txCountPercentChange =
-        lastWeek && lastTwoWeeks
-          ? ((lastWeek.txCount - lastTwoWeeks.txCount) / lastTwoWeeks.txCount) *
-            100
-          : 0;
-
-      const valueQuoteSumPercentChange =
-        lastWeek && lastTwoWeeks
-          ? ((lastWeek.valueQuoteSum - lastTwoWeeks.valueQuoteSum) /
-              lastTwoWeeks.valueQuoteSum) *
-            100
-          : 0;
-
-      const gasQuoteSumPercentChange =
-        lastWeek && lastTwoWeeks
-          ? ((lastWeek.gasQuoteSum - lastTwoWeeks.gasQuoteSum) /
-              lastTwoWeeks.gasQuoteSum) *
-            100
-          : 0;
-
-      const lastActiveDatesFormatted =
-        lastActiveDates?.find(
-          lastActiveDate => lastActiveDate.address === tx.address
-        ) || null;
-
-      return {
-        address: tx.address,
-        lastTx: lastActiveDatesFormatted && lastActiveDatesFormatted.lastActive,
-        txCount: {
-          allTime: tx.txCount,
-          lastWeek: lastWeek ? lastWeek.txCount : 0,
-          percentChange: txCountPercentChange
-        },
-        valueQuoteSum: {
-          allTime: tx.valueQuoteSum,
-          lastWeek: lastWeek ? lastWeek.valueQuoteSum : 0,
-          percentChange: valueQuoteSumPercentChange
-        },
-        gasQuoteSum: {
-          allTime: tx.gasQuoteSum,
-          lastWeek: lastWeek ? lastWeek.gasQuoteSum : 0,
-          percentChange: gasQuoteSumPercentChange
-        }
-      };
-    });
-
-    return { contracts: txsByContractFormatted };
+    return { contracts: walletStatsByContract };
   });
 
 export const getSummaryByMonth = publicProcedure

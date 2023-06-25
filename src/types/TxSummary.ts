@@ -16,11 +16,12 @@ export type TxSummary = {
 
 export type TxSummaryByContract = {
   contracts: {
-    address: string;
-    txCount: TxSum;
-    valueQuoteSum: TxSum;
-    gasQuoteSum: TxSum;
-    lastTx: string | null;
+    address: string | null;
+    txCount: number;
+    valueQuoteSum: number;
+    erc20ValueQuoteSum: number;
+    gasQuoteSum: number;
+    lastTx: string;
   }[];
 };
 
