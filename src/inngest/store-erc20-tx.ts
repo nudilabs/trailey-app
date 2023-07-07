@@ -28,10 +28,17 @@ const getErc20Trasnfers = async (
       startBlock
     );
     const { items, pagination } = res.data;
+
+    if (items.length === 0) {
+      hasMore = false;
+      break;
+    }
+
     lastBlock = items[0].block_height + 1;
 
     for (let tx of items) {
       const signAt = moment.utc(tx.block_signed_at).toDate();
+      // console.log('tx', tx.block_height);
       let txData: Erc20Tx = {
         txHash: tx.tx_hash,
         signedAt: signAt,
