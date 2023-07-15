@@ -44,7 +44,11 @@ import SearchBar from '@/components/SearchBar';
 import ChainSelector from '@/components/ChainSelector';
 import moment from 'moment';
 import { LastResync } from '@/types/LastResync';
-import { formatPrettyNumber, getFormattedAddress } from '@/utils/format';
+import {
+  formatPrettyNumber,
+  getEthFromWei,
+  getFormattedAddress
+} from '@/utils/format';
 import Avatar from '@/components/Avatar';
 
 export default function Home({
@@ -415,7 +419,9 @@ export default function Home({
                             <Text>
                               {currentChain?.is_testnet
                                 ? `${currentChain?.symbol} ${formatPrettyNumber(
-                                    summary?.data?.valueSum.allTime ?? 0
+                                    getEthFromWei(
+                                      summary?.data?.valueSum.allTime
+                                    ) ?? 0
                                   )}`
                                 : `$${formatPrettyNumber(
                                     summary?.data?.valueQuoteSum.allTime ?? 0
@@ -438,7 +444,9 @@ export default function Home({
                             <Text>
                               {currentChain?.is_testnet
                                 ? `${currentChain?.symbol} ${formatPrettyNumber(
-                                    summary?.data?.gasSum.allTime ?? 0
+                                    getEthFromWei(
+                                      summary?.data?.gasSum.allTime
+                                    ) ?? 0
                                   )}`
                                 : `$${formatPrettyNumber(
                                     summary?.data?.gasQuoteSum.allTime ?? 0
