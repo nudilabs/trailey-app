@@ -23,7 +23,7 @@ import Avatar from '../Avatar';
 import {
   formatDecimals,
   formatPrettyNumber,
-  getEthFromGwei,
+  getEthFromWei,
   getFormattedAddress
 } from '@/utils/format';
 import { IAccount } from '@/types/IAccount';
@@ -253,7 +253,7 @@ export default function ProfileCard({
                   <Text>
                     {currentChain?.is_testnet
                       ? `${balance?.symbol} ${formatPrettyNumber(
-                          getEthFromGwei(txSummary?.valueSum.allTime) ?? 0
+                          getEthFromWei(txSummary?.valueSum.allTime) ?? 0
                         )}`
                       : `$${formatPrettyNumber(
                           Number(txSummary?.valueQuoteSum.allTime) +
@@ -297,7 +297,7 @@ export default function ProfileCard({
                   <Text>
                     {currentChain?.is_testnet
                       ? `${balance?.symbol} ${formatPrettyNumber(
-                          getEthFromGwei(txSummary?.gasSum.allTime) ?? 0
+                          getEthFromWei(txSummary?.gasSum.allTime) ?? 0
                         )}`
                       : `$${formatPrettyNumber(
                           txSummary?.gasQuoteSum.allTime ?? 0
