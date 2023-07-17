@@ -27,7 +27,8 @@ import { publicProvider } from 'wagmi/providers/public';
 
 import { trpc } from '../connectors/Trpc';
 import { env } from '@/env.mjs';
-// import ENV from '@/utils/Env';
+
+import { Analytics } from '@vercel/analytics/react';
 
 const { chains, provider } = configureChains(
   [
@@ -85,6 +86,7 @@ const App = ({ Component, pageProps }: AppProps<{}>) => {
       <ChakraProvider theme={theme}>
         <Layout {...profileProps}>
           <Component {...profileProps} {...pageProps} />
+          <Analytics />
         </Layout>
       </ChakraProvider>
     </WagmiConfig>

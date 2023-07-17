@@ -31,6 +31,7 @@
     "@types/react-dom": "18.0.11",
     "@types/react-helmet": "^6.1.6",
     "@upstash/qstash": "^0.3.6",
+    "@vercel/analytics": "^1.0.1",
     "@vercel/edge-config": "^0.1.10",
     "@wagmi/core": "^0.10.9",
     "axios": "^1.4.0",
