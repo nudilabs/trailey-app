@@ -35,6 +35,7 @@ import { useRouter } from 'next/router';
 import SearchBar from '../SearchBar';
 import BundleButton from '../BundleButton';
 import { IBundle } from '@/types/IBundle';
+import { TwitterIcon } from '../icons';
 
 interface LinkItemProps {
   name: string;
@@ -207,7 +208,7 @@ const SidebarContent = ({
             onClose={onClose}
             isHover={isHover}
             key={'twitter'}
-            icon={FiTwitter}
+            icon={TwitterIcon}
             href={'https://twitter.com/dropbookxyz'}
             external
           >
